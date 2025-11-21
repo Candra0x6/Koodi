@@ -1,26 +1,132 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #3c3c3c;
+  
+  /* Duolingo Green */
+  --primary: #58cc02;
+  --primary-foreground: #ffffff;
+  --primary-depth: #46a302;
+  
+  /* Duolingo Blue */
+  --secondary: #1cb0f6;
+  --secondary-foreground: #ffffff;
+  --secondary-depth: #1899d6;
+  
+  /* Duolingo Yellow */
+  --accent: #ffc800;
+  --accent-foreground: #4b4b4b;
+  --accent-depth: #e5b400;
+  
+  /* Duolingo Red */
+  --destructive: #ff4b4b;
+  --destructive-foreground: #ffffff;
+  --destructive-depth: #d43232;
+
+  /* Neutrals */
+  --muted: #f7f7f7;
+  --muted-foreground: #777777;
+  
+  --card: #ffffff;
+  --card-foreground: #3c3c3c;
+  
+  --popover: #ffffff;
+  --popover-foreground: #3c3c3c;
+  
+  --border: #e5e5e5;
+  --input: #f7f7f7;
+  --ring: #1cb0f6;
+  
+  --radius: 1rem; /* 16px default, but we'll use larger for buttons */
+}
+
+.dark {
+  --background: #131f24;
+  --foreground: #ffffff;
+  
+  --primary: #58cc02;
+  --primary-foreground: #ffffff;
+  --primary-depth: #46a302;
+  
+  --secondary: #1cb0f6;
+  --secondary-foreground: #ffffff;
+  --secondary-depth: #1899d6;
+  
+  --accent: #ffc800;
+  --accent-foreground: #4b4b4b;
+  --accent-depth: #e5b400;
+  
+  --destructive: #ff4b4b;
+  --destructive-foreground: #ffffff;
+  --destructive-depth: #d43232;
+  
+  --muted: #202f36;
+  --muted-foreground: #aafaad;
+  
+  --card: #131f24;
+  --card-foreground: #ffffff;
+  
+  --popover: #131f24;
+  --popover-foreground: #ffffff;
+  
+  --border: #37464f;
+  --input: #202f36;
+  --ring: #1cb0f6;
 }
 
 @theme inline {
+  --font-sans: 'Geist', 'Geist Fallback';
+  --font-mono: 'Geist Mono', 'Geist Mono Fallback';
+  
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-depth: var(--primary-depth);
+  
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary-depth: var(--secondary-depth);
+  
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent-depth: var(--accent-depth);
+  
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-destructive-depth: var(--destructive-depth);
+  
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  body {
+    @apply bg-background text-foreground;
+  }
 }
