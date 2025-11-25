@@ -93,11 +93,25 @@ export function CodeLessonGame({ lessonId }: { lessonId: string;}) {
     return shuffled
   }
 
+  const shuffleReorderItems = <T,>(arr: T[]) => {
+    const shuffled = [...arr]
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+    }
+    return shuffled
+  }
+
   const leftPairs = currentQuestion?.pairs?.filter((p) => p.index >= 1 && p.index <= 4) || []
   const rightPairs = currentQuestion?.pairs?.filter((p) => p.index >= 5 && p.index <= 8) || []
 
   const shuffledLeftPairs = React.useMemo(() => shuffleArray(leftPairs), [currentQuestion?.id])
   const shuffledRightPairs = React.useMemo(() => shuffleArray(rightPairs), [currentQuestion?.id])
+
+  const shuffledReorderItems = React.useMemo(() => {
+    if (currentQuestion?.type !== "REORDER" || !currentQuestion?.items) return []
+    return shuffleReorderItems(currentQuestion.items)
+  }, [currentQuestion?.id])
 
   React.useEffect(() => {
     if (!currentQuestion) return
@@ -111,9 +125,9 @@ export function CodeLessonGame({ lessonId }: { lessonId: string;}) {
     setMatchedPairs([])
 
     if (currentQuestion.type === "REORDER" && currentQuestion.items) {
-      setReorderItems(currentQuestion.items)
+      setReorderItems(shuffledReorderItems)
     }
-  }, [currentQuestion])
+  }, [currentQuestion, shuffledReorderItems])
 
   // Mark lesson as complete when game state is completed
   React.useEffect(() => {
@@ -368,7 +382,7 @@ export function CodeLessonGame({ lessonId }: { lessonId: string;}) {
                 gameState === "feedback" && "pointer-events-none",
               )}
             >
-              <GripVertical className="text-muted-foreground w-5 h-5 flex-shrink-0" />
+              <GripVertical className="text-muted-foreground w-5 h-5 shrink-0" />
               <span>{item.text}</span>
             </div>
           </Reorder.Item>
