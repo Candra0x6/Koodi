@@ -1,284 +1,234 @@
-
-
-Below is a **clean, professional PRD (Project Requirements Document)** for your **Duolingo-style Coding Learning App** — using **Next.js + TypeScript + Supabase + Prisma ORM**.  
-This is structured exactly like a real software PRD used by product managers.
+Sure — here is a **complete PRD (Product Requirements Document)** for your coding-learning app (Duolingo-style for programming).
 
 ---
 
-# 📘 **PRD — Duolingo-Style Coding Learning App**
-**Tech Stack: Next.js (App Router), TypeScript, Supabase Auth + DB, Prisma ORM**  
-**Platform: Web-first, later Mobile (React Native optional)**  
-**Version:** MVP v1.0
+# 📌 PRD — Coding Learning App (Gamified like Duolingo)
+
+## 1. Overview
+
+The app teaches users to code using short gamified lessons with XP, streaks, hearts, and progressive difficulty.
+Users choose a programming language (e.g., Python) during onboarding and follow a personalized learning path.
 
 ---
 
-# 1. 🎯 **App Overview**
-A gamified web app that teaches coding from beginner → advanced using mini-games inspired by Duolingo.  
-Instead of text-heavy lessons, users learn through:
+## 2. Goals
 
-- Fix-the-bug games  
-- Code reorder puzzles  
-- Predict-the-output quizzes  
-- Timed challenges  
-- Mini project builder  
-- Streak-based difficulty
-
-The product is built to be:
-
-- **Extremely addictive** (Duolingo-style progression)  
-- **Beginner-friendly** (no typing at first, only tap/drag)  
-- **Modular** (game levels stored in Supabase, rendered dynamically)
+| Type      | Goal                                                            |
+| --------- | --------------------------------------------------------------- |
+| Primary   | Help beginners learn coding in an engaging, game-based way      |
+| Secondary | Help intermediate users improve skills & prepare for interviews |
+| Business  | Convert users from free → premium subscription                  |
 
 ---
 
-# 2. 👤 **Target Users**
-### Primary:
-- Students (13–25) learning coding for the first time  
-- Absolute beginners who get overwhelmed by text-heavy tutorials  
-- People who prefer mobile-style learning (Duolingo UX)
+## 3. Target Users
 
-### Secondary:
-- Bootcamp learners  
-- Hobbyists  
-- Coding influencers teaching via custom paths
+| Segment             | Description                                 |
+| ------------------- | ------------------------------------------- |
+| Beginner learners   | Never coded before, want guided progression |
+| Intermediate coders | Already coding, want structured improvement |
+| Job seekers         | Preparing for coding interview challenges   |
 
 ---
 
-# 3. 🎮 **Core Game Lesson Types (Mandatory)**
+## 4. Core Experience / User Flow
 
-### 1. **Fix-The-Bug Games**
-- Debug Hunt (tap wrong syntax)
-- Line Repair
-- 3 Bugs Challenge (timed)
+Open App
+  ↓
+Welcome Screen
+  → CTA: "Start Learning"
+  ↓
+Sign Up / Login
+  • Google
+  • Email & Password
+  • Continue Without Account (Guest)
+  ↓
+Choose Language (Phase 1: Python; Phase 2: JS, Java, C++)
+  ↓
+Choose Goal
+  • Learn coding from zero
+  • Improve coding skills
+  • Prepare for interviews
+  ↓
+Skill Placement Test (Optional - 5 questions)
+  → Determines starting level & unlocks matching lessons
+  ↓
+Avatar Setup (Quick)
+  → Choose character, username auto-suggested
+  ↓
+Intro to XP, Hearts, Streak, Coins
+  ↓
+Start First Lesson
+  → Learning Path with Chapters → Units → Lessons
+      (Each chapter harder than previous; first chapter unlocked only)
 
-### 2. **Code Reorder Games**
-- Drag blocks to form correct code
-- Build the Function (assemble components)
 
-### 3. **Fill-in-the-Blank**
-- Missing line in loop
-- Autocomplete challenge (array, string methods)
 
-### 4. **Predict the Output**
-- “What will this print?”
-- Step-tracing visualizer
+## After First Lesson -> New User Retention Loop
+Lesson Complete
+  ↓
+Reward Popup
+  • XP gained
+  • Coins earned
+  • Streak
+  ↓
+Daily Goal
+  • Soft prompt: "You’re close to your daily goal, continue?"
+  ↓
+Home Dashboard
+  • Continue Lesson
+  • Practice
+  • Play Minigame
+  • Leaderboard
 
-### 5. **Timed Coding Challenges (Fast Mode)**
-- Match code → output
-- Rapid Debug Mode (fix 5 bugs under 30 seconds)
-
-### 6. **Logic Puzzle Games**
-- Boolean unlock
-- Flowchart decisions
-
-### 7. **Mini-Project Builder**
-- Progressive: add variables → add functions → loops → arrays
-
-### 8. **Streak-Based Difficulty Unlocking**
-- Lessons adapt based on streak  
-- Unlock boss challenges every 7 days  
-
----
-
-# 4. 🛣️ **User Flows (Critical)**
-
-## **4.1 Onboarding**
-1. User creates account via **Supabase Auth** (email, Google, or anonymous mode).  
-2. Choose coding path:  
-   - JavaScript (MVP)  
-3. Mini onboarding test → places user at Level 1–3.  
-4. Opens first unit.
-
----
-
-## **4.2 Lesson Flow (Duolingo Path Style)**
-1. User taps a level  
-2. Backend returns:
-   - game type  
-   - question data  
-   - correct answers  
-   - UI config  
-3. User completes 1–4 mini-games per lesson  
-4. Award XP, streak, hearts  
-5. Progress to next lesson  
 
 ---
 
-## **4.3 Streak & XP**
-- Streak increased daily  
-- XP gained from lessons & challenges  
-- Higher streak → unlock harder problems  
-- Losing all hearts → retry tomorrow  
+## 5. Features
+
+### 5.1 Learning Content Hierarchy
+
+| Level    | Meaning                                          |
+| -------- | ------------------------------------------------ |
+| Language | Python                          |
+| Chapter  | High-level topic (Basics, OOP, Data Structures…) |
+| Unit     | Subtopic (Variables, Loops, Lists…)              |
+| Lesson   | Daily lesson group                               |
+| Question | MCQ, fill blank, debug code, code output         |
+
+### 5.2 Lesson Question Types
+
+| Type              | Example                 |
+| ----------------- | ----------------------- |
+| Multiple Choice   | Choose correct syntax   |
+| Fill in the Blank | `print(____)`           |
+| Code Output       | Predict output of code  |
+| Debug Code        | Fix broken code snippet |
+
+Each question has:
+
+* Content
+* Multiple choices (for MCQ)
+* Correct answer
+* Explanation after answering
+
+### 5.3 Gamification
+
+| System | Rules                                           |
+| ------ | ----------------------------------------------- |
+| Hearts | Lose heart when wrong → lesson ends if 0        |
+| XP     | Earn XP for correct answers & lesson completion |
+| Streak | Increase daily learning streak                  |
+| Unlock | Units are locked until previous completed       |
+
+### 5.4 User Progress
+
+The app tracks:
+
+* Completed lessons
+* Progress per unit & chapter
+* Answers (correct/incorrect)
+* Starting level (if placement test used)
+
+## 7. Success Metrics (KPIs)
+
+| Category   | Metric                                           |
+| ---------- | ------------------------------------------------ |
+| Engagement | Daily Active Users (DAU), Average Lesson Time    |
+| Learning   | Lessons completed per week, improvement accuracy |
+| Retention  | Day-3 retention, streak length                   |
+| Business   | Conversion to Premium                            |
 
 ---
 
-## **4.4 Program Builder Unlock Flow**
-1. After completing Level 5, user unlocks "Mini Program"  
-2. Each lesson adds a new feature:  
-   - print text  
-   - add variable  
-   - add function  
-   - loop  
-3. At the end → user gets certificate-like animation  
+## 8. Technical Architecture
+
+### 8.1 Frontend
+
+| Section  | Stack                |
+| -------- | -------------------- |
+| Client   | Next.js (App Router) |
+| Language | TypeScript           |
+| State    | Zustand / Redux      |
+| UI       | Tailwind / Shadcn    |
+
+### 8.2 Backend
+
+| Component                       | Technology                        |
+| ------------------------------- | --------------------------------- |
+| API                             | Next.js Route Handlers            |
+| Auth                            | NextAuth (Google + Email + Guest) |
+| DB                              | PostgreSQL                        |
+| ORM                             | Prisma                            |
+
+### 8.3 Database (Prisma)
+
+Matches previous schema:
+
+* Users, Languages, Chapters, Units, Lessons, Questions
+* Progress tables (UserUnitProgress, UserLessonCompletion, UserAnswer)
 
 ---
 
-# 5. 🧩 **Core Features (MVP)**
+## 9. Content Roadmap (Python Phase-1)
 
-### ✔️ Gamified Learning Path
-- Chapters → Units → Lessons → Mini-games  
-- Locked lessons until prerequisites are completed
+| Chapter         | Units | Lessons | Questions |
+| --------------- | ----- | ------- | --------- |
+| Basics          | 5     | 25      | 150       |
+| Control Flow    | 5     | 25      | 150       |
+| Functions       | 4     | 20      | 120       |
+| Data Structures | 4     | 20      | 120       |
 
-### ✔️ All Game Lesson Types
-- 8 game modes listed above  
-- Configurable via Supabase JSON schema
-
-### ✔️ XP, Streak, Leaderboards
-- Track user performance  
-- Weekly global leaderboard  
-- Streak freeze (premium later)
-
-### ✔️ Daily Challenges
-- Random mix of mini-games  
-- Timed challenge  
-- Rewards: bonus XP or profile badges  
-
-### ✔️ User Profile & Stats
-- XP count  
-- Lesson completion history  
-- Achievements  
-- Streak history graph  
-
-### ✔️ Basic Admin Panel
-- Upload new questions  
-- Create levels  
-- Configure game modes  
-- JSON editor for question structure  
+Total launch content ≈ **540 questions**
 
 ---
 
-# 6. ⚙️ **Tech Stack & Architecture**
+## 10. Milestones / Timeline
 
-### **Frontend — Next.js + TypeScript**
-- App Router  
-- Server Actions for DB mutations  
-- React for game rendering  
-- Zustand for global state (XP, hearts, streak UI)
-
-### **Backend — Supabase**
-- Supabase Auth: email, Google, anonymous  
-- Supabase DB (Postgres)  
-- Supabase RLS for security  
-
-### **ORM — Prisma**
-- Models for:  
-  - User  
-  - Lesson  
-  - GameType  
-  - Question  
-  - UserProgress  
-  - UserStats  
-  - StreakLog  
-
-### **Storage**
-- Supabase Storage for:  
-  - Images  
-  - Minified game configs  
-
-### **API Routes**
-- `/api/lesson/get`  
-- `/api/lesson/complete`  
-- `/api/streak/update`  
-- `/api/progress/save`  
-- `/api/admin/*`  
+| Week   | Deliverable                                 |
+| ------ | ------------------------------------------- |
+| Week 1 | UI Wireframes + DB completed + Auth working |
+| Week 2 | Onboarding flow + Language → Learning Path  |
+| Week 3 | Lesson system + Questions + XP + Hearts     |
+| Week 4 | Progress tracking + Streak + Dashboard      |
+| Week 5 | Avatar + Animations + Transitions           |
+| Week 6 | Polish + QA + Beta launch                   |
 
 ---
 
-# 7. 🗂️ **Database Schema (Simplified)**
+## 11. Risks & Mitigation
 
-### `User`
-- id  
-- email  
-- created_at  
-
-### `UserStats`
-- user_id  
-- xp  
-- streak  
-- hearts  
-- last_active_date  
-
-### `Lesson`
-- id  
-- unit_id  
-- order  
-- game_type (FK)  
-- difficulty  
-- question_ids (array)  
-
-### `Question`
-- id  
-- game_type  
-- prompt  
-- code_snippet  
-- choices (json)  
-- answer (json)  
-- metadata (json)
-
-### `GameType`
-- id  
-- name  
-- config_schema (json)  
-
-### `UserProgress`
-- user_id  
-- lesson_id  
-- completed  
-- score  
+| Risk                              | Mitigation                              |
+| --------------------------------- | --------------------------------------- |
+| Users quit after early difficulty | Adaptive difficulty + hints             |
+| Not enough content                | Modular content import tool for authors |
+| Bugs in code questions            | Preview + testcase validation           |
 
 ---
 
-# 8. ✨ **In-Scope (MVP)**
+## 12. Future Enhancements (Phase 3+)
 
-### ✔️ Must Have
-- Authentication  
-- Gamified learning path  
-- 8 game mini-types  
-- Streak + XP  
-- Daily challenge  
-- Basic admin panel  
-- Responsive web design  
+* Leaderboards
+* AI feedback on code
+* Community challenge battles
+* Learning pathways (Web Dev / Data Science)
+* Mobile app (React Native)
 
 ---
 
-# 9. 🚫 **Out-of-Scope (Future Versions)**
+### ✔ This PRD is suitable for:
 
-### Not for MVP:
-- Full social features (friends, following)  
-- Code editor with typing  
-- Community-created lessons  
-- Multi-language support (Python, Java)  
-- Premium subscription  
-- Long-form projects  
-- AI tutor (later addition)
+* Founder vision alignment
+* Investor deck
+* Roadmap planning
+* Team development sync
 
 ---
 
-# 10. 📆 **Timeline (Realistic)**
-**8–12 weeks MVP**
+If you want next I can create:
+🚀 **Wireframes (UI/UX Screen flow)
+🔥 Jira Sprint Task Breakdown
+🗂️ Notion Documentation Structure
+📦 Full seed file with Python lessons**
 
-| Week | Deliverable |
-|------|-------------|
-| 1–2 | UI/UX wireframes, DB schema, lesson structure |
-| 3–4 | Auth + user stats + lesson map |
-| 5–6 | Mini-game engines (first 5 types) |
-| 7 | All 8 game types integrated |
-| 8 | Streak & XP system + UI |
-| 9 | Admin panel |
-| 10 | QA, polish animations, deploy |
-| 11–12 | Beta test + adjustments |
-
----
-
-# 11. 🧭 **Vision (Long-Term)**
-"Become the Duolingo for learning to code — simple, addictive, and fun, with playful characters and gamified curriculum."
+Just tell me what you want next.

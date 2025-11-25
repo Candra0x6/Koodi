@@ -1,49 +1,60 @@
-"use client"
+'use client'
 
-import * as React from "react"
-import * as AvatarPrimitive from "@radix-ui/react-avatar"
+import * as React from 'react'
+import { cn } from '@/lib/utils'
 
-import { cn } from "@/lib/utils"
+interface AvatarProps extends React.HTMLAttributes<HTMLDivElement> {
+  src?: string
+  fallback: string
+  size?: 'sm' | 'md' | 'lg' | 'xl'
+}
 
-function Avatar({
-  className,
-  ...props
-}: React.ComponentProps<typeof AvatarPrimitive.Root>) {
+function Avatar({ src, fallback, size = 'md', className, ...props }: AvatarProps) {
+  const sizes = {
+    sm: 'h-8 w-8 text-xs',
+    md: 'h-12 w-12 text-sm',
+    lg: 'h-16 w-16 text-base',
+    xl: 'h-24 w-24 text-xl',
+  }
+
   return (
-    <AvatarPrimitive.Root
+    <div
       data-slot="avatar"
       className={cn(
-        "relative flex size-8 shrink-0 overflow-hidden rounded-full",
-        className
+        'relative flex shrink-0 overflow-hidden rounded-full border-2 border-border',
+        sizes[size],
+        className,
       )}
       {...props}
-    />
+    >
+      {src ? (
+        <img className="aspect-square h-full w-full object-cover" src={src || '/placeholder.svg'} alt="Avatar" />
+      ) : (
+        <div className="flex h-full w-full items-center justify-center bg-muted text-muted-foreground font-bold uppercase tracking-widest">
+          {fallback}
+        </div>
+      )}
+    </div>
   )
 }
 
-function AvatarImage({
-  className,
-  ...props
-}: React.ComponentProps<typeof AvatarPrimitive.Image>) {
+function AvatarImage({ className, ...props }: React.ComponentProps<'img'>) {
   return (
-    <AvatarPrimitive.Image
+    <img
       data-slot="avatar-image"
-      className={cn("aspect-square size-full", className)}
+      className={cn('aspect-square h-full w-full object-cover', className)}
       {...props}
     />
   )
 }
 
-function AvatarFallback({
-  className,
-  ...props
-}: React.ComponentProps<typeof AvatarPrimitive.Fallback>) {
+function AvatarFallback({ className, ...props }: React.ComponentProps<'div'>) {
   return (
-    <AvatarPrimitive.Fallback
+    <div
       data-slot="avatar-fallback"
       className={cn(
-        "bg-muted flex size-full items-center justify-center rounded-full",
-        className
+        'bg-muted flex h-full w-full items-center justify-center rounded-full',
+        className,
       )}
       {...props}
     />

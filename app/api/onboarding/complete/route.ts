@@ -1,210 +1,143 @@
-import { auth } from '@/auth';
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma/client';
+import { PrismaClient } from '@/lib/generated/prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { auth } from '@/auth';
+import { createChapterStructure } from '@/lib/chapter-seeder';
+
+const adapter = new PrismaPg({
+  connectionString: process.env.DATABASE_URL,
+});
+
+const prisma = new PrismaClient({ adapter });
 
 export async function POST(request: NextRequest) {
+  const session = await auth();
   try {
-    const session = await auth();
-
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     const body = await request.json();
+
     const {
-      userId,
-      selectedLanguage,
-      difficulty,
-      hearAbout,
-      hearAboutOther,
-      learningReason,
-      learningReasonOther,
-      goals,
-      dailyGoal,
+      selectedLanguageId,
+      learningGoal,
+      avatarId,
+      placementTestScore,
+      authMethod,
+      email,
+      password,
     } = body;
 
-    if (!selectedLanguage || !difficulty) {
+    let user;
+    let userId: string;
+
+    // If guest user creating account
+    if (authMethod === 'guest' && email && password) {
+      user = await prisma.user.create({
+        data: {
+          email,
+          username: email.split('@')[0],
+          password,
+          selectedLanguageId,
+          learningGoal,
+          avatarId,
+          placementTestScore,
+          onboardingCompleted: true,
+          isGuest: false,
+        },
+      });
+      userId = user.id;
+    } else if (session?.user?.id) {
+      // If already authenticated, update existing user
+      user = await prisma.user.update({
+        where: { id: session.user.id },
+        data: {
+          selectedLanguageId,
+          learningGoal,
+          avatarId,
+          placementTestScore,
+          onboardingCompleted: true,
+          isGuest: false,
+        },
+      });
+      userId = user.id;
+    } else {
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { message: 'User authentication failed' },
+        { status: 401 }
+      );
+    }
+
+    // Get the selected language
+    const language = await prisma.language.findUnique({
+      where: { id: selectedLanguageId },
+    });
+
+    if (!language) {
+      return NextResponse.json(
+        { message: 'Language not found' },
         { status: 400 }
       );
     }
 
-    // Update or create OnboardingData
-    const onboardingData = await prisma.onboardingData.upsert({
-      where: { userId },
-      update: {
-        selectedCourse: selectedLanguage,
-        knowledgeLevel: difficulty,
-        hearAbout,
-        hearAboutOther,
-        learningReason,
-        learningReasonOther,
-        goals,
-        dailyGoal,
-        completed: true,
-        completedAt: new Date(),
-      },
-      create: {
-        userId,
-        selectedCourse: selectedLanguage,
-        knowledgeLevel: difficulty,
-        hearAbout,
-        hearAboutOther,
-        learningReason,
-        learningReasonOther,
-        goals,
-        dailyGoal,
-        completed: true,
-        completedAt: new Date(),
-      },
+    // Check if chapter structure already exists for this language
+    const existingChapters = await prisma.chapter.findMany({
+      where: { languageId: selectedLanguageId },
+      take: 1,
     });
 
-    // Map difficulty to level
-    const difficultyMap: Record<string, number> = {
-      beginner: 1,
-      intermediate: 2,
-      advanced: 3,
-    };
-    const difficultyLevel = difficultyMap[difficulty.toLowerCase()] || 1;
-
-    // Get the game type (language)
-    const gameType = await prisma.gameType.findUnique({
-      where: { id: selectedLanguage },
-    });
-
-    if (!gameType) {
-      return NextResponse.json({ error: 'Language not found' }, { status: 400 });
-    }
-
-    // Fetch all questions for this game type with matching difficulty range
-    const questions = await prisma.question.findMany({
+    // Get all units for this language in order
+    const allUnits = await prisma.unit.findMany({
       where: {
-        gameTypeId: selectedLanguage,
-        difficulty: {
-          gte: Math.max(1, difficultyLevel - 1),
-          lte: difficultyLevel + 1,
-        },
+        chapter: { languageId: selectedLanguageId },
       },
-      select: { id: true, unitId: true },
-      take: 100,
+      orderBy: [
+        { chapter: { levelIndex: 'asc' } },
+        { unitIndex: 'asc' },
+      ],
     });
 
-    // Get unique units from questions
-    const uniqueUnitIds = [...new Set(questions.map((q) => q.unitId).filter(Boolean))];
+    // If no units exist, create chapter structure
+    if (allUnits.length === 0) {
+      console.log(`Creating chapter structure for ${language.name}...`);
+      await createChapterStructure(prisma, selectedLanguageId, language.name);
 
-    // Fetch lessons in these units
-    const lessons = await prisma.lesson.findMany({
-      where: {
-        unit: {
-          id: { in: uniqueUnitIds as string[] },
+      // Fetch units again after creation
+      const newUnits = await prisma.unit.findMany({
+        where: {
+          chapter: { languageId: selectedLanguageId },
         },
-      },
-      select: { id: true, unitId: true },
-    });
-
-    // Create UserProgress for all lessons
-    if (lessons.length > 0) {
-      await prisma.userProgress.createMany({
-        data: lessons.map((lesson) => ({
-          userId,
-          lessonId: lesson.id,
-          completed: false,
-          attempts: 0,
-        })),
-        skipDuplicates: true,
+        orderBy: [
+          { chapter: { levelIndex: 'asc' } },
+          { unitIndex: 'asc' },
+        ],
       });
-    }
 
-    // Create MasteryLevel records for skills
-    if (questions.length > 0) {
-      const eloRatings: Record<number, number> = {
-        1: 1000,
-        2: 1200,
-        3: 1400,
-      };
+      // Batch create all UserUnitProgress records
+      const progressData = newUnits.map((unit, index) => ({
+        userId,
+        unitId: unit.id,
+        isUnlocked: index === 0, // Only first unit unlocked
+        completed: false,
+        progress: 0,
+      }));
 
-      for (const question of questions.slice(0, 10)) {
-        await prisma.masteryLevel.upsert({
-          where: {
-            userId_skillId: {
-              userId,
-              skillId: question.id,
-            },
-          },
-          update: {
-            currentLevel: difficultyLevel,
-            eloRating: eloRatings[difficultyLevel],
-          },
-          create: {
-            userId,
-            skillId: question.id,
-            status: 'in_progress',
-            currentLevel: difficultyLevel,
-            eloRating: eloRatings[difficultyLevel],
-          },
+      if (progressData.length > 0) {
+        await prisma.userUnitProgress.createMany({
+          data: progressData,
+          skipDuplicates: true,
         });
       }
-    }
-
-    // Create UserStats if not exists
-    await prisma.userStats.upsert({
-      where: { userId },
-      update: {
-        lastActiveDate: new Date(),
-      },
-      create: {
+    } else {
+      // Batch create progress records for existing units
+      const progressData = allUnits.map((unit, index) => ({
         userId,
-        xp: 0,
-        level: 1,
-        hearts: 5,
-        maxHearts: 5,
-        lastActiveDate: new Date(),
-      },
-    });
+        unitId: unit.id,
+        isUnlocked: index === 0, // Only first unit unlocked
+        completed: false,
+        progress: 0,
+      }));
 
-    // Create UserChapter records for all chapters
-    const chapters = await prisma.chapter.findMany({
-      select: { id: true },
-      orderBy: { order: 'asc' },
-    });
-
-    if (chapters.length > 0) {
-      // First chapter should be 'in_progress', rest should be 'locked'
-      await prisma.userChapter.createMany({
-        data: chapters.map((chapter, idx) => ({
-          userId,
-          chapterId: chapter.id,
-          status: idx === 0 ? 'in_progress' : 'locked',
-          xpEarned: 0,
-          startedAt: idx === 0 ? new Date() : null,
-        })),
-        skipDuplicates: true,
-      });
-
-      // Create UserUnit records for all units in all chapters
-      const units = await prisma.unit.findMany({
-        select: { id: true, order: true, chapterId: true },
-      });
-
-      if (units.length > 0) {
-        await prisma.userUnit.createMany({
-          data: units.map((unit) => {
-            // Determine if unit is unlocked or locked based on chapter and unit order
-            const chapter = chapters.find((c) => c.id === unit.chapterId);
-            const isFirstChapter = chapter?.id === chapters[0]?.id;
-            const isFirstUnit = isFirstChapter && unit.order === 1;
-
-            return {
-              userId,
-              unitId: unit.id,
-              status: isFirstUnit ? 'unlocked' : 'locked',
-              xpEarned: 0,
-              score: 0,
-              attempts: 0,
-              startedAt: isFirstUnit ? new Date() : null,
-            };
-          }),
+      if (progressData.length > 0) {
+        await prisma.userUnitProgress.createMany({
+          data: progressData,
           skipDuplicates: true,
         });
       }
@@ -212,14 +145,17 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: 'Onboarding completed successfully',
-      data: onboardingData,
+      userId,
+      redirectUrl: `/chapters?languageId=${selectedLanguageId}`,
     });
   } catch (error) {
     console.error('Onboarding error:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { message: 'Failed to complete onboarding', error: String(error) },
       { status: 500 }
     );
+  } finally {
+    await prisma.$disconnect();
   }
 }
+

@@ -20,12 +20,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         session.user.username = token.username as string;
       }
 
+      if (token.languageId && session.user) {
+        session.user.languageId = token.languageId as string;
+      }
+
       return session;
     },
     async jwt({ token, user }) {
       if (user) {
         token.sub = user.id;
         token.username = user.username;
+        token.languageId = (user as any).languageId;
       }
       return token;
     }

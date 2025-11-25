@@ -1,0 +1,104 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { PrismaClient } from '@/lib/generated/prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { auth } from '@/auth';
+
+const adapter = new PrismaPg({
+  connectionString: process.env.DATABASE_URL,
+});
+
+const prisma = new PrismaClient({ adapter });
+
+/**
+ * Calculate XP earned for a lesson completion
+ * Base XP = 10 + (difficulty × 5)
+ * Streak multiplier: 1x base, 1.25x (3+ days), 1.5x (7+ days), 2x (14+ days)
+ */
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ lessonId: string }> }
+) {
+  try {
+    const session = await auth();
+    const userId = session?.user?.id;
+
+    if (!userId) {
+      return NextResponse.json(
+        { message: 'User not authenticated' },
+        { status: 401 }
+      );
+    }
+
+    const { lessonId } = await params;
+
+    // Get lesson difficulty
+    const lesson = await prisma.lesson.findUnique({
+      where: { id: lessonId },
+      select: {
+        id: true,
+        questions: {
+          select: { difficulty: true },
+        },
+      },
+    });
+
+    if (!lesson) {
+      return NextResponse.json(
+        { message: 'Lesson not found' },
+        { status: 404 }
+      );
+    }
+
+    // Calculate average difficulty from questions
+    const avgDifficulty =
+      lesson.questions.length > 0
+        ? Math.round(
+            lesson.questions.reduce((sum, q) => sum + q.difficulty, 0) /
+              lesson.questions.length
+          )
+        : 1;
+
+    // Get user's current streak
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { streak: true, lastStreakDate: true },
+    });
+
+    if (!user) {
+      return NextResponse.json(
+        { message: 'User not found' },
+        { status: 404 }
+      );
+    }
+
+    // Calculate streak multiplier
+    let streakMultiplier = 1;
+    if (user.streak >= 14) {
+      streakMultiplier = 2;
+    } else if (user.streak >= 7) {
+      streakMultiplier = 1.5;
+    } else if (user.streak >= 3) {
+      streakMultiplier = 1.25;
+    }
+
+    // Base XP = 10 + (difficulty × 5)
+    const baseXP = 10 + avgDifficulty * 5;
+    const xpEarned = Math.round(baseXP * streakMultiplier);
+
+    return NextResponse.json({
+      xpEarned,
+      baseXP,
+      difficulty: avgDifficulty,
+      streakMultiplier,
+      currentStreak: user.streak,
+    });
+  } catch (error) {
+    console.error('Error calculating XP:', error);
+    return NextResponse.json(
+      { message: 'Failed to calculate XP', error: String(error) },
+      { status: 500 }
+    );
+  } finally {
+    await prisma.$disconnect();
+  }
+}

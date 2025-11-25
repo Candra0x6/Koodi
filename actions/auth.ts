@@ -47,6 +47,7 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
 
   const existingUser = await prisma.user.findUnique({
     where: {
+      username: name,
       email,
     },
   });
@@ -60,20 +61,6 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
       username: name,
       email,
       password: hashedPassword,
-      profile: {
-        create: {
-          languagePreference: "en",
-          theme: "light",
-        },
-      },
-      stats: {
-        create: {
-          xp: 0,
-          streak: 0,
-          hearts: 5,
-          level: 1,
-        },
-      },
     },
   });
 
