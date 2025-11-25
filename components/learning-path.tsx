@@ -104,8 +104,9 @@ const PathNode = ({
             {level.type === "chest" ? (
               <div className={cn("relative w-16 h-16 drop-shadow-sm filter", isLocked ? "grayscale opacity-60" : "")}>
                 {/* Use Next.js Image for better handling */}
-                <Image src="/chest.png" alt="Chest" width={64} height={64} className="object-contain" />
+<h1 className="text-4xl">🎁</h1>
               </div>
+              
             ) : level.type === "book" ? (
               <BookOpen className={cn("w-8 h-8", iconColor)} strokeWidth={3} />
             ) : level.status === "active" ? (

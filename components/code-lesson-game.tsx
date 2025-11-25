@@ -537,23 +537,56 @@ export function CodeLessonGame({ lessonId }: { lessonId: string;}) {
     const renderPairButton = (pair: MatchPair) => {
       const isMatched = matchedPairs.includes(pair.id)
       const isSelected = selectedMatchIds.includes(pair.id)
+      const isNotMatched =
+        selectedMatchIds.length === 2 &&
+        isSelected &&
+        !matchedPairs.includes(pair.id)
 
+      console.log("Matched Pairs: ", isNotMatched)
       if (isMatched) {
-        return <div key={pair.id} className="h-16" /> // Invisible placeholder
+        return (
+          <motion.div
+            key={pair.id}
+            className="h-16 animate-shake rounded-xl bg-green-100 border-2 border-green-500 flex items-center justify-center px-2 text-center font-mono text-sm md:text-base font-medium text-green-600"
+            initial={{ scale: 1, opacity: 1 }}
+            animate={{ scale: 1.2, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 100, damping: 15 }}
+          >
+            {pair.text}
+          </motion.div>
+        )
       }
-
+    
+      // if (isNotMatched) {
+      //   return (
+      //     <motion.div
+      //       key={pair.id}
+      //       className="h-16 rounded-xl bg-red-100 border-2 border-red-500 flex items-center justify-center px-2 text-center font-mono text-sm md:text-base font-medium text-red-600"
+      //         initial={{ opacity: 1, scale: 1 }}
+      // animate={{ opacity: 1, scale: [1, 1.15, 1] }}   // bounce then return
+      // transition={{
+      //   duration: 0.45,
+      //   type: "spring",
+      //   stiffness: 260,
+      //   damping: 14
+      // }}
+      //     >
+      //       {pair.text}
+      //     </motion.div>
+      //   )
+      // }
       return (
         <motion.button
           key={pair.id}
           layoutId={`match-${pair.id}`}
           onClick={() => handleMatchClick(pair.id)}
+          animate={isNotMatched ? { x: [0, -10, 10, -10, 10, 0] } : isSelected ? { scale: 0.95 } : { scale: 1 }}
+          transition={isNotMatched ? { duration: 0.3, ease: "easeInOut" } : { duration: 0.1 }}
           className={cn(
             "h-16 rounded-xl border-2 border-b-4 font-mono text-sm md:text-base font-medium transition-all flex items-center justify-center px-2 text-center",
             isSelected ? "bg-blue-100 border-blue-500 text-blue-600" : "bg-card border-border hover:bg-muted/50",
-            selectedMatchIds.length === 2 &&
-              isSelected &&
-              !matchedPairs.includes(pair.id) &&
-              "animate-shake bg-red-100 border-red-500 text-red-600",
+            isNotMatched && "bg-red-100 border-red-500 text-red-600",
+            isMatched && "bg-green-500/20 border-green-500 text-green-600 cursor-default",
           )}
           whileTap={{ scale: 0.95 }}
         >
