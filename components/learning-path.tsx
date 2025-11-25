@@ -17,6 +17,8 @@ export interface LevelNode {
   icon?: React.ReactNode
   type: "lesson" | "chest" | "book"
   position?: number // -1 (left) to 1 (right)
+  title?: string
+  lessonId?: string // ID of first incomplete lesson to navigate to
 }
 
 export interface UnitData {
@@ -40,19 +42,30 @@ const PathNode = ({
   index,
   total,
   xOffset,
+  onNodeClick,
 }: {
   level: LevelNode
   index: number
   total: number
   xOffset: number
+  onNodeClick?: (level: LevelNode) => void
 }) => {
-  const isLeft = xOffset < 0
   const isActive = level.status === "active"
   const isLocked = level.status === "locked"
+  const isCompleted = level.status === "completed"
   const isChest = level.type === "chest"
+  const isClickable = !isLocked
 
-  // Node Colors
-  const bgColor = isActive ? "bg-[#58cc02]" : isLocked ? "bg-[#e5e5e5]" : isChest ? "bg-transparent" : "bg-[#ffc800]"
+  // Node Colors - Green for completed, bright green for active, gray for locked
+  const bgColor = isCompleted
+    ? "bg-[#58cc02]"
+    : isActive
+      ? "bg-[#58cc02]"
+      : isLocked
+        ? "bg-[#e5e5e5]"
+        : isChest
+          ? "bg-transparent"
+          : "bg-[#ffc800]"
 
   const borderColor = isActive
     ? "border-[#46a302]" // Darker green
@@ -94,11 +107,15 @@ const PathNode = ({
           )}
 
           <button
+            onClick={() => isClickable && onNodeClick?.(level)}
+            disabled={isLocked}
             className={cn(
               "relative w-16 h-16 rounded-full flex items-center justify-center border-b-4 active:border-b-0 active:translate-y-[4px] transition-all duration-100 z-10 overflow-hidden",
               bgColor,
               borderColor,
               isChest && "w-20 h-20 border-0 bg-transparent active:scale-95 overflow-visible",
+              isClickable && "cursor-pointer hover:scale-105 hover:brightness-110",
+              isLocked && "cursor-not-allowed",
             )}
           >
             {level.type === "chest" ? (
@@ -157,7 +174,7 @@ export const UnitHeader = ({ unit, className }: { unit: UnitData; className?: st
   )
 }
 
-export const LearningPath = ({ unit }: { unit: UnitData }) => {
+export const LearningPath = ({ unit, onLevelClick }: { unit: UnitData; onLevelClick?: (level: LevelNode) => void }) => {
   const totalHeight = unit.levels.length * LEVEL_HEIGHT + START_OFFSET * 2
 
   // Generate path points for SVG
@@ -189,9 +206,35 @@ export const LearningPath = ({ unit }: { unit: UnitData }) => {
     return d
   }
 
+  // Generate path segment for specific range (for coloring completed segments green)
+  const generateSvgPathSegment = (startIdx: number, endIdx: number) => {
+    if (pathPoints.length === 0 || startIdx >= endIdx) return ""
+
+    let d = `M ${pathPoints[startIdx].x + 150} ${pathPoints[startIdx].y}`
+
+    for (let i = startIdx; i < endIdx && i < pathPoints.length - 1; i++) {
+      const current = pathPoints[i]
+      const next = pathPoints[i + 1]
+
+      const cp1x = current.x + 150
+      const cp1y = current.y + LEVEL_HEIGHT * 0.5
+      const cp2x = next.x + 150
+      const cp2y = next.y - LEVEL_HEIGHT * 0.5
+
+      d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${next.x + 150} ${next.y}`
+    }
+
+    return d
+  }
+
+  // Find the last completed index for green path
+  const lastCompletedIndex = unit.levels.reduce((acc, level, idx) => {
+    return level.status === "completed" ? idx : acc
+  }, -1)
+
   return (
     <div className="relative w-full max-w-[300px] mx-auto" style={{ height: totalHeight }}>
-      {/* SVG Path Background */}
+      {/* SVG Path Background (gray) */}
       <svg
         className="absolute top-0 left-0 w-full h-full pointer-events-none z-0 overflow-visible"
         viewBox={`0 0 300 ${totalHeight}`}
@@ -204,6 +247,17 @@ export const LearningPath = ({ unit }: { unit: UnitData }) => {
           strokeLinecap="round"
           strokeLinejoin="round"
         />
+        {/* Green path overlay for completed segments */}
+        {lastCompletedIndex >= 0 && (
+          <path
+            d={generateSvgPathSegment(0, lastCompletedIndex + 1)}
+            fill="none"
+            stroke="#58cc02"
+            strokeWidth="10"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        )}
       </svg>
 
       {/* Nodes */}
@@ -214,6 +268,7 @@ export const LearningPath = ({ unit }: { unit: UnitData }) => {
           index={i}
           total={unit.levels.length}
           xOffset={Math.sin(i * 0.8) * PATH_AMPLITUDE}
+          onNodeClick={onLevelClick}
         />
       ))}
     </div>
