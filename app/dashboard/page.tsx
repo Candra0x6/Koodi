@@ -2,12 +2,13 @@
 
 import { Suspense, useEffect, useState, useRef } from "react"
 import { cn } from "@/lib/utils"
-import { Home, Zap, Target, Shield, User, Bell, Lock, ChevronLeft, ChevronRight, Loader2, Laptop } from "lucide-react"
+import { Home, Zap, Target, Shield, User, Bell, Lock, ChevronLeft, ChevronRight, Loader2, Laptop, Book } from "lucide-react"
 import { UnitHeader, type UnitData, type LevelNode, type LevelStatus, LearningPath } from "@/components/learning-path"
 import { useAuth } from "@/lib/hooks/use-auth"
 import Image from "next/image"
 import type { LucideIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { motion, AnimatePresence } from "framer-motion"
 
 // --- Types ---
 
@@ -184,18 +185,18 @@ const UnitSection = ({ unit, chapterTitle, unitIndex, languageId, onLessonClick,
   const unitData = buildUnitData(unit, chapterTitle, color.hex)
 
   return (
-    <div ref={setRef} className="border-t-2 border-border pt-8 pb-12" data-unit-index={unitIndex} data-chapter-title={chapterTitle}>
-      {/* Unit Header */}
-      <div className="px-4 mb-8">
-        <div className="flex items-center justify-between mb-2">
-          <h2 className={cn("text-2xl font-bold", color.text)}>Unit {unitIndex + 1}</h2>
-          <p className="text-muted-foreground font-bold text-lg">{unit.title}</p>
-        </div>
-        <p className="text-muted-foreground">{chapterTitle}</p>
-      </div>
+    <>
+    <div className="flex px-10 space-x-10 items-center justify-center">
 
+
+    <div className={`px-4 h-2 bg-gray-400 rounded-full flex-1 ${unit.unitIndex === 1 ? "hidden" : ""}`} />
+    <h1 className=" text-center ">{ unit.unitIndex === 1? "":unit.title }</h1>
+    <div className={`px-4 h-2 bg-gray-400 rounded-full flex-1 ${unit.unitIndex === 1 ? "hidden" : ""}`} />
+    </div>
+    <div ref={setRef} className={`pt-8 pb-12`} data-unit-index={unitIndex} data-chapter-title={chapterTitle}>
+      
       {/* Learning Path */}
-      <div className="flex justify-center">
+      <div className={`flex justify-center ${unitIndex !== 0 ? "mt-20" : ""}`}>
         <LearningPath unit={unitData} onLevelClick={(level) => {
           if (level.lessonId) {
             onLessonClick(level.lessonId)
@@ -203,6 +204,7 @@ const UnitSection = ({ unit, chapterTitle, unitIndex, languageId, onLessonClick,
         }} />
       </div>
     </div>
+    </>
   )
 }
 
@@ -216,6 +218,7 @@ function LearnContent() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [currentChapterIndex, setCurrentChapterIndex] = useState(0)
+  const [isChapterListOpen, setIsChapterListOpen] = useState(false)
   
   // State for sticky header
   const [activeUnit, setActiveUnit] = useState<{
@@ -440,50 +443,95 @@ function LearnContent() {
 
   return (
     <div className="min-h-screen bg-background pb-32">
-      <TopBar
-        streak={user?.streak || 0}
-        xp={user?.xp || 0}
-        hearts={user?.hearts || 5}
-      />
-
-      <div className="max-w-full mx-auto bg-background min-h-screen border-x-2 border-border/50 shadow-sm relative">
+      
+      <div className="max-w-full mx-auto bg-background min-h-screen relative">
         {/* Sticky Chapter Header and Navigation */}
-        <Button 
-          className={cn(
-            "sticky top-16 z-40 rounded-none w-full p-0 flex justify-between items-center h-16 transition-colors duration-300 border-b-4",
-            currentHeaderColor.bg,
-            currentHeaderColor.border
-          )}
-        >
-          <div className="flex items-center h-full px-2">
-            {currentChapterIndex > 0 && (
-              <button 
-                onClick={(e) => { e.stopPropagation(); handlePrevChapter(); }}
-                className="p-2 hover:bg-black/10 rounded-xl transition-colors text-white"
-              >
-                <ChevronLeft className="w-6 h-6" />
-              </button>
+        <div className="sticky top-16 z-40">
+          <Button 
+            onClick={() => setIsChapterListOpen(!isChapterListOpen)}
+            className={cn(
+              "rounded-xl w-full p-5 flex justify-between items-center h-16 transition-colors duration-300 border-b-4",
+              currentHeaderColor.bg,
+              currentHeaderColor.border
             )}
-          </div>
+          >
+            <div className="flex-1 text-left text-white/90 font-bold uppercase text-sm tracking-widest py-3">
+              <h2 className="text-[13px] opacity-80">CHAPTER {currentChapterIndex + 1}</h2>
+              <h1 className="text-white text-base">{activeUnit?.unitTitle || currentChapter?.title || "Loading..."}</h1>
+            </div>
 
-          <div className="flex-1 text-center text-white/90 font-bold uppercase text-sm tracking-widest py-3">
-            <h2 className="text-[13px] opacity-80">UNIT {activeUnit?.unitIndex || 1}</h2>
-            <h1 className="text-white text-base">{activeUnit?.unitTitle || currentChapter?.title || "Loading..."}</h1>
-          </div>
+            <div className="flex items-center h-full px-2">
+              <Book className="text-white w-6 h-6" />
+            </div>
+          </Button>
 
-          <div className="flex items-center h-full px-2">
-             {currentChapterIndex < chapters.length - 1 ? (
-              <button 
-                onClick={(e) => { e.stopPropagation(); handleNextChapter(); }}
-                className="p-2 hover:bg-black/10 rounded-xl transition-colors text-white"
-              >
-                <ChevronRight className="w-6 h-6" />
-              </button>
-            ) : (
-              <div className="w-10" /> // Spacer
+          <AnimatePresence>
+            {isChapterListOpen && (
+              <>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onClick={() => setIsChapterListOpen(false)}
+                  className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
+                />
+                <motion.div
+                  initial={{ opacity: 0, y: -20, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -20, scale: 0.95 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute top-full left-0 right-0 mt-2 bg-card border-2 border-border rounded-2xl shadow-xl z-50 overflow-hidden max-h-[60vh] flex flex-col"
+                >
+                  <div className="p-4 bg-muted/50 border-b-2 border-border">
+                    <h3 className="font-bold text-lg text-foreground">Select a Chapter</h3>
+                  </div>
+                  <div className="overflow-y-auto p-2 space-y-2">
+                    {chapters.map((chapter, index) => (
+                      <button
+                        key={chapter.id}
+                        onClick={() => {
+                          setCurrentChapterIndex(index)
+                          setIsChapterListOpen(false)
+                          window.scrollTo({ top: 0, behavior: 'smooth' })
+                        }}
+                        className={cn(
+                          "w-full text-left p-4 rounded-xl transition-all border-2 border-transparent hover:bg-muted flex items-center gap-4 group",
+                          currentChapterIndex === index 
+                            ? "bg-blue-50 border-blue-200" 
+                            : "hover:border-border"
+                        )}
+                      >
+                        <div className={cn(
+                          "w-12 h-12 rounded-xl flex items-center justify-center font-bold text-lg border-b-4 transition-transform group-active:translate-y-[2px] group-active:border-b-2",
+                          currentChapterIndex === index
+                            ? "bg-primary text-white border-green-700"
+                            : "bg-muted text-muted-foreground border-gray-300"
+                        )}
+                        >
+                          {index + 1}
+                        </div>
+                        <div className="flex-1">
+                          <h4 className={cn(
+                            "font-black text-sm uppercase tracking-wider mb-1",
+                            currentChapterIndex === index ? "text-primary" : "text-muted-foreground"
+                          )}>
+                            Chapter {index + 1}
+                          </h4>
+                          <p className="font-bold text-foreground">{chapter.title}</p>
+                        </div>
+                        {currentChapterIndex === index && (
+                          <div className="text-blue-500">
+                            <div className="w-3 h-3 bg-current rounded-full" />
+                          </div>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </motion.div>
+              </>
             )}
-          </div>
-        </Button>
+          </AnimatePresence>
+        </div>
 
         {/* All Units on One Page */}
         <div className="py-8 relative z-0">

@@ -87,7 +87,7 @@ interface TopBarProps {
 }
 
 const TopBar = ({ streak, xp, hearts }: TopBarProps) => (
-  <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur border-b-2 border-border h-16">
+  <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur h-16">
     <div className="container max-w-md mx-auto h-full flex items-center justify-between px-4">
       {/* Language Flag */}
       <div className="cursor-pointer hover:bg-muted p-2 rounded-xl transition-colors">
@@ -192,7 +192,7 @@ const UnitSection = ({ unit, chapterTitle, unitIndex, languageId, onLessonClick 
   const unitData = buildUnitData(unit, chapterTitle)
 
   return (
-    <div className="border-t-2 border-border pt-8 pb-12">
+    <div className="pt-8 pb-12 ">
       {/* Unit Header */}
       <div className="px-4 mb-8">
         <h2 className="text-2xl font-bold text-[#58cc02] mb-2">Unit {unitIndex + 1}</h2>
@@ -339,14 +339,14 @@ function LearnContent() {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-32">
+    <div className="min-h-screen bg-black pb-32">
       <TopBar
         streak={user?.streak || 0}
         xp={user?.xp || 0}
         hearts={user?.hearts || 5}
       />
 
-      <div className="max-w-full mx-auto bg-background min-h-screen border-x-2 border-border/50 shadow-sm relative">
+      <div className="max-w-full mx-auto bg-background min-h-screen shadow-sm relative">
         {/* Sticky Chapter Header and Navigation */}
         <div className="sticky top-16 z-40 bg-[#58cc02]">
           <div className="text-center text-white/90 font-bold uppercase text-sm tracking-widest pt-2">

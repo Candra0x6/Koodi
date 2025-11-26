@@ -2,7 +2,7 @@
 
 import React, { useState } from "react"
 import { motion } from "framer-motion"
-import { Check, Lock, Star, BookOpen } from "lucide-react"
+import { Check, Lock, Star, BookOpen, FastForward } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/duolingo-ui"
 import Image from "next/image"
@@ -101,7 +101,26 @@ const PathNode = ({
             Start
             <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 w-3 h-3 bg-white border-r-2 border-b-2 border-border rotate-45 transform" />
           </motion.div>
-        )}
+        ) }
+        
+        {
+
+          index === 0 && level.status === "active"  && (
+            
+           <motion.div
+            initial={{ y: -10, opacity: 0 }}
+            animate={{ y: [0, -8, 0], opacity: 1 }}
+            transition={{
+              y: { repeat: Number.POSITIVE_INFINITY, duration: 1.5, ease: "easeInOut" },
+              opacity: { duration: 0.3 },
+            }}
+            className="absolute -top-12 left-1/2 -translate-x-1/2 bg-white text-[#58cc02] font-extrabold text-sm py-2 px-3 rounded-xl shadow-lg border-2 border-border uppercase tracking-widest whitespace-nowrap z-20"
+          >
+            Skip
+            <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 w-3 h-3 bg-white border-r-2 border-b-2 border-border rotate-45 transform" />
+          </motion.div>
+        )
+        }
 
         {/* The Node Button */}
         <div className="relative group">
@@ -151,8 +170,8 @@ const PathNode = ({
                   // Jumping Star animation for active lesson rotated, make delay every loop
                   <motion.div className="" animate={{ y:[0, -6, 0]}} transition={{ repeat: Number.POSITIVE_INFINITY, duration: 2.5, ease: "linear", repeatDelay: 0.5 }}>
 
-                    <Star className="w-8 h-8 text-white fill-white" />
-                  </motion.div>
+{          index !== 0 ?          <Star className="w-8 h-8 text-white fill-white" /> : <FastForward className="h-8 w-8 text-white fill-white" />
+}                  </motion.div>
                 ) : level.status === "locked" ? (
                   <Lock className="w-6 h-6 text-[#afafaf]" strokeWidth={3} />
                 ) : (
