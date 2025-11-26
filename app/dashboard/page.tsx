@@ -1,12 +1,13 @@
 "use client"
 
-import { Suspense, useEffect, useState } from "react"
+import { Suspense, useEffect, useState, useRef } from "react"
 import { cn } from "@/lib/utils"
-import { Home, Zap, Target, Shield, User, Bell, Lock, ChevronLeft, ChevronRight, Loader2 } from "lucide-react"
+import { Home, Zap, Target, Shield, User, Bell, Lock, ChevronLeft, ChevronRight, Loader2, Laptop } from "lucide-react"
 import { UnitHeader, type UnitData, type LevelNode, type LevelStatus, LearningPath } from "@/components/learning-path"
 import { useAuth } from "@/lib/hooks/use-auth"
 import Image from "next/image"
 import type { LucideIcon } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 // --- Types ---
 
@@ -68,15 +69,26 @@ function transformLessonsToLevels(lessons: Lesson[]): LevelNode[] {
 }
 
 // Build unit data with lessons as levels
-function buildUnitData(unit: Unit, chapterTitle: string): UnitData {
+function buildUnitData(unit: Unit, chapterTitle: string, color: string): UnitData {
   return {
     id: unit.id,
     title: unit.title,
     description: chapterTitle,
-    color: "#58cc02",
+    color: color,
     levels: transformLessonsToLevels(unit.lessons),
   }
 }
+
+// --- Constants ---
+
+const UNIT_COLORS = [
+  { bg: "bg-[#58cc02]", border: "border-[#46a302]", text: "text-[#58cc02]", hex: "#58cc02" }, // Green
+  { bg: "bg-[#ce82ff]", border: "border-[#a568cc]", text: "text-[#ce82ff]", hex: "#ce82ff" }, // Purple
+  { bg: "bg-[#00cd9c]", border: "border-[#00a47d]", text: "text-[#00cd9c]", hex: "#00cd9c" }, // Teal
+  { bg: "bg-[#ff9600]", border: "border-[#cc7800]", text: "text-[#ff9600]", hex: "#ff9600" }, // Orange
+  { bg: "bg-[#ff4b4b]", border: "border-[#cc3c3c]", text: "text-[#ff4b4b]", hex: "#ff4b4b" }, // Red
+  { bg: "bg-[#1cb0f6]", border: "border-[#168dbd]", text: "text-[#1cb0f6]", hex: "#1cb0f6" }, // Blue
+]
 
 // --- Components ---
 
@@ -158,45 +170,28 @@ interface ChapterNavigationProps {
   onNext: () => void
 }
 
-const ChapterNavigation = ({ currentIndex, totalChapters, onPrev, onNext }: ChapterNavigationProps) => (
-  <div className="flex items-center justify-between px-4 py-2 bg-[#46a302]">
-    <button
-      onClick={onPrev}
-      disabled={currentIndex === 0}
-      className="p-2 rounded-full hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-    >
-      <ChevronLeft className="w-6 h-6 text-white" />
-    </button>
-    <span className="text-white font-semibold">
-      Chapter {currentIndex + 1} of {totalChapters}
-    </span>
-    <button
-      onClick={onNext}
-      disabled={currentIndex === totalChapters - 1}
-      className="p-2 rounded-full hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-    >
-      <ChevronRight className="w-6 h-6 text-white" />
-    </button>
-  </div>
-)
-
 interface UnitSectionProps {
   unit: Unit
   chapterTitle: string
   unitIndex: number
   languageId: string
   onLessonClick: (lessonId: string) => void
+  color: typeof UNIT_COLORS[0]
+  setRef: (el: HTMLDivElement | null) => void
 }
 
-const UnitSection = ({ unit, chapterTitle, unitIndex, languageId, onLessonClick }: UnitSectionProps) => {
-  const unitData = buildUnitData(unit, chapterTitle)
+const UnitSection = ({ unit, chapterTitle, unitIndex, languageId, onLessonClick, color, setRef }: UnitSectionProps) => {
+  const unitData = buildUnitData(unit, chapterTitle, color.hex)
 
   return (
-    <div className="border-t-2 border-border pt-8 pb-12">
+    <div ref={setRef} className="border-t-2 border-border pt-8 pb-12" data-unit-index={unitIndex} data-chapter-title={chapterTitle}>
       {/* Unit Header */}
       <div className="px-4 mb-8">
-        <h2 className="text-2xl font-bold text-[#58cc02] mb-2">Unit {unitIndex + 1}</h2>
-        <p className="text-muted-foreground">{unit.title}</p>
+        <div className="flex items-center justify-between mb-2">
+          <h2 className={cn("text-2xl font-bold", color.text)}>Unit {unitIndex + 1}</h2>
+          <p className="text-muted-foreground font-bold text-lg">{unit.title}</p>
+        </div>
+        <p className="text-muted-foreground">{chapterTitle}</p>
       </div>
 
       {/* Learning Path */}
@@ -221,10 +216,16 @@ function LearnContent() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [currentChapterIndex, setCurrentChapterIndex] = useState(0)
+  
+  // State for sticky header
+  const [activeUnit, setActiveUnit] = useState<{
+    unitIndex: number
+    chapterTitle: string
+    unitTitle: string
+    color: typeof UNIT_COLORS[0]
+  } | null>(null)
 
-  // Get current chapter
-  const currentChapter = chapters[currentChapterIndex]
-  const units = currentChapter?.units || []
+  const unitRefs = useRef<(HTMLDivElement | null)[]>([])
 
   useEffect(() => {
     const loadChapters = async () => {
@@ -263,13 +264,110 @@ function LearnContent() {
     }
   }, [languageId, authLoading])
 
+  // Scroll spy logic
+  useEffect(() => {
+    const handleScroll = () => {
+      if (unitRefs.current.length === 0) return
+
+      // Find the unit that is currently active (closest to top but not fully scrolled past)
+      // We want the unit whose top is <= headerOffset (e.g. 120px)
+      // But we want the *last* such unit.
+      
+      const headerOffset = 140 // Adjust based on header height + sticky offset
+      
+      let currentActiveIndex = -1
+      
+      for (let i = 0; i < unitRefs.current.length; i++) {
+        const ref = unitRefs.current[i]
+        if (!ref) continue
+        
+        const rect = ref.getBoundingClientRect()
+        
+        // If the top of the unit is above the "trigger line", it's a candidate
+        if (rect.top <= headerOffset) {
+          currentActiveIndex = i
+        } else {
+          // Since units are ordered, once we find one below the line, we can stop?
+          // Actually, we want the last one that is <= headerOffset.
+          // So we continue until we find one > headerOffset, then break.
+          break
+        }
+      }
+
+      if (currentActiveIndex !== -1) {
+        // We need to map this global index back to chapter/unit data
+        // We can store the data in the ref or recalculate
+        // Let's recalculate for simplicity or use data attributes
+        const ref = unitRefs.current[currentActiveIndex]
+        if (ref) {
+           // We can't easily get data from DOM unless we put it there.
+           // Better to compute the flattened list of units first.
+        }
+      }
+    }
+
+    window.addEventListener("scroll", handleScroll)
+    handleScroll() // Initial check
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [chapters, currentChapterIndex]) // Re-run when chapters change
+
+  const currentChapter = chapters[currentChapterIndex]
+
+  // Get units for current chapter
+  const displayedUnits = currentChapter ? currentChapter.units.map((unit) => ({
+      ...unit,
+      chapterTitle: currentChapter.title,
+      chapterLevel: currentChapter.levelIndex
+    })) : []
+
+  // Update active unit based on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      const headerOffset = 180 // Sticky header bottom position approx
+      
+      let activeIndex = 0
+      
+      unitRefs.current.forEach((ref, index) => {
+        if (ref) {
+          const rect = ref.getBoundingClientRect()
+          if (rect.top < headerOffset) {
+            activeIndex = index
+          }
+        }
+      })
+      
+      if (displayedUnits[activeIndex]) {
+        const unit = displayedUnits[activeIndex]
+        const color = UNIT_COLORS[activeIndex % UNIT_COLORS.length]
+        
+        setActiveUnit({
+          unitIndex: activeIndex + 1,
+          chapterTitle: unit.chapterTitle,
+          unitTitle: unit.title,
+          color
+        })
+      }
+    }
+
+    window.addEventListener("scroll", handleScroll)
+    // Initial set
+    if (displayedUnits.length > 0 && !activeUnit) {
+        handleScroll()
+    }
+    
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [displayedUnits, activeUnit])
+
   const handlePrevChapter = () => {
     setCurrentChapterIndex((prev) => Math.max(0, prev - 1))
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   const handleNextChapter = () => {
     setCurrentChapterIndex((prev) => Math.min(chapters.length - 1, prev + 1))
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
+
 
   const handleLessonClick = (lessonId: string) => {
     window.location.href = `/lessons/${lessonId}?languageId=${languageId}`
@@ -326,7 +424,7 @@ function LearnContent() {
   }
 
   // No chapters found
-  if (chapters.length === 0 || !currentChapter) {
+  if (chapters.length === 0) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center p-8">
@@ -338,6 +436,8 @@ function LearnContent() {
     )
   }
 
+  const currentHeaderColor = activeUnit?.color || UNIT_COLORS[0]
+
   return (
     <div className="min-h-screen bg-background pb-32">
       <TopBar
@@ -348,28 +448,55 @@ function LearnContent() {
 
       <div className="max-w-full mx-auto bg-background min-h-screen border-x-2 border-border/50 shadow-sm relative">
         {/* Sticky Chapter Header and Navigation */}
-        <div className="sticky top-16 z-40 bg-[#58cc02]">
-          <div className="text-center text-white/90 font-bold uppercase text-sm tracking-widest pt-2">
-            {currentChapter.title}
+        <Button 
+          className={cn(
+            "sticky top-16 z-40 rounded-none w-full p-0 flex justify-between items-center h-16 transition-colors duration-300 border-b-4",
+            currentHeaderColor.bg,
+            currentHeaderColor.border
+          )}
+        >
+          <div className="flex items-center h-full px-2">
+            {currentChapterIndex > 0 && (
+              <button 
+                onClick={(e) => { e.stopPropagation(); handlePrevChapter(); }}
+                className="p-2 hover:bg-black/10 rounded-xl transition-colors text-white"
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+            )}
           </div>
-          <ChapterNavigation
-            currentIndex={currentChapterIndex}
-            totalChapters={chapters.length}
-            onPrev={handlePrevChapter}
-            onNext={handleNextChapter}
-          />
-        </div>
+
+          <div className="flex-1 text-center text-white/90 font-bold uppercase text-sm tracking-widest py-3">
+            <h2 className="text-[13px] opacity-80">UNIT {activeUnit?.unitIndex || 1}</h2>
+            <h1 className="text-white text-base">{activeUnit?.unitTitle || currentChapter?.title || "Loading..."}</h1>
+          </div>
+
+          <div className="flex items-center h-full px-2">
+             {currentChapterIndex < chapters.length - 1 ? (
+              <button 
+                onClick={(e) => { e.stopPropagation(); handleNextChapter(); }}
+                className="p-2 hover:bg-black/10 rounded-xl transition-colors text-white"
+              >
+                <ChevronRight className="w-6 h-6" />
+              </button>
+            ) : (
+              <div className="w-10" /> // Spacer
+            )}
+          </div>
+        </Button>
 
         {/* All Units on One Page */}
         <div className="py-8 relative z-0">
-          {units.map((unit, index) => (
+          {displayedUnits.map((unit, index) => (
             <UnitSection
               key={unit.id}
               unit={unit}
-              chapterTitle={currentChapter.title}
+              chapterTitle={unit.chapterTitle}
               unitIndex={index}
               languageId={languageId}
               onLessonClick={handleLessonClick}
+              color={UNIT_COLORS[index % UNIT_COLORS.length]}
+              setRef={(el) => (unitRefs.current[index] = el)}
             />
           ))}
         </div>

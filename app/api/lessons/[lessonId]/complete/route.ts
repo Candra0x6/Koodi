@@ -9,6 +9,13 @@ const adapter = new PrismaPg({
 
 const prisma = new PrismaClient({ adapter });
 
+// Map difficulty enum to numeric value for XP calculation
+const difficultyValue = {
+  EASY: 1,
+  MEDIUM: 2,
+  HARD: 3,
+};
+
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
@@ -22,7 +29,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { lessonId } = body;
+    const { lessonId, sessionId } = body;
 
     if (!lessonId) {
       return NextResponse.json(
@@ -37,6 +44,7 @@ export async function POST(request: NextRequest) {
       select: {
         id: true,
         unitId: true,
+        targetDifficulty: true,
         unit: {
           select: {
             id: true,
@@ -77,23 +85,8 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Calculate XP earned
-    const lessonWithQuestions = await prisma.lesson.findUnique({
-      where: { id: lessonId },
-      select: {
-        questions: {
-          select: { difficulty: true },
-        },
-      },
-    });
-
-    const avgDifficulty =
-      lessonWithQuestions?.questions.length || 0 > 0
-        ? Math.round(
-            (lessonWithQuestions?.questions.reduce((sum, q) => sum + q.difficulty, 0) || 0) /
-              (lessonWithQuestions?.questions.length || 1)
-          )
-        : 1;
+    // Calculate XP based on lesson's target difficulty
+    const avgDifficulty = difficultyValue[lesson.targetDifficulty] || 1;
 
     // Get user for streak calculation
     const user = await prisma.user.findUnique({
@@ -161,6 +154,17 @@ export async function POST(request: NextRequest) {
         xpEarned,
       },
     });
+
+    // Mark lesson session as completed if sessionId provided
+    if (sessionId) {
+      await prisma.lessonSession.update({
+        where: { id: sessionId },
+        data: {
+          completedAt: new Date(),
+          xpEarned,
+        },
+      });
+    }
 
     // Calculate unit progress: completed lessons / total lessons
     const unitId = lesson.unitId;

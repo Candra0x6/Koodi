@@ -292,64 +292,67 @@ async function createChapterStructure(languageId: string, languageName: string) 
   console.log(`\n📚 Creating chapter structure for ${languageName}...`);
 
   const chapters = [];
+  let totalQuestionsCreated = 0;
   
   for (let chapterIdx = 1; chapterIdx <= 3; chapterIdx++) {
+    // Create chapter first
     const chapter = await prisma.chapter.create({
       data: {
         title: `Chapter ${chapterIdx}: ${getChapterTitle(chapterIdx)}`,
         levelIndex: chapterIdx,
         languageId,
-        units: {
-          create: Array.from({ length: 3 }, (_, unitIdx) => {
-            const unitIndex = unitIdx + 1;
-            return {
-              title: `Unit ${unitIndex}: ${getUnitTitle(chapterIdx, unitIndex)}`,
-              unitIndex,
-              lessons: {
-                create: [
-                  {
-                    title: 'Lesson 1: Basics',
-                    lessonIndex: 1,
-                    questions: {
-                      create: LESSON_QUESTIONS.slice(0, 6).map((q) => createQuestionData(q)),
-                    },
-                  },
-                  {
-                    title: 'Lesson 2: Advanced',
-                    lessonIndex: 2,
-                    questions: {
-                      create: LESSON_QUESTIONS.slice(6, 12).map((q) => createQuestionData(q)),
-                    },
-                  },
-                ],
-              },
-            };
-          }),
-        },
-      },
-      include: {
-        units: {
-          include: {
-            lessons: {
-              include: { questions: true },
-            },
-          },
-        },
       },
     });
 
+    // Create units and lessons for this chapter
+    const units = [];
+    for (let unitIdx = 1; unitIdx <= 3; unitIdx++) {
+      const unit = await prisma.unit.create({
+        data: {
+          title: `Unit ${unitIdx}: ${getUnitTitle(chapterIdx, unitIdx)}`,
+          unitIndex: unitIdx,
+          chapterId: chapter.id,
+        },
+      });
+
+      // Create lessons for this unit
+      const lessons = [];
+      for (let lessonIdx = 1; lessonIdx <= 2; lessonIdx++) {
+        const lesson = await prisma.lesson.create({
+          data: {
+            title: `Lesson ${lessonIdx}: ${lessonIdx === 1 ? 'Basics' : 'Advanced'}`,
+            lessonIndex: lessonIdx,
+            unitId: unit.id,
+            hearts: 3,
+            questionCount: 5,
+            targetDifficulty: chapterIdx === 1 ? 'EASY' : chapterIdx === 2 ? 'MEDIUM' : 'HARD',
+          },
+        });
+        lessons.push(lesson);
+      }
+
+      units.push(unit);
+    }
+
+    // Create questions for this chapter (language+chapter)
+    const questionsForChapter = await Promise.all(
+      LESSON_QUESTIONS.map((q) => 
+        prisma.question.create({
+          data: {
+            ...createQuestionData(q),
+            languageId,
+            chapterId: chapter.id,
+          },
+        })
+      )
+    );
+
+    totalQuestionsCreated += questionsForChapter.length;
     chapters.push(chapter);
-    console.log(`  ✓ Chapter ${chapterIdx}: ${chapter.title} (${chapter.units.length} units)`);
+    console.log(`  ✓ Chapter ${chapterIdx}: ${chapter.title} (3 units, 6 lessons, ${questionsForChapter.length} questions)`);
   }
 
-  // Count total questions created
-  const totalQuestions = chapters.reduce((sum, ch) => {
-    return sum + ch.units.reduce((uSum, u) => {
-      return uSum + u.lessons.reduce((lSum, l) => lSum + l.questions.length, 0);
-    }, 0);
-  }, 0);
-
-  console.log(`\n✅ Created structure: 3 chapters, 9 units, 18 lessons, ${totalQuestions} questions`);
+  console.log(`\n✅ Created structure: 3 chapters, 9 units, 18 lessons, ${totalQuestionsCreated} questions`);
   return chapters;
 }
 
@@ -358,12 +361,19 @@ function createQuestionData(q: any) {
   // Ensure correctOrder is always an array
   const correctOrderValue = Array.isArray(q.correctOrder) ? q.correctOrder : [];
   
+  // Map numeric difficulty to DifficultyLevel enum
+  const difficultyMap: Record<number, 'EASY' | 'MEDIUM' | 'HARD'> = {
+    1: 'EASY',
+    2: 'MEDIUM',
+    3: 'HARD',
+  };
+
   const baseData = {
     type: q.type as any,
     instruction: q.instruction,
     description: q.description || null,
     explanation: q.explanation || null,
-    difficulty: q.difficulty,
+    difficulty: difficultyMap[q.difficulty] || 'EASY',
     codeBlock: q.codeBlock || null,
     codeBefore: q.codeBefore || null,
     codeAfter: q.codeAfter || null,

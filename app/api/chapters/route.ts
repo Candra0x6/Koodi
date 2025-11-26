@@ -34,13 +34,12 @@ export async function GET(request: NextRequest) {
           include: {
             lessons: {
               orderBy: { lessonIndex: 'asc' },
-              include: {
-                questions: {
-                  select: { id: true, type: true },
-                },
-              },
             },
           },
+        },
+        // Get question count for the chapter
+        _count: {
+          select: { questions: true },
         },
       },
     });

@@ -34,9 +34,11 @@ model User {
   lastStreakDate  DateTime?          // Last day a lesson was completed
   lastActiveAt    DateTime?
 
-  progresses      UserUnitProgress[]
-  completedLessons UserLessonCompletion[]
-  answers         UserAnswer[]
+  progresses        UserUnitProgress[]
+  completedLessons  UserLessonCompletion[]
+  answers           UserAnswer[]
+  lessonSessions    LessonSession[]
+  questionHistories UserQuestionHistory[]
 }
 
 model Language {
@@ -47,6 +49,7 @@ model Language {
   chapters  Chapter[]
   users     User[]
   placementTests PlacementTest[]
+  questions Question[]
 }
 
 model Chapter {
@@ -58,6 +61,7 @@ model Chapter {
   language    Language  @relation(fields: [languageId], references: [id])
 
   units       Unit[]
+  questions   Question[]
 }
 
 model Unit {
@@ -80,12 +84,35 @@ model Lesson {
   title     String
   unitId    String
   unit      Unit     @relation(fields: [unitId], references: [id])
-
-  questions Question[]
+  type      LessonType @default(BOOK)
+  
+  // Dynamic question selection config
+  questionCount     Int      @default(5)  // how many questions per session
+  targetDifficulty  DifficultyLevel @default(EASY)
+  selectionConfig   Json?    // optional: custom selection rules
 
   userLessonCompletions UserLessonCompletion[]
+  lessonSessions        LessonSession[]
 }
 
+enum LessonType {
+  CHEST
+  BOOK
+  ACTIVE
+  LOCKED
+  STAR
+  DUMBBELL
+  TROPHY
+  HEADPHONES
+  ROLEPLAY
+  VIDEO
+}
+
+enum DifficultyLevel {
+  EASY
+  MEDIUM
+  HARD
+}
 model Question {
   id            String        @id @default(cuid())
   type          QuestionType
@@ -114,12 +141,16 @@ model Question {
   pairs         MatchPair[]
 
   explanation   String?
-  difficulty    Int @default(1)
+  difficulty    DifficultyLevel  @default(EASY)
 
-  lessonId      String
-  lesson        Lesson @relation(fields: [lessonId], references: [id])
+  // Dynamic selection - questions belong to language+chapter, not specific lesson
+  languageId    String
+  language      Language @relation(fields: [languageId], references: [id])
+  chapterId     String
+  chapter       Chapter  @relation(fields: [chapterId], references: [id])
 
-  userAnswers   UserAnswer[]
+  userAnswers           UserAnswer[]
+  userQuestionHistories UserQuestionHistory[]
 }
 
 model CodeSegment {
@@ -243,4 +274,38 @@ model UserAnswer {
 
   user        User     @relation(fields: [userId], references: [id])
   question    Question @relation(fields: [questionId], references: [id])
+}
+
+// Track lesson sessions with dynamically selected questions
+model LessonSession {
+  id          String   @id @default(cuid())
+  lessonId    String
+  lesson      Lesson   @relation(fields: [lessonId], references: [id])
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  
+  questionIds String[] // IDs of questions selected for this session
+  startedAt   DateTime @default(now())
+  completedAt DateTime?
+  heartsUsed  Int      @default(0)
+  xpEarned    Int      @default(0)
+
+  @@index([userId, lessonId])
+}
+
+// Track user's history with each question for adaptive selection
+model UserQuestionHistory {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  questionId  String
+  question    Question @relation(fields: [questionId], references: [id])
+  
+  attempts    Int      @default(0)
+  correct     Int      @default(0)
+  lastSeenAt  DateTime @default(now())
+  mastery     Float    @default(0) // 0-1 score based on performance
+
+  @@unique([userId, questionId])
+  @@index([userId])
 }

@@ -37,6 +37,7 @@ export function CodeLessonGame({ lessonId }: { lessonId: string;}) {
   const router = useRouter()
   // State for loading questions from database
   const [questions, setQuestions] = React.useState<PrismaQuestion[]>([])
+  const [sessionId, setSessionId] = React.useState<string | null>(null)
   const [loading, setLoading] = React.useState(true)
   const [error, setError] = React.useState<string | null>(null)
   const [completionData, setCompletionData] = React.useState<CompletionData | null>(null)
@@ -58,7 +59,7 @@ export function CodeLessonGame({ lessonId }: { lessonId: string;}) {
   const onClose = () => {
     router.push(`/chapters`)
   }
-  // Fetch questions from database
+  // Fetch questions from database (dynamic selection)
   React.useEffect(() => {
     const fetchQuestions = async () => {
       try {
@@ -67,8 +68,16 @@ export function CodeLessonGame({ lessonId }: { lessonId: string;}) {
         if (!response.ok) throw new Error('Failed to load lesson')
         
         const data = await response.json()
-        setQuestions(data.lesson.questions)
-        setGameState("playing")
+        // New API returns questions array directly and sessionId
+        setQuestions(data.questions || [])
+        setSessionId(data.sessionId || null)
+        
+        if (data.questions?.length > 0) {
+          setGameState("playing")
+        } else {
+          setError('No questions available for this lesson')
+          setGameState("error")
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred')
         setGameState("error")
@@ -139,7 +148,7 @@ export function CodeLessonGame({ lessonId }: { lessonId: string;}) {
         const response = await fetch(`/api/lessons/${lessonId}/complete`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ lessonId }),
+          body: JSON.stringify({ lessonId, sessionId }),
         })
 
         if (!response.ok) {
@@ -157,7 +166,7 @@ export function CodeLessonGame({ lessonId }: { lessonId: string;}) {
     }
 
     completeLesson()
-  }, [gameState, lessonId])
+  }, [gameState, lessonId, sessionId])
 
   // Match Madness Logic
   const handleMatchClick = (id: string) => {
@@ -191,15 +200,17 @@ export function CodeLessonGame({ lessonId }: { lessonId: string;}) {
     }
   }
 
-  const handleCheck = () => {
+  const handleCheck = async () => {
     if (gameState !== "playing" || !currentQuestion) return
 
     let isCorrect = false
     let correctText = ""
+    let selectedAnswer = ""
 
     if (currentQuestion.type === "DEBUG_HUNT") {
       // Find the segment with the bug that was selected
       const selectedSegment = currentQuestion.codeSegments?.find((s) => s.id === selectedSegmentId)
+      selectedAnswer = selectedSegmentId || ""
       if (selectedSegment?.isBug) {
         isCorrect = true
       } else {
@@ -215,10 +226,12 @@ export function CodeLessonGame({ lessonId }: { lessonId: string;}) {
       currentQuestion.type === "LINE_REPAIR"
     ) {
       const option = currentQuestion.options?.find((o) => o.id === selectedOptionId)
+      selectedAnswer = selectedOptionId || ""
       isCorrect = !!option?.isCorrect
       correctText = currentQuestion.options?.find((o) => o.isCorrect)?.text || ""
     } else if (currentQuestion.type === "REORDER") {
       const currentOrder = reorderItems.map((item) => item.index)
+      selectedAnswer = JSON.stringify(currentOrder)
       const correctOrder = currentQuestion.correctOrder || []
       isCorrect = JSON.stringify(currentOrder) === JSON.stringify(correctOrder)
 
@@ -232,8 +245,25 @@ export function CodeLessonGame({ lessonId }: { lessonId: string;}) {
     } else if (currentQuestion.type === "MATCH_MADNESS") {
       // Check if all pairs are matched
       const totalPairs = currentQuestion.pairs?.length || 0
+      selectedAnswer = JSON.stringify(matchedPairs)
       isCorrect = matchedPairs.length === totalPairs
       correctText = "Match all pairs to continue!"
+    }
+
+    // Submit answer to track user history (for adaptive learning)
+    try {
+      await fetch('/api/user-answers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          questionId: currentQuestion.id,
+          selected: selectedAnswer,
+          isCorrect,
+          sessionId,
+        }),
+      })
+    } catch (err) {
+      console.error('Failed to save answer:', err)
     }
 
     setFeedbackStatus(isCorrect ? "correct" : "incorrect")

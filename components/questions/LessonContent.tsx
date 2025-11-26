@@ -722,6 +722,7 @@ export default function LessonContent({
   const [lesson, setLesson] = useState<Lesson | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [sessionId, setSessionId] = useState<string | null>(null);
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Answer[]>([]);
@@ -739,8 +740,17 @@ export default function LessonContent({
         const res = await fetch(`/api/lessons/${lessonId}/questions`);
         if (!res.ok) throw new Error('Failed to load lesson');
 
-        const data = (await res.json()) as { lesson: Lesson };
-        setLesson(data.lesson);
+        const data = await res.json();
+        // New API returns questions array directly and lesson info separately
+        const lessonData: Lesson = {
+          id: data.lesson.id,
+          title: data.lesson.title,
+          hearts: data.lesson.hearts,
+          questions: data.questions || [],
+          unit: data.lesson.unit,
+        };
+        setLesson(lessonData);
+        setSessionId(data.sessionId || null);
         setMaxHearts(data.lesson.hearts);
         setHearts(data.lesson.hearts);
       } catch (err) {
@@ -755,6 +765,9 @@ export default function LessonContent({
 
   if (loading) return <LoadingState />;
   if (error || !lesson) return <ErrorState error={error} languageId={languageId as string} />;
+  if (lesson.questions.length === 0) {
+    return <ErrorState error="No questions available for this lesson" languageId={languageId as string} />;
+  }
 
   const isLessonComplete = answers.length === lesson.questions.length;
   if (isLessonComplete) {

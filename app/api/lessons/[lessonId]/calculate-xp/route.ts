@@ -9,6 +9,13 @@ const adapter = new PrismaPg({
 
 const prisma = new PrismaClient({ adapter });
 
+// Map difficulty enum to numeric value for XP calculation
+const difficultyValue = {
+  EASY: 1,
+  MEDIUM: 2,
+  HARD: 3,
+};
+
 /**
  * Calculate XP earned for a lesson completion
  * Base XP = 10 + (difficulty × 5)
@@ -31,14 +38,12 @@ export async function POST(
 
     const { lessonId } = await params;
 
-    // Get lesson difficulty
+    // Get lesson with targetDifficulty
     const lesson = await prisma.lesson.findUnique({
       where: { id: lessonId },
       select: {
         id: true,
-        questions: {
-          select: { difficulty: true },
-        },
+        targetDifficulty: true,
       },
     });
 
@@ -49,14 +54,8 @@ export async function POST(
       );
     }
 
-    // Calculate average difficulty from questions
-    const avgDifficulty =
-      lesson.questions.length > 0
-        ? Math.round(
-            lesson.questions.reduce((sum, q) => sum + q.difficulty, 0) /
-              lesson.questions.length
-          )
-        : 1;
+    // Use lesson's target difficulty for XP calculation
+    const avgDifficulty = difficultyValue[lesson.targetDifficulty] || 1;
 
     // Get user's current streak
     const user = await prisma.user.findUnique({

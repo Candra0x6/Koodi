@@ -30,15 +30,10 @@ interface Lesson {
   id: string;
   title: string;
   lessonIndex: number;
-  questions?: Question[];
+  type: string;
   userCompletion?: {
     completed: boolean;
   };
-}
-
-interface Question {
-  id: string;
-  type: string;
 }
 
 function ChaptersContent() {
@@ -290,11 +285,6 @@ function ChaptersContent() {
                                   <span className="text-sm font-medium text-gray-900 flex-1">
                                     {lesson.title}
                                   </span>
-                                  {lesson.questions && (
-                                    <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                                      {lesson.questions.length} q
-                                    </span>
-                                  )}
                                 </button>
                               ))}
                             </div>

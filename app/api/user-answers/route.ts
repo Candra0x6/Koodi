@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { questionId, selected, isCorrect, lessonId } = body;
+    const { questionId, selected, isCorrect, sessionId } = body;
 
     if (!questionId || selected === undefined || isCorrect === undefined) {
       return NextResponse.json(
@@ -41,9 +41,61 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Note: Hearts are only tracked in frontend state, not persisted to database
-    // This allows multiple retry attempts without consuming database hearts
-    
+    // Update user's question history for adaptive learning
+    const existingHistory = await prisma.userQuestionHistory.findUnique({
+      where: {
+        userId_questionId: {
+          userId,
+          questionId,
+        },
+      },
+    });
+
+    if (existingHistory) {
+      // Update existing history
+      const newAttempts = existingHistory.attempts + 1;
+      const newCorrect = existingHistory.correct + (isCorrect ? 1 : 0);
+      // Calculate mastery as success rate with decay for old data
+      const mastery = newCorrect / newAttempts;
+
+      await prisma.userQuestionHistory.update({
+        where: {
+          userId_questionId: {
+            userId,
+            questionId,
+          },
+        },
+        data: {
+          attempts: newAttempts,
+          correct: newCorrect,
+          lastSeenAt: new Date(),
+          mastery,
+        },
+      });
+    } else {
+      // Create new history entry
+      await prisma.userQuestionHistory.create({
+        data: {
+          userId,
+          questionId,
+          attempts: 1,
+          correct: isCorrect ? 1 : 0,
+          lastSeenAt: new Date(),
+          mastery: isCorrect ? 1 : 0,
+        },
+      });
+    }
+
+    // Update session hearts used if sessionId provided
+    if (sessionId && !isCorrect) {
+      await prisma.lessonSession.update({
+        where: { id: sessionId },
+        data: {
+          heartsUsed: { increment: 1 },
+        },
+      });
+    }
+
     return NextResponse.json({
       success: true,
     });
