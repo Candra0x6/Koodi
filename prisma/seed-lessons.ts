@@ -2,7 +2,7 @@ import { PrismaClient } from '../lib/generated/prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 
 const adapter = new PrismaPg({
-  connectionString: process.env.DATABASE_URL || 'postgresql://postgres.ckngpdwuhbjbbentrrza:KoodieEinSIjaknslasdjb10129@aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres',
+  connectionString: process.env.DATABASE_URL || 'postgresql://postgres.fvwsoryptbhufzdlgmya:KOSnianoisano218@aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres',
 });
 
 const prisma = new PrismaClient({ adapter });
@@ -285,75 +285,1673 @@ const LESSON_QUESTIONS = [
     explanation: 'OOP principles are fundamental to object-oriented programming.',
     difficulty: 2,
   },
+  
+  // --- EXTRA QUESTIONS TO EXPAND THE BANK ---
+  // DEBUG_HUNT (3)
+  {
+    id: 'q13',
+    type: 'DEBUG_HUNT',
+    instruction: 'Spot the typo',
+    description: 'Fix the property name to access array length.',
+    codeSegments: [
+      { id: 'q13_1', code: 'const nums = [1,2,3];', isBug: false, correction: null, index: 0 },
+      { id: 'q13_2', code: ' if (nums.', isBug: false, correction: null, index: 1 },
+      { id: 'q13_3', code: 'lenght', isBug: true, correction: 'length', index: 2 },
+      { id: 'q13_4', code: ' > 0) {', isBug: false, correction: null, index: 3 },
+      { id: 'q13_5', code: ' console.log(nums[0]);', isBug: false, correction: null, index: 4 },
+      { id: 'q13_6', code: ' }', isBug: false, correction: null, index: 5 },
+    ],
+    explanation: 'The correct property is length, not lenght.',
+    difficulty: 1,
+  },
+
+  // MULTIPLE_CHOICE (2)
+  {
+    id: 'q14',
+    type: 'MULTIPLE_CHOICE',
+    instruction: 'Choose the correct method',
+    description: 'Remove the first element of the array.',
+    codeBlock: 'const q = ["a", "b", "c"];\nq.________();',
+    options: [
+      { id: 'q14o1', text: 'pop', isCorrect: false, index: 1 },
+      { id: 'q14o2', text: 'shift', isCorrect: true, index: 2 },
+      { id: 'q14o3', text: 'unshift', isCorrect: false, index: 3 },
+    ],
+    explanation: 'shift() removes the first element from an array.',
+    difficulty: 1,
+  },
+
+  // REORDER (4)
+  {
+    id: 'q15',
+    type: 'REORDER',
+    instruction: 'Make a sum function',
+    description: 'Order the lines to sum numbers from 1 to n.',
+    items: [
+      { id: 'q15_i1', text: 'function sumTo(n) {', index: 1 },
+      { id: 'q15_i2', text: '  let s = 0;', index: 2 },
+      { id: 'q15_i3', text: '  for (let i = 1; i <= n; i++) s += i;', index: 3 },
+      { id: 'q15_i4', text: '  return s; }', index: 4 },
+    ],
+    correctOrder: [1, 2, 3, 4],
+    explanation: 'Initialize accumulator, loop from 1..n, and return.',
+    difficulty: 2,
+  },
+
+  // FILL_BLANK (3)
+  {
+    id: 'q16',
+    type: 'FILL_BLANK',
+    instruction: 'Use strict equality',
+    description: 'Fill the operator to strictly compare a with 5.',
+    codeBefore: 'const a = 5; if (a ',
+    codeAfter: ' 5) { console.log("five"); }',
+    options: [
+      { id: 'q16o1', text: '===', isCorrect: true, index: 1 },
+      { id: 'q16o2', text: '==', isCorrect: false, index: 2 },
+      { id: 'q16o3', text: '<=', isCorrect: false, index: 3 },
+    ],
+    explanation: '=== performs strict equality without type coercion.',
+    difficulty: 1,
+  },
+
+  // PREDICT_OUTPUT (2)
+  {
+    id: 'q17',
+    type: 'PREDICT_OUTPUT',
+    instruction: 'Know your types',
+    description: 'What is the output of typeof null?',
+    codeBlock: 'console.log(typeof null);',
+    options: [
+      { id: 'q17o1', text: '"null"', isCorrect: false, index: 1 },
+      { id: 'q17o2', text: '"object"', isCorrect: true, index: 2 },
+      { id: 'q17o3', text: '"undefined"', isCorrect: false, index: 3 },
+    ],
+    explanation: 'In JS, typeof null is a historical quirk: "object".',
+    difficulty: 2,
+  },
+
+  // LOGIC_PUZZLE (2)
+  {
+    id: 'q18',
+    type: 'LOGIC_PUZZLE',
+    instruction: 'Pass the exam',
+    description: 'Choose values that satisfy the condition.',
+    logicCondition: 'score > 50 && passed === true',
+    options: [
+      { id: 'q18o1', text: 'score = 40, passed = true', isCorrect: false, index: 1 },
+      { id: 'q18o2', text: 'score = 60, passed = true', isCorrect: true, index: 2 },
+      { id: 'q18o3', text: 'score = 60, passed = false', isCorrect: false, index: 3 },
+    ],
+    explanation: 'Both conditions must be true: score > 50 and passed.',
+    difficulty: 2,
+  },
+
+  // --- ADDITIONAL QUESTIONS to reach ~50 total ---
+  // DEBUG_HUNT (4)
+  {
+    id: 'q19',
+    type: 'DEBUG_HUNT',
+    instruction: 'Fix the loop boundary',
+    description: 'Off-by-one error prevents last element from printing.',
+    codeSegments: [
+      { id: 'q19_1', code: 'const arr = [1,2,3,4];', isBug: false, correction: null, index: 0 },
+      { id: 'q19_2', code: ' for (let i = 0; i ', isBug: false, correction: null, index: 1 },
+      { id: 'q19_3', code: '< ', isBug: true, correction: '<= ', index: 2 },
+      { id: 'q19_4', code: 'arr.length - 1; i++) {', isBug: false, correction: null, index: 3 },
+      { id: 'q19_5', code: ' console.log(arr[i]);', isBug: false, correction: null, index: 4 },
+      { id: 'q19_6', code: ' }', isBug: false, correction: null, index: 5 },
+    ],
+    explanation: 'Use <= arr.length - 1 or i < arr.length.',
+    difficulty: 1,
+  },
+
+  // MULTIPLE_CHOICE (3)
+  {
+    id: 'q20',
+    type: 'MULTIPLE_CHOICE',
+    instruction: 'Pick the correct method',
+    description: 'Find if an array contains a value.',
+    codeBlock: 'const langs = ["js", "py", "rb"];\n// Check for "py"',
+    options: [
+      { id: 'q20o1', text: 'langs.has("py")', isCorrect: false, index: 1 },
+      { id: 'q20o2', text: 'langs.includes("py")', isCorrect: true, index: 2 },
+      { id: 'q20o3', text: 'langs.contains("py")', isCorrect: false, index: 3 },
+    ],
+    explanation: 'Use Array.prototype.includes to check membership.',
+    difficulty: 1,
+  },
+
+  // REORDER (5)
+  {
+    id: 'q21',
+    type: 'REORDER',
+    instruction: 'Construct a try/catch',
+    description: 'Arrange to handle a potential error.',
+    items: [
+      { id: 'q21_i1', text: 'try {', index: 1 },
+      { id: 'q21_i2', text: '  JSON.parse("{")', index: 2 },
+      { id: 'q21_i3', text: '} catch (e) {', index: 3 },
+      { id: 'q21_i4', text: '  console.error(e.message)', index: 4 },
+      { id: 'q21_i5', text: '}', index: 5 },
+    ],
+    correctOrder: [1, 2, 3, 4, 5],
+    explanation: 'try block first, then catch to handle errors.',
+    difficulty: 2,
+  },
+
+  // FILL_BLANK (4)
+  {
+    id: 'q22',
+    type: 'FILL_BLANK',
+    instruction: 'Complete the template string',
+    description: 'Use backticks and interpolation.',
+    codeBefore: 'const name = "Ada"; const msg = ',
+    codeAfter: ';',
+    options: [
+      { id: 'q22o1', text: '`Hello, ${name}!`', isCorrect: true, index: 1 },
+      { id: 'q22o2', text: '"Hello, ${name}!"', isCorrect: false, index: 2 },
+      { id: 'q22o3', text: "'Hello, ' + {name}", isCorrect: false, index: 3 },
+    ],
+    explanation: 'Template literals require backticks and ${}.',
+    difficulty: 1,
+  },
+
+  // LOGIC_PUZZLE (3)
+  {
+    id: 'q23',
+    type: 'LOGIC_PUZZLE',
+    instruction: 'Gate access rule',
+    description: 'Choose values to satisfy the condition.',
+    logicCondition: 'isAdmin || (loggedIn && hasTicket)',
+    options: [
+      { id: 'q23o1', text: 'isAdmin=false, loggedIn=true, hasTicket=false', isCorrect: false, index: 1 },
+      { id: 'q23o2', text: 'isAdmin=true, loggedIn=false, hasTicket=false', isCorrect: true, index: 2 },
+      { id: 'q23o3', text: 'isAdmin=false, loggedIn=true, hasTicket=true', isCorrect: true, index: 3 },
+    ],
+    explanation: 'Either admin or both logged in and has a ticket.',
+    difficulty: 2,
+  },
+
+  // MATCH_MADNESS (3)
+  {
+    id: 'q24',
+    type: 'MATCH_MADNESS',
+    instruction: 'Match expressions to results',
+    description: 'Tap matching pairs.',
+    pairs: [
+      { text: 'Array.isArray([])', matchId: 'true', index: 1 },
+      { text: 'Boolean(0)', matchId: 'false', index: 2 },
+      { text: 'Math.max(1, 3)', matchId: '3', index: 3 },
+      { text: 'parseInt("10")', matchId: '10', index: 4 },
+      { text: 'true', matchId: 'Array.isArray([])', index: 5 },
+      { text: 'false', matchId: 'Boolean(0)', index: 6 },
+      { text: '3', matchId: 'Math.max(1, 3)', index: 7 },
+      { text: '10', matchId: 'parseInt("10")', index: 8 },
+    ],
+    explanation: 'Recognize standard JS results.',
+    difficulty: 2,
+  },
+
+  // REORDER (6)
+  {
+    id: 'q25',
+    type: 'REORDER',
+    instruction: 'Compose a fetch sequence',
+    description: 'Properly handle a promise chain.',
+    items: [
+      { id: 'q25_i1', text: 'fetch("/api")', index: 1 },
+      { id: 'q25_i2', text: '  .then(r => r.json())', index: 2 },
+      { id: 'q25_i3', text: '  .then(data => console.log(data))', index: 3 },
+      { id: 'q25_i4', text: '  .catch(err => console.error(err))', index: 4 },
+    ],
+    correctOrder: [1, 2, 3, 4],
+    explanation: 'Parse JSON before using data; catch at the end.',
+    difficulty: 2,
+  },
+
+  // FILL_BLANK (5)
+  {
+    id: 'q26',
+    type: 'FILL_BLANK',
+    instruction: 'Select proper default value',
+    description: 'Use nullish coalescing to default.',
+    codeBefore: 'const input = null; const value = input ',
+    codeAfter: ' "N/A";',
+    options: [
+      { id: 'q26o1', text: '??', isCorrect: true, index: 1 },
+      { id: 'q26o2', text: '||', isCorrect: false, index: 2 },
+      { id: 'q26o3', text: '?:', isCorrect: false, index: 3 },
+    ],
+    explanation: 'Use ?? to fallback only on null/undefined.',
+    difficulty: 1,
+  },
+
+  // DEBUG_HUNT (5)
+  {
+    id: 'q27',
+    type: 'DEBUG_HUNT',
+    instruction: 'Fix strict mode error',
+    description: 'Undeclared variable assignment should be declared.',
+    codeSegments: [
+      { id: 'q27_1', code: '"use strict";', isBug: false, correction: null, index: 0 },
+      { id: 'q27_2', code: ' x ', isBug: true, correction: ' let x ', index: 1 },
+      { id: 'q27_3', code: '= 10;', isBug: false, correction: null, index: 2 },
+    ],
+    explanation: 'Declare variables with let/const in strict mode.',
+    difficulty: 2,
+  },
+
+  // MULTIPLE_CHOICE (4)
+  {
+    id: 'q28',
+    type: 'MULTIPLE_CHOICE',
+    instruction: 'Immutable string operation',
+    description: 'Which creates a new string with uppercase?',
+    codeBlock: 'const s = "hello";',
+    options: [
+      { id: 'q28o1', text: 's[0] = "H"', isCorrect: false, index: 1 },
+      { id: 'q28o2', text: 's.toUpperCase()', isCorrect: true, index: 2 },
+      { id: 'q28o3', text: 's.capitalize()', isCorrect: false, index: 3 },
+    ],
+    explanation: 'Strings are immutable; methods return new strings.',
+    difficulty: 1,
+  },
+
+  // REORDER (7)
+  {
+    id: 'q29',
+    type: 'REORDER',
+    instruction: 'Build a filter pipeline',
+    description: 'Filter evens and map doubled.',
+    items: [
+      { id: 'q29_i1', text: 'const xs = [1,2,3,4];', index: 1 },
+      { id: 'q29_i2', text: 'const ys = xs', index: 2 },
+      { id: 'q29_i3', text: '  .filter(x => x % 2 === 0)', index: 3 },
+      { id: 'q29_i4', text: '  .map(x => x * 2);', index: 4 },
+    ],
+    correctOrder: [1, 2, 3, 4],
+    explanation: 'Filter before map for desired result.',
+    difficulty: 2,
+  },
+
+  // FILL_BLANK (6)
+  {
+    id: 'q30',
+    type: 'FILL_BLANK',
+    instruction: 'Choose the correct keyword',
+    description: 'Prevent reassignment of a binding.',
+    codeBefore: '_____ pi = 3.14159;',
+    codeAfter: '',
+    options: [
+      { id: 'q30o1', text: 'const', isCorrect: true, index: 1 },
+      { id: 'q30o2', text: 'let', isCorrect: false, index: 2 },
+      { id: 'q30o3', text: 'var', isCorrect: false, index: 3 },
+    ],
+    explanation: 'Use const for constants.',
+    difficulty: 1,
+  },
+
+  // DEBUG_HUNT (6)
+  {
+    id: 'q31',
+    type: 'DEBUG_HUNT',
+    instruction: 'Correct equality usage',
+    description: 'Fix loose equality in condition.',
+    codeSegments: [
+      { id: 'q31_1', code: 'const n = "5";', isBug: false, correction: null, index: 0 },
+      { id: 'q31_2', code: ' if (n ', isBug: false, correction: null, index: 1 },
+      { id: 'q31_3', code: '==', isBug: true, correction: '===', index: 2 },
+      { id: 'q31_4', code: ' 5) { console.log("five") }', isBug: false, correction: null, index: 3 },
+    ],
+    explanation: 'Prefer strict equality (===).',
+    difficulty: 1,
+  },
+
+  // MULTIPLE_CHOICE (5)
+  {
+    id: 'q32',
+    type: 'MULTIPLE_CHOICE',
+    instruction: 'Pick correct spread usage',
+    description: 'Clone an array shallowly.',
+    codeBlock: 'const a = [1,2,3];',
+    options: [
+      { id: 'q32o1', text: 'const b = a;', isCorrect: false, index: 1 },
+      { id: 'q32o2', text: 'const b = [...a];', isCorrect: true, index: 2 },
+      { id: 'q32o3', text: 'const b = clone(a);', isCorrect: false, index: 3 },
+    ],
+    explanation: 'Spread operator creates a shallow copy.',
+    difficulty: 1,
+  },
+
+  // REORDER (8)
+  {
+    id: 'q33',
+    type: 'REORDER',
+    instruction: 'Create an arrow function',
+    description: 'Return square of a number.',
+    items: [
+      { id: 'q33_i1', text: 'const sq = ', index: 1 },
+      { id: 'q33_i2', text: '(n) => ', index: 2 },
+      { id: 'q33_i3', text: 'n * n;', index: 3 },
+    ],
+    correctOrder: [1, 2, 3],
+    explanation: 'Arrow function syntax: params => expression.',
+    difficulty: 1,
+  },
+
+  // LOGIC_PUZZLE (4)
+  {
+    id: 'q34',
+    type: 'LOGIC_PUZZLE',
+    instruction: 'Shipping eligibility',
+    description: 'Choose cart values that qualify for free shipping.',
+    logicCondition: 'total >= 50 && country !== "Remote"',
+    options: [
+      { id: 'q34o1', text: 'total = 40, country="US"', isCorrect: false, index: 1 },
+      { id: 'q34o2', text: 'total = 50, country="US"', isCorrect: true, index: 2 },
+      { id: 'q34o3', text: 'total = 70, country="Remote"', isCorrect: false, index: 3 },
+    ],
+    explanation: 'Threshold must be met and country not Remote.',
+    difficulty: 2,
+  },
+
+  // DEBUG_HUNT (7)
+  {
+    id: 'q35',
+    type: 'DEBUG_HUNT',
+    instruction: 'Fix property access',
+    description: 'Correctly access nested property.',
+    codeSegments: [
+      { id: 'q35_1', code: 'const user = { profile: { name: "Lin" } };', isBug: false, correction: null, index: 0 },
+      { id: 'q35_2', code: ' console.log(user.profile.', isBug: false, correction: null, index: 1 },
+      { id: 'q35_3', code: 'nam', isBug: true, correction: 'name', index: 2 },
+      { id: 'q35_4', code: ');', isBug: false, correction: null, index: 3 },
+    ],
+    explanation: 'Typo in property name.',
+    difficulty: 1,
+  },
+
+  // MULTIPLE_CHOICE (6)
+  {
+    id: 'q36',
+    type: 'MULTIPLE_CHOICE',
+    instruction: 'Pick correct Map usage',
+    description: 'Set and get values from a Map.',
+    codeBlock: 'const m = new Map();',
+    options: [
+      { id: 'q36o1', text: 'm["a"] = 1; m.get("a")', isCorrect: false, index: 1 },
+      { id: 'q36o2', text: 'm.set("a", 1); m.get("a")', isCorrect: true, index: 2 },
+      { id: 'q36o3', text: 'm.add("a", 1); m.fetch("a")', isCorrect: false, index: 3 },
+    ],
+    explanation: 'Use set/get with Map.',
+    difficulty: 2,
+  },
+
+  // PREDICT_OUTPUT (3)
+  {
+    id: 'q37',
+    type: 'PREDICT_OUTPUT',
+    instruction: 'Understand hoisting',
+    description: 'What is printed?',
+    codeBlock: 'console.log(a);\nvar a = 2;',
+    options: [
+      { id: 'q37o1', text: '2', isCorrect: false, index: 1 },
+      { id: 'q37o2', text: 'undefined', isCorrect: true, index: 2 },
+      { id: 'q37o3', text: 'ReferenceError', isCorrect: false, index: 3 },
+    ],
+    explanation: 'var declarations are hoisted with undefined.',
+    difficulty: 2,
+  },
+
+  // FILL_BLANK (7)
+  {
+    id: 'q38',
+    type: 'FILL_BLANK',
+    instruction: 'Choose correct destructuring',
+    description: 'Extract second item from array by index.',
+    codeBefore: 'const arr = ["x","y","z"]; const ',
+    codeAfter: ' = arr[1];',
+    options: [
+      { id: 'q38o1', text: 'second', isCorrect: true, index: 1 },
+      { id: 'q38o2', text: '{ second }', isCorrect: false, index: 2 },
+      { id: 'q38o3', text: 'arr[1]', isCorrect: false, index: 3 },
+    ],
+    explanation: 'Index access returns the second element.',
+    difficulty: 1,
+  },
+
+  // DEBUG_HUNT (8)
+  {
+    id: 'q39',
+    type: 'DEBUG_HUNT',
+    instruction: 'Fix missing return',
+    description: 'Function should return value.',
+    codeSegments: [
+      { id: 'q39_1', code: 'function id(x) {', isBug: false, correction: null, index: 0 },
+      { id: 'q39_2', code: ' x', isBug: true, correction: ' return x', index: 1 },
+      { id: 'q39_3', code: ' }', isBug: false, correction: null, index: 2 },
+    ],
+    explanation: 'Return the parameter x.',
+    difficulty: 1,
+  },
+
+  // MULTIPLE_CHOICE (7)
+  {
+    id: 'q40',
+    type: 'MULTIPLE_CHOICE',
+    instruction: 'Correct Set usage',
+    description: 'Add unique elements to a Set.',
+    codeBlock: 'const s = new Set([1,2]);',
+    options: [
+      { id: 'q40o1', text: 's.push(2)', isCorrect: false, index: 1 },
+      { id: 'q40o2', text: 's.add(2)', isCorrect: true, index: 2 },
+      { id: 'q40o3', text: 's.insert(3)', isCorrect: false, index: 3 },
+    ],
+    explanation: 'Use add() with Set.',
+    difficulty: 1,
+  },
+
+  // PREDICT_OUTPUT (4)
+  {
+    id: 'q41',
+    type: 'PREDICT_OUTPUT',
+    instruction: 'Know NaN comparisons',
+    description: 'What is the result?',
+    codeBlock: 'console.log(NaN === NaN);',
+    options: [
+      { id: 'q41o1', text: 'true', isCorrect: false, index: 1 },
+      { id: 'q41o2', text: 'false', isCorrect: true, index: 2 },
+      { id: 'q41o3', text: 'TypeError', isCorrect: false, index: 3 },
+    ],
+    explanation: 'NaN is not equal to itself.',
+    difficulty: 2,
+  },
+
+  // FILL_BLANK (8)
+  {
+    id: 'q42',
+    type: 'FILL_BLANK',
+    instruction: 'Complete object destructuring',
+    description: 'Extract name property.',
+    codeBefore: 'const user = { name: "Mia", age: 20 }; const { ',
+    codeAfter: ' } = user;',
+    options: [
+      { id: 'q42o1', text: 'username', isCorrect: false, index: 1 },
+      { id: 'q42o2', text: 'name', isCorrect: true, index: 2 },
+      { id: 'q42o3', text: 'user.name', isCorrect: false, index: 3 },
+    ],
+    explanation: 'Destructure by property name.',
+    difficulty: 1,
+  },
+
+  // DEBUG_HUNT (9)
+  {
+    id: 'q43',
+    type: 'DEBUG_HUNT',
+    instruction: 'Fix JSON string',
+    description: 'JSON requires double quotes for keys and strings.',
+    codeSegments: [
+      { id: 'q43_1', code: "const s = '{'name': 'Ada'}';", isBug: true, correction: 'const s = "{\"name\": \"Ada\"}";', index: 0 },
+    ],
+    explanation: 'Use double quotes in JSON or escape properly.',
+    difficulty: 3,
+  },
+
+  // MULTIPLE_CHOICE (8)
+  {
+    id: 'q44',
+    type: 'MULTIPLE_CHOICE',
+    instruction: 'Choose correct Promise creation',
+    description: 'Create a resolved Promise with value 42.',
+    codeBlock: '',
+    options: [
+      { id: 'q44o1', text: 'new Promise(42)', isCorrect: false, index: 1 },
+      { id: 'q44o2', text: 'Promise.resolve(42)', isCorrect: true, index: 2 },
+      { id: 'q44o3', text: 'Promise.new(42)', isCorrect: false, index: 3 },
+    ],
+    explanation: 'Use Promise.resolve to wrap a value.',
+    difficulty: 1,
+  },
+
+  // PREDICT_OUTPUT (5)
+  {
+    id: 'q45',
+    type: 'PREDICT_OUTPUT',
+    instruction: 'Arrow function this',
+    description: 'What is printed?',
+    codeBlock: 'const obj = {\n  val: 1,\n  inc: () => { this.val++; console.log(this.val); }\n};\nobj.inc();',
+    options: [
+      { id: 'q45o1', text: '2', isCorrect: false, index: 1 },
+      { id: 'q45o2', text: 'undefined or error', isCorrect: true, index: 2 },
+      { id: 'q45o3', text: 'NaN', isCorrect: false, index: 3 },
+    ],
+    explanation: 'Arrow functions do not bind their own this.',
+    difficulty: 3,
+  },
+
+  // FILL_BLANK (9)
+  {
+    id: 'q46',
+    type: 'FILL_BLANK',
+    instruction: 'Pick correct optional chaining',
+    description: 'Safely access nested property.',
+    codeBefore: 'const city = user.address',
+    codeAfter: ';',
+    options: [
+      { id: 'q46o1', text: '?.city', isCorrect: true, index: 1 },
+      { id: 'q46o2', text: '.?city;', isCorrect: false, index: 2 },
+      { id: 'q46o3', text: '??.city', isCorrect: false, index: 3 },
+    ],
+    explanation: 'Use ?. for optional chaining.',
+    difficulty: 2,
+  },
+
+  // DEBUG_HUNT (10)
+  {
+    id: 'q47',
+    type: 'DEBUG_HUNT',
+    instruction: 'Fix async/await',
+    description: 'Await the asynchronous call before using result.',
+    codeSegments: [
+      { id: 'q47_1', code: 'async function run() {', isBug: false, correction: null, index: 0 },
+      { id: 'q47_2', code: ' const data = fetch("/api");', isBug: true, correction: ' const data = await fetch("/api");', index: 1 },
+      { id: 'q47_3', code: ' console.log(data.ok);', isBug: false, correction: null, index: 2 },
+      { id: 'q47_4', code: '}', isBug: false, correction: null, index: 3 },
+    ],
+    explanation: 'Use await to resolve the Promise.',
+    difficulty: 2,
+  },
+
+  // MULTIPLE_CHOICE (9)
+  {
+    id: 'q48',
+    type: 'MULTIPLE_CHOICE',
+    instruction: 'Select correct String/Number conversion',
+    description: 'Turn "42" into 42.',
+    codeBlock: '',
+    options: [
+      { id: 'q48o1', text: 'Number("42")', isCorrect: true, index: 1 },
+      { id: 'q48o2', text: 'parseFloat(42)', isCorrect: false, index: 2 },
+      { id: 'q48o3', text: 'toNumber("42")', isCorrect: false, index: 3 },
+    ],
+    explanation: 'Number(…) converts strings to numbers.',
+    difficulty: 1,
+  },
+
+  // PREDICT_OUTPUT (6)
+  {
+    id: 'q49',
+    type: 'PREDICT_OUTPUT',
+    instruction: 'Array reference behavior',
+    description: 'What gets printed?',
+    codeBlock: 'const a = [1];\nconst b = a;\nb.push(2);\nconsole.log(a.length);',
+    options: [
+      { id: 'q49o1', text: '1', isCorrect: false, index: 1 },
+      { id: 'q49o2', text: '2', isCorrect: true, index: 2 },
+      { id: 'q49o3', text: 'Error', isCorrect: false, index: 3 },
+    ],
+    explanation: 'Arrays are reference types; b references a.',
+    difficulty: 1,
+  },
+
+  // FILL_BLANK (10)
+  {
+    id: 'q50',
+    type: 'FILL_BLANK',
+    instruction: 'Choose correct export',
+    description: 'Export a default function.',
+    codeBefore: 'export default ',
+    codeAfter: ' main() { return 1 }',
+    options: [
+      { id: 'q50o1', text: 'export default', isCorrect: false, index: 1 },
+      { id: 'q50o2', text: 'function', isCorrect: true, index: 2 },
+      { id: 'q50o3', text: 'module.exports =', isCorrect: false, index: 3 },
+    ],
+    explanation: 'Default export is declared at file end in this snippet.',
+    difficulty: 2,
+  },
+
+  // ===== CHAPTER 1 SPECIFIC QUESTIONS (Variables, Data Types, Operations) =====
+  // q51-q75: Variables & Data Types
+  {
+    id: 'q51',
+    type: 'MULTIPLE_CHOICE',
+    instruction: 'Choose the correct variable declaration',
+    description: 'Which statement correctly declares a variable?',
+    codeBlock: 'Select the valid JavaScript variable declaration:',
+    options: [
+      { id: 'q51o1', text: 'var x = 5;', isCorrect: true, index: 1 },
+      { id: 'q51o2', text: '5 = x;', isCorrect: false, index: 2 },
+      { id: 'q51o3', text: 'variable x;', isCorrect: false, index: 3 },
+    ],
+    explanation: 'var, let, or const are used to declare variables in JavaScript.',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q52',
+    type: 'MULTIPLE_CHOICE',
+    instruction: 'Identify the data type',
+    description: 'What is the data type of the value 42?',
+    codeBlock: 'const value = 42;',
+    options: [
+      { id: 'q52o1', text: 'string', isCorrect: false, index: 1 },
+      { id: 'q52o2', text: 'number', isCorrect: true, index: 2 },
+      { id: 'q52o3', text: 'boolean', isCorrect: false, index: 3 },
+    ],
+    explanation: '42 is a numeric value, so its type is "number".',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q53',
+    type: 'PREDICT_OUTPUT',
+    instruction: 'What will this print?',
+    description: 'Analyze the code and predict the output.',
+    codeBlock: 'console.log(typeof "hello");',
+    options: [
+      { id: 'q53o1', text: '"hello"', isCorrect: false, index: 1 },
+      { id: 'q53o2', text: '"string"', isCorrect: true, index: 2 },
+      { id: 'q53o3', text: 'string', isCorrect: false, index: 3 },
+    ],
+    explanation: 'The typeof operator returns "string" for string values.',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q54',
+    type: 'DEBUG_HUNT',
+    instruction: 'Fix the variable error',
+    description: 'Find the bug in this variable declaration.',
+    codeSegments: [
+      { id: 'q54_1', code: 'let ', isBug: false, correction: null, index: 0 },
+      { id: 'q54_2', code: '123name', isBug: true, correction: 'name123', index: 1 },
+      { id: 'q54_3', code: ' = "Alice";', isBug: false, correction: null, index: 2 },
+    ],
+    explanation: 'Variable names cannot start with a number.',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q55',
+    type: 'FILL_BLANK',
+    instruction: 'Complete the statement',
+    description: 'Fill in the correct data type keyword.',
+    codeBefore: 'The value "true" is of type ',
+    codeAfter: '',
+    options: [
+      { id: 'q55o1', text: 'boolean', isCorrect: true, index: 1 },
+      { id: 'q55o2', text: 'string', isCorrect: false, index: 2 },
+      { id: 'q55o3', text: 'object', isCorrect: false, index: 3 },
+    ],
+    explanation: 'true and false are boolean values in JavaScript.',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q56',
+    type: 'MULTIPLE_CHOICE',
+    instruction: 'Select the correct reassignment',
+    description: 'How do you change a variable\'s value?',
+    codeBlock: 'let x = 5;\n________',
+    options: [
+      { id: 'q56o1', text: 'x == 10;', isCorrect: false, index: 1 },
+      { id: 'q56o2', text: 'x = 10;', isCorrect: true, index: 2 },
+      { id: 'q56o3', text: 'let x = 10;', isCorrect: false, index: 3 },
+    ],
+    explanation: 'Use = (assignment) to change a variable value, not == (comparison).',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q57',
+    type: 'PREDICT_OUTPUT',
+    instruction: 'What is the output?',
+    description: 'Predict the console output.',
+    codeBlock: 'let a = "5";\nlet b = 5;\nconsole.log(a + b);',
+    options: [
+      { id: 'q57o1', text: '10', isCorrect: false, index: 1 },
+      { id: 'q57o2', text: '"55"', isCorrect: true, index: 2 },
+      { id: 'q57o3', text: '"10"', isCorrect: false, index: 3 },
+    ],
+    explanation: 'Adding a string to a number concatenates them as a string.',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q58',
+    type: 'REORDER',
+    instruction: 'Order the statements',
+    description: 'Arrange to declare, initialize, and use a variable.',
+    items: [
+      { id: 'var-1', text: 'const message = "Hello";', index: 1 },
+      { id: 'var-2', text: 'console.log(message);', index: 2 },
+    ],
+    correctOrder: [1, 2],
+    explanation: 'You must declare and initialize before using a variable.',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q59',
+    type: 'LOGIC_PUZZLE',
+    instruction: 'Find the correct value',
+    description: 'Which value is a valid number?',
+    logicCondition: 'typeof x === "number"',
+    options: [
+      { id: 'q59o1', text: '"42"', isCorrect: false, index: 1 },
+      { id: 'q59o2', text: '42', isCorrect: true, index: 2 },
+      { id: 'q59o3', text: 'null', isCorrect: false, index: 3 },
+    ],
+    explanation: '42 without quotes is a number; "42" with quotes is a string.',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q60',
+    type: 'MATCH_MADNESS',
+    instruction: 'Match values to their types',
+    description: 'Match each value with its correct data type.',
+    pairs: [
+      { text: '42', matchId: 'number', index: 1 },
+      { text: '"hello"', matchId: 'string', index: 2 },
+      { text: 'true', matchId: 'boolean', index: 3 },
+      { text: 'number', matchId: '42', index: 4 },
+      { text: 'string', matchId: '"hello"', index: 5 },
+      { text: 'boolean', matchId: 'true', index: 6 },
+    ],
+    explanation: 'Match each value to its corresponding data type.',
+    difficulty: 1,
+  },
+
+  // ===== CHAPTER 2 SPECIFIC QUESTIONS (Control Flow, Loops, Logic) =====
+  // q61-q85: If/Else, Loops, Boolean Logic
+  {
+    id: 'q61',
+    type: 'MULTIPLE_CHOICE',
+    instruction: 'Complete the if statement',
+    description: 'Which condition checks if a number is greater than 10?',
+    codeBlock: 'if (________) {',
+    options: [
+      { id: 'q61o1', text: 'num > 10', isCorrect: true, index: 1 },
+      { id: 'q61o2', text: 'num < 10', isCorrect: false, index: 2 },
+      { id: 'q61o3', text: 'num = 10', isCorrect: false, index: 3 },
+    ],
+    explanation: 'Use > for "greater than" comparisons.',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q62',
+    type: 'PREDICT_OUTPUT',
+    instruction: 'What does this output?',
+    description: 'Predict the console output.',
+    codeBlock: 'let x = 15;\nif (x > 10) {\n  console.log("big");\n} else {\n  console.log("small");\n}',
+    options: [
+      { id: 'q62o1', text: '"small"', isCorrect: false, index: 1 },
+      { id: 'q62o2', text: '"big"', isCorrect: true, index: 2 },
+      { id: 'q62o3', text: 'Error', isCorrect: false, index: 3 },
+    ],
+    explanation: '15 > 10 is true, so "big" is printed.',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q63',
+    type: 'DEBUG_HUNT',
+    instruction: 'Fix the logic error',
+    description: 'This condition has the wrong operator.',
+    codeSegments: [
+      { id: 'q63_1', code: 'if (age ', isBug: false, correction: null, index: 0 },
+      { id: 'q63_2', code: '> ', isBug: true, correction: '>=', index: 1 },
+      { id: 'q63_3', code: '18)', isBug: false, correction: null, index: 2 },
+    ],
+    explanation: 'Use >= to include 18; > excludes it.',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q64',
+    type: 'FILL_BLANK',
+    instruction: 'Complete the else if',
+    description: 'Fill in the keyword for additional conditions.',
+    codeBefore: 'if (x > 10) {\n  console.log("high");\n} ',
+    codeAfter: ' (x < 5) {\n  console.log("low");\n}',
+    options: [
+      { id: 'q64o1', text: 'else if', isCorrect: true, index: 1 },
+      { id: 'q64o2', text: 'if', isCorrect: false, index: 2 },
+      { id: 'q64o3', text: 'else', isCorrect: false, index: 3 },
+    ],
+    explanation: 'Use else if for additional conditions after the first if.',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q65',
+    type: 'REORDER',
+    instruction: 'Order the loop correctly',
+    description: 'Arrange the for loop components in order.',
+    items: [
+      { id: 'loop-a', text: 'for (let i = 0; i < 3; i++) {', index: 1 },
+      { id: 'loop-b', text: '  console.log(i);', index: 2 },
+      { id: 'loop-c', text: '}', index: 3 },
+    ],
+    correctOrder: [1, 2, 3],
+    explanation: 'The for loop structure: declaration, condition, increment, body.',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q66',
+    type: 'LOGIC_PUZZLE',
+    instruction: 'How many times will this loop run?',
+    description: 'Count the iterations.',
+    logicCondition: 'for (let i = 0; i < 5; i++)',
+    options: [
+      { id: 'q66o1', text: '4 times', isCorrect: false, index: 1 },
+      { id: 'q66o2', text: '5 times', isCorrect: true, index: 2 },
+      { id: 'q66o3', text: '6 times', isCorrect: false, index: 3 },
+    ],
+    explanation: 'i goes from 0 to 4 (5 values), so the loop runs 5 times.',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q67',
+    type: 'PREDICT_OUTPUT',
+    instruction: 'What is the output?',
+    description: 'Predict what this code prints.',
+    codeBlock: 'for (let i = 1; i <= 3; i++) {\n  console.log(i);\n}',
+    options: [
+      { id: 'q67o1', text: '0, 1, 2', isCorrect: false, index: 1 },
+      { id: 'q67o2', text: '1, 2, 3', isCorrect: true, index: 2 },
+      { id: 'q67o3', text: '1, 2, 3, 4', isCorrect: false, index: 3 },
+    ],
+    explanation: 'i starts at 1, goes up to and includes 3.',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q68',
+    type: 'MULTIPLE_CHOICE',
+    instruction: 'What does && mean?',
+    description: 'Which statement describes the && operator?',
+    codeBlock: 'Select the meaning of &&',
+    options: [
+      { id: 'q68o1', text: 'OR - either condition is true', isCorrect: false, index: 1 },
+      { id: 'q68o2', text: 'AND - both conditions must be true', isCorrect: true, index: 2 },
+      { id: 'q68o3', text: 'NOT - negates a condition', isCorrect: false, index: 3 },
+    ],
+    explanation: '&& is the AND operator; both conditions must be true.',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q69',
+    type: 'PREDICT_OUTPUT',
+    instruction: 'Evaluate the boolean expression',
+    description: 'What is the result?',
+    codeBlock: 'console.log(true && false);',
+    options: [
+      { id: 'q69o1', text: 'true', isCorrect: false, index: 1 },
+      { id: 'q69o2', text: 'false', isCorrect: true, index: 2 },
+      { id: 'q69o3', text: 'undefined', isCorrect: false, index: 3 },
+    ],
+    explanation: 'true && false = false (both must be true for AND).',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q70',
+    type: 'MATCH_MADNESS',
+    instruction: 'Match operators to their meanings',
+    description: 'Match each operator to what it does.',
+    pairs: [
+      { text: '&&', matchId: 'AND - both true', index: 1 },
+      { text: '||', matchId: 'OR - either true', index: 2 },
+      { text: '!', matchId: 'NOT - negates', index: 3 },
+      { text: 'AND - both true', matchId: '&&', index: 4 },
+      { text: 'OR - either true', matchId: '||', index: 5 },
+      { text: 'NOT - negates', matchId: '!', index: 6 },
+    ],
+    explanation: 'These are the three main logical operators.',
+    difficulty: 1,
+  },
+
+  // ===== CHAPTER 3 SPECIFIC QUESTIONS (Functions, Parameters, Returns) =====
+  // q71-q95: Functions, Scope, Recursion
+  {
+    id: 'q71',
+    type: 'MULTIPLE_CHOICE',
+    instruction: 'How do you declare a function?',
+    description: 'Which is the correct function declaration syntax?',
+    codeBlock: 'Select the correct function declaration:',
+    options: [
+      { id: 'q71o1', text: 'function myFunc() { }', isCorrect: true, index: 1 },
+      { id: 'q71o2', text: 'func myFunc() { }', isCorrect: false, index: 2 },
+      { id: 'q71o3', text: 'define myFunc() { }', isCorrect: false, index: 3 },
+    ],
+    explanation: 'Use the "function" keyword to declare a function.',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q72',
+    type: 'MULTIPLE_CHOICE',
+    instruction: 'What does return do?',
+    description: 'What is the purpose of the return statement?',
+    codeBlock: 'function getValue() { return 42; }',
+    options: [
+      { id: 'q72o1', text: 'Stops the program', isCorrect: false, index: 1 },
+      { id: 'q72o2', text: 'Sends a value back from the function', isCorrect: true, index: 2 },
+      { id: 'q72o3', text: 'Prints to console', isCorrect: false, index: 3 },
+    ],
+    explanation: 'return sends the result back to where the function was called.',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q73',
+    type: 'PREDICT_OUTPUT',
+    instruction: 'What will be logged?',
+    description: 'Predict the output.',
+    codeBlock: 'function add(a, b) { return a + b; }\nconsole.log(add(3, 5));',
+    options: [
+      { id: 'q73o1', text: '"3, 5"', isCorrect: false, index: 1 },
+      { id: 'q73o2', text: '8', isCorrect: true, index: 2 },
+      { id: 'q73o3', text: 'undefined', isCorrect: false, index: 3 },
+    ],
+    explanation: 'add(3, 5) returns 3 + 5 = 8.',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q74',
+    type: 'DEBUG_HUNT',
+    instruction: 'Fix the function',
+    description: 'This function is missing something.',
+    codeSegments: [
+      { id: 'q74_1', code: 'function greet(name) {', isBug: false, correction: null, index: 0 },
+      { id: 'q74_2', code: '  console.log("Hi " + name);', isBug: false, correction: null, index: 1 },
+      { id: 'q74_3', code: '}', isBug: true, correction: '// Missing return', index: 2 },
+    ],
+    explanation: 'The function works but doesn\'t return a value.',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q75',
+    type: 'FILL_BLANK',
+    instruction: 'Complete the function call',
+    description: 'Fill in the missing parameter.',
+    codeBefore: 'function square(x) { return x * x; }\nlet result = square(',
+    codeAfter: ');',
+    options: [
+      { id: 'q75o1', text: '5', isCorrect: true, index: 1 },
+      { id: 'q75o2', text: 'return', isCorrect: false, index: 2 },
+      { id: 'q75o3', text: 'x', isCorrect: false, index: 3 },
+    ],
+    explanation: 'Pass the argument 5 to the square function.',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q76',
+    type: 'REORDER',
+    instruction: 'Order the function correctly',
+    description: 'Arrange to create a complete function.',
+    items: [
+      { id: 'func-1', text: 'function multiply(a, b) {', index: 1 },
+      { id: 'func-2', text: '  return a * b;', index: 2 },
+      { id: 'func-3', text: '}', index: 3 },
+    ],
+    correctOrder: [1, 2, 3],
+    explanation: 'Function structure: keyword, name/params, body, closing brace.',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q77',
+    type: 'LOGIC_PUZZLE',
+    instruction: 'What will this function return?',
+    description: 'Trace the execution.',
+    logicCondition: 'function getValue() { return 10 * 2; } getValue();',
+    options: [
+      { id: 'q77o1', text: '10', isCorrect: false, index: 1 },
+      { id: 'q77o2', text: '20', isCorrect: true, index: 2 },
+      { id: 'q77o3', text: '100', isCorrect: false, index: 3 },
+    ],
+    explanation: '10 * 2 = 20.',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q78',
+    type: 'MULTIPLE_CHOICE',
+    instruction: 'What is a parameter?',
+    description: 'Which statement correctly describes parameters?',
+    codeBlock: 'function greet(name) { ... }',
+    options: [
+      { id: 'q78o1', text: 'The value passed when calling the function', isCorrect: false, index: 1 },
+      { id: 'q78o2', text: 'The variable in the function definition', isCorrect: true, index: 2 },
+      { id: 'q78o3', text: 'The return value', isCorrect: false, index: 3 },
+    ],
+    explanation: 'Parameters are variables in the function definition; arguments are values passed.',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q79',
+    type: 'PREDICT_OUTPUT',
+    instruction: 'What is the scope issue?',
+    description: 'Where can the variable be accessed?',
+    codeBlock: 'function myFunc() { let x = 5; } console.log(x);',
+    options: [
+      { id: 'q79o1', text: '5', isCorrect: false, index: 1 },
+      { id: 'q79o2', text: 'Error - x is not defined', isCorrect: true, index: 2 },
+      { id: 'q79o3', text: 'undefined', isCorrect: false, index: 3 },
+    ],
+    explanation: 'let x is local to the function; it\'s not accessible outside.',
+    difficulty: 2,
+  },
+
+  {
+    id: 'q80',
+    type: 'MATCH_MADNESS',
+    instruction: 'Match function concepts',
+    description: 'Match terms with definitions.',
+    pairs: [
+      { text: 'Parameter', matchId: 'Variable in function definition', index: 1 },
+      { text: 'Argument', matchId: 'Value passed to function', index: 2 },
+      { text: 'Return', matchId: 'Send value back', index: 3 },
+      { text: 'Variable in function definition', matchId: 'Parameter', index: 4 },
+      { text: 'Value passed to function', matchId: 'Argument', index: 5 },
+      { text: 'Send value back', matchId: 'Return', index: 6 },
+    ],
+    explanation: 'These are key function terminology.',
+    difficulty: 1,
+  },
 ];
 
-// Helper function to create chapter structure for a language
+// Helper function to create chapter structure for a language (no loops, unique content)
 async function createChapterStructure(languageId: string, languageName: string) {
-  console.log(`\n📚 Creating chapter structure for ${languageName}...`);
+  console.log(`\n📚 Creating chapter structure for ${languageName} (no loops, unique lessons/questions)...`);
 
-  const chapters = [];
   let totalQuestionsCreated = 0;
-  
-  for (let chapterIdx = 1; chapterIdx <= 3; chapterIdx++) {
-    // Create chapter first
-    const chapter = await prisma.chapter.create({
-      data: {
-        title: `Chapter ${chapterIdx}: ${getChapterTitle(chapterIdx)}`,
-        levelIndex: chapterIdx,
-        languageId,
-      },
-    });
 
-    // Create units and lessons for this chapter
-    const units = [];
-    for (let unitIdx = 1; unitIdx <= 3; unitIdx++) {
-      const unit = await prisma.unit.create({
-        data: {
-          title: `Unit ${unitIdx}: ${getUnitTitle(chapterIdx, unitIdx)}`,
-          unitIndex: unitIdx,
-          chapterId: chapter.id,
-        },
-      });
+  // -------------------- Chapter 1 --------------------
+  const chapter1 = await prisma.chapter.create({
+    data: {
+      title: `Chapter 1: ${getChapterTitle(1)}`,
+      levelIndex: 1,
+      languageId,
+    },
+  });
 
-      // Create lessons for this unit
-      const lessons = [];
-      for (let lessonIdx = 1; lessonIdx <= 2; lessonIdx++) {
-        const lesson = await prisma.lesson.create({
-          data: {
-            title: `Lesson ${lessonIdx}: ${lessonIdx === 1 ? 'Basics' : 'Advanced'}`,
-            lessonIndex: lessonIdx,
-            unitId: unit.id,
-            hearts: 3,
-            questionCount: 5,
-            targetDifficulty: chapterIdx === 1 ? 'EASY' : chapterIdx === 2 ? 'MEDIUM' : 'HARD',
-          },
-        });
-        lessons.push(lesson);
-      }
+  // Units for Chapter 1
+  const ch1_unit1 = await prisma.unit.create({
+    data: { title: 'Unit 1: Intro to Variables', unitIndex: 1, chapterId: chapter1.id },
+  });
+  const ch1_unit2 = await prisma.unit.create({
+    data: { title: 'Unit 2: Data Types & Strings', unitIndex: 2, chapterId: chapter1.id },
+  });
+  const ch1_unit3 = await prisma.unit.create({
+    data: { title: 'Unit 3: Basic Operations', unitIndex: 3, chapterId: chapter1.id },
+  });
 
-      units.push(unit);
-    }
+  // Lessons for Chapter 1 (unique titles) - 5-6 per unit
+  await prisma.lesson.create({
+    data: {
+      title: 'Variables Basics',
+      lessonIndex: 1,
+      unitId: ch1_unit1.id,
+      hearts: 3,
+      questionCount: 4,
+      targetDifficulty: 'EASY',
+    },
+  });
+  await prisma.lesson.create({
+    data: {
+      title: 'Variable Scope',
+      lessonIndex: 2,
+      unitId: ch1_unit1.id,
+      hearts: 3,
+      questionCount: 4,
+      targetDifficulty: 'EASY',
+    },
+  });
+  await prisma.lesson.create({
+    data: {
+      title: 'Naming Conventions',
+      lessonIndex: 3,
+      unitId: ch1_unit1.id,
+      hearts: 3,
+      questionCount: 4,
+      targetDifficulty: 'EASY',
+    },
+  });
+  await prisma.lesson.create({
+    data: {
+      title: 'Constants & Mutability',
+      lessonIndex: 4,
+      unitId: ch1_unit1.id,
+      hearts: 3,
+      questionCount: 4,
+      targetDifficulty: 'EASY',
+    },
+  });
+  await prisma.lesson.create({
+    data: {
+      title: 'Assignment Patterns',
+      lessonIndex: 5,
+      unitId: ch1_unit1.id,
+      hearts: 3,
+      questionCount: 4,
+      targetDifficulty: 'EASY',
+    },
+  });
 
-    // Create questions for this chapter (language+chapter)
-    const questionsForChapter = await Promise.all(
-      LESSON_QUESTIONS.map((q) => 
-        prisma.question.create({
-          data: {
-            ...createQuestionData(q),
-            languageId,
-            chapterId: chapter.id,
-          },
-        })
-      )
-    );
+  await prisma.lesson.create({
+    data: {
+      title: 'Type Conversion',
+      lessonIndex: 1,
+      unitId: ch1_unit2.id,
+      hearts: 3,
+      questionCount: 4,
+      targetDifficulty: 'EASY',
+    },
+  });
+  await prisma.lesson.create({
+    data: {
+      title: 'String Methods',
+      lessonIndex: 2,
+      unitId: ch1_unit2.id,
+      hearts: 3,
+      questionCount: 4,
+      targetDifficulty: 'EASY',
+    },
+  });
+  await prisma.lesson.create({
+    data: {
+      title: 'Numbers & Math',
+      lessonIndex: 3,
+      unitId: ch1_unit2.id,
+      hearts: 3,
+      questionCount: 4,
+      targetDifficulty: 'EASY',
+    },
+  });
+  await prisma.lesson.create({
+    data: {
+      title: 'Boolean Values',
+      lessonIndex: 4,
+      unitId: ch1_unit2.id,
+      hearts: 3,
+      questionCount: 4,
+      targetDifficulty: 'EASY',
+    },
+  });
+  await prisma.lesson.create({
+    data: {
+      title: 'Template Strings',
+      lessonIndex: 5,
+      unitId: ch1_unit2.id,
+      hearts: 3,
+      questionCount: 4,
+      targetDifficulty: 'EASY',
+    },
+  });
+  await prisma.lesson.create({
+    data: {
+      title: 'Type Checking',
+      lessonIndex: 6,
+      unitId: ch1_unit2.id,
+      hearts: 3,
+      questionCount: 4,
+      targetDifficulty: 'EASY',
+    },
+  });
 
-    totalQuestionsCreated += questionsForChapter.length;
-    chapters.push(chapter);
-    console.log(`  ✓ Chapter ${chapterIdx}: ${chapter.title} (3 units, 6 lessons, ${questionsForChapter.length} questions)`);
-  }
+  await prisma.lesson.create({
+    data: {
+      title: 'Operators 101',
+      lessonIndex: 1,
+      unitId: ch1_unit3.id,
+      hearts: 3,
+      questionCount: 4,
+      targetDifficulty: 'EASY',
+    },
+  });
+  await prisma.lesson.create({
+    data: {
+      title: 'Arithmetic Operations',
+      lessonIndex: 2,
+      unitId: ch1_unit3.id,
+      hearts: 3,
+      questionCount: 4,
+      targetDifficulty: 'EASY',
+    },
+  });
+  await prisma.lesson.create({
+    data: {
+      title: 'Comparison Operators',
+      lessonIndex: 3,
+      unitId: ch1_unit3.id,
+      hearts: 3,
+      questionCount: 4,
+      targetDifficulty: 'EASY',
+    },
+  });
+  await prisma.lesson.create({
+    data: {
+      title: 'Logical Operations',
+      lessonIndex: 4,
+      unitId: ch1_unit3.id,
+      hearts: 3,
+      questionCount: 4,
+      targetDifficulty: 'EASY',
+    },
+  });
+  await prisma.lesson.create({
+    data: {
+      title: 'Expressions Practice',
+      lessonIndex: 5,
+      unitId: ch1_unit3.id,
+      hearts: 3,
+      questionCount: 4,
+      targetDifficulty: 'EASY',
+    },
+  });
 
-  console.log(`\n✅ Created structure: 3 chapters, 9 units, 18 lessons, ${totalQuestionsCreated} questions`);
-  return chapters;
+  // Questions for Chapter 1 (Variables, Data Types, Operations)
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[50]), languageId, chapterId: chapter1.id } }); // q51
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[51]), languageId, chapterId: chapter1.id } }); // q52
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[52]), languageId, chapterId: chapter1.id } }); // q53
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[53]), languageId, chapterId: chapter1.id } }); // q54
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[54]), languageId, chapterId: chapter1.id } }); // q55
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[55]), languageId, chapterId: chapter1.id } }); // q56
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[56]), languageId, chapterId: chapter1.id } }); // q57
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[57]), languageId, chapterId: chapter1.id } }); // q58
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[58]), languageId, chapterId: chapter1.id } }); // q59
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[59]), languageId, chapterId: chapter1.id } }); // q60
+  totalQuestionsCreated += 10;
+  console.log(`  ✓ Chapter 1: ${chapter1.title} (3 units, 16 lessons, 10 questions on Variables & Data Types)`);
+
+  // -------------------- Chapter 2 --------------------
+  const chapter2 = await prisma.chapter.create({
+    data: {
+      title: `Chapter 2: ${getChapterTitle(2)}`,
+      levelIndex: 2,
+      languageId,
+    },
+  });
+
+  const ch2_unit1 = await prisma.unit.create({
+    data: { title: 'Unit 1: If/Else Foundations', unitIndex: 1, chapterId: chapter2.id },
+  });
+  const ch2_unit2 = await prisma.unit.create({
+    data: { title: 'Unit 2: Looping Patterns', unitIndex: 2, chapterId: chapter2.id },
+  });
+  const ch2_unit3 = await prisma.unit.create({
+    data: { title: 'Unit 3: Boolean Logic', unitIndex: 3, chapterId: chapter2.id },
+  });
+
+  await prisma.lesson.create({
+    data: {
+      title: 'Branching Basics',
+      lessonIndex: 1,
+      unitId: ch2_unit1.id,
+      hearts: 3,
+      questionCount: 4,
+      targetDifficulty: 'MEDIUM',
+    },
+  });
+  await prisma.lesson.create({
+    data: {
+      title: 'If/Else Chains',
+      lessonIndex: 2,
+      unitId: ch2_unit1.id,
+      hearts: 3,
+      questionCount: 4,
+      targetDifficulty: 'MEDIUM',
+    },
+  });
+  await prisma.lesson.create({
+    data: {
+      title: 'Nested Conditions',
+      lessonIndex: 3,
+      unitId: ch2_unit1.id,
+      hearts: 3,
+      questionCount: 4,
+      targetDifficulty: 'MEDIUM',
+    },
+  });
+  await prisma.lesson.create({
+    data: {
+      title: 'Ternary Operator',
+      lessonIndex: 4,
+      unitId: ch2_unit1.id,
+      hearts: 3,
+      questionCount: 4,
+      targetDifficulty: 'MEDIUM',
+    },
+  });
+  await prisma.lesson.create({
+    data: {
+      title: 'Switch Statements',
+      lessonIndex: 5,
+      unitId: ch2_unit1.id,
+      hearts: 3,
+      questionCount: 4,
+      targetDifficulty: 'MEDIUM',
+    },
+  });
+
+  await prisma.lesson.create({
+    data: {
+      title: 'For Loops',
+      lessonIndex: 1,
+      unitId: ch2_unit2.id,
+      hearts: 3,
+      questionCount: 4,
+      targetDifficulty: 'MEDIUM',
+    },
+  });
+  await prisma.lesson.create({
+    data: {
+      title: 'While Loops',
+      lessonIndex: 2,
+      unitId: ch2_unit2.id,
+      hearts: 3,
+      questionCount: 4,
+      targetDifficulty: 'MEDIUM',
+    },
+  });
+  await prisma.lesson.create({
+    data: {
+      title: 'Do-While Loops',
+      lessonIndex: 3,
+      unitId: ch2_unit2.id,
+      hearts: 3,
+      questionCount: 4,
+      targetDifficulty: 'MEDIUM',
+    },
+  });
+  await prisma.lesson.create({
+    data: {
+      title: 'Break & Continue',
+      lessonIndex: 4,
+      unitId: ch2_unit2.id,
+      hearts: 3,
+      questionCount: 4,
+      targetDifficulty: 'MEDIUM',
+    },
+  });
+  await prisma.lesson.create({
+    data: {
+      title: 'Nested Loops',
+      lessonIndex: 5,
+      unitId: ch2_unit2.id,
+      hearts: 3,
+      questionCount: 4,
+      targetDifficulty: 'MEDIUM',
+    },
+  });
+
+  await prisma.lesson.create({
+    data: {
+      title: 'Truth Tables',
+      lessonIndex: 1,
+      unitId: ch2_unit3.id,
+      hearts: 3,
+      questionCount: 4,
+      targetDifficulty: 'MEDIUM',
+    },
+  });
+  await prisma.lesson.create({
+    data: {
+      title: 'AND/OR/NOT',
+      lessonIndex: 2,
+      unitId: ch2_unit3.id,
+      hearts: 3,
+      questionCount: 4,
+      targetDifficulty: 'MEDIUM',
+    },
+  });
+  await prisma.lesson.create({
+    data: {
+      title: 'De Morgan Logic',
+      lessonIndex: 3,
+      unitId: ch2_unit3.id,
+      hearts: 3,
+      questionCount: 4,
+      targetDifficulty: 'MEDIUM',
+    },
+  });
+  await prisma.lesson.create({
+    data: {
+      title: 'Logic Puzzles',
+      lessonIndex: 4,
+      unitId: ch2_unit3.id,
+      hearts: 3,
+      questionCount: 4,
+      targetDifficulty: 'MEDIUM',
+    },
+  });
+  await prisma.lesson.create({
+    data: {
+      title: 'Operator Precedence',
+      lessonIndex: 5,
+      unitId: ch2_unit3.id,
+      hearts: 3,
+      questionCount: 4,
+      targetDifficulty: 'MEDIUM',
+    },
+  });
+
+  // Questions for Chapter 2 (Control Flow, Loops, Boolean Logic)
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[60]), languageId, chapterId: chapter2.id } }); // q61
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[61]), languageId, chapterId: chapter2.id } }); // q62
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[62]), languageId, chapterId: chapter2.id } }); // q63
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[63]), languageId, chapterId: chapter2.id } }); // q64
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[64]), languageId, chapterId: chapter2.id } }); // q65
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[65]), languageId, chapterId: chapter2.id } }); // q66
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[66]), languageId, chapterId: chapter2.id } }); // q67
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[67]), languageId, chapterId: chapter2.id } }); // q68
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[68]), languageId, chapterId: chapter2.id } }); // q69
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[69]), languageId, chapterId: chapter2.id } }); // q70
+  totalQuestionsCreated += 10;
+  console.log(`  ✓ Chapter 2: ${chapter2.title} (3 units, 15 lessons, 10 questions on Control Flow & Logic)`);
+
+  // -------------------- Chapter 3 --------------------
+  const chapter3 = await prisma.chapter.create({
+    data: {
+      title: `Chapter 3: ${getChapterTitle(3)}`,
+      levelIndex: 3,
+      languageId,
+    },
+  });
+
+  const ch3_unit1 = await prisma.unit.create({
+    data: { title: 'Unit 1: Function Basics', unitIndex: 1, chapterId: chapter3.id },
+  });
+  const ch3_unit2 = await prisma.unit.create({
+    data: { title: 'Unit 2: Parameters & Returns', unitIndex: 2, chapterId: chapter3.id },
+  });
+  const ch3_unit3 = await prisma.unit.create({
+    data: { title: 'Unit 3: Recursion & Patterns', unitIndex: 3, chapterId: chapter3.id },
+  });
+
+  await prisma.lesson.create({
+    data: {
+      title: 'Writing Functions',
+      lessonIndex: 1,
+      unitId: ch3_unit1.id,
+      hearts: 3,
+      questionCount: 4,
+      targetDifficulty: 'HARD',
+    },
+  });
+  await prisma.lesson.create({
+    data: {
+      title: 'Function Scope',
+      lessonIndex: 2,
+      unitId: ch3_unit1.id,
+      hearts: 3,
+      questionCount: 4,
+      targetDifficulty: 'HARD',
+    },
+  });
+  await prisma.lesson.create({
+    data: {
+      title: 'Global vs Local',
+      lessonIndex: 3,
+      unitId: ch3_unit1.id,
+      hearts: 3,
+      questionCount: 4,
+      targetDifficulty: 'HARD',
+    },
+  });
+  await prisma.lesson.create({
+    data: {
+      title: 'Hoisting Behavior',
+      lessonIndex: 4,
+      unitId: ch3_unit1.id,
+      hearts: 3,
+      questionCount: 4,
+      targetDifficulty: 'HARD',
+    },
+  });
+  await prisma.lesson.create({
+    data: {
+      title: 'Closure Concepts',
+      lessonIndex: 5,
+      unitId: ch3_unit1.id,
+      hearts: 3,
+      questionCount: 4,
+      targetDifficulty: 'HARD',
+    },
+  });
+
+  await prisma.lesson.create({
+    data: {
+      title: 'Arguments & Defaults',
+      lessonIndex: 1,
+      unitId: ch3_unit2.id,
+      hearts: 3,
+      questionCount: 4,
+      targetDifficulty: 'HARD',
+    },
+  });
+  await prisma.lesson.create({
+    data: {
+      title: 'Return Values',
+      lessonIndex: 2,
+      unitId: ch3_unit2.id,
+      hearts: 3,
+      questionCount: 4,
+      targetDifficulty: 'HARD',
+    },
+  });
+  await prisma.lesson.create({
+    data: {
+      title: 'Arrow Functions',
+      lessonIndex: 3,
+      unitId: ch3_unit2.id,
+      hearts: 3,
+      questionCount: 4,
+      targetDifficulty: 'HARD',
+    },
+  });
+  await prisma.lesson.create({
+    data: {
+      title: 'Higher Order Functions',
+      lessonIndex: 4,
+      unitId: ch3_unit2.id,
+      hearts: 3,
+      questionCount: 4,
+      targetDifficulty: 'HARD',
+    },
+  });
+  await prisma.lesson.create({
+    data: {
+      title: 'Callback Functions',
+      lessonIndex: 5,
+      unitId: ch3_unit2.id,
+      hearts: 3,
+      questionCount: 4,
+      targetDifficulty: 'HARD',
+    },
+  });
+
+  await prisma.lesson.create({
+    data: {
+      title: 'Recursion Intro',
+      lessonIndex: 1,
+      unitId: ch3_unit3.id,
+      hearts: 3,
+      questionCount: 4,
+      targetDifficulty: 'HARD',
+    },
+  });
+  await prisma.lesson.create({
+    data: {
+      title: 'Base Cases',
+      lessonIndex: 2,
+      unitId: ch3_unit3.id,
+      hearts: 3,
+      questionCount: 4,
+      targetDifficulty: 'HARD',
+    },
+  });
+  await prisma.lesson.create({
+    data: {
+      title: 'Recursive Patterns',
+      lessonIndex: 3,
+      unitId: ch3_unit3.id,
+      hearts: 3,
+      questionCount: 4,
+      targetDifficulty: 'HARD',
+    },
+  });
+  await prisma.lesson.create({
+    data: {
+      title: 'Stack & Call Stack',
+      lessonIndex: 4,
+      unitId: ch3_unit3.id,
+      hearts: 3,
+      questionCount: 4,
+      targetDifficulty: 'HARD',
+    },
+  });
+  await prisma.lesson.create({
+    data: {
+      title: 'Tail Recursion',
+      lessonIndex: 5,
+      unitId: ch3_unit3.id,
+      hearts: 3,
+      questionCount: 4,
+      targetDifficulty: 'HARD',
+    },
+  });
+
+  // Questions for Chapter 3 (Functions, Parameters, Returns, Scope)
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[70]), languageId, chapterId: chapter3.id } }); // q71
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[71]), languageId, chapterId: chapter3.id } }); // q72
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[72]), languageId, chapterId: chapter3.id } }); // q73
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[73]), languageId, chapterId: chapter3.id } }); // q74
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[74]), languageId, chapterId: chapter3.id } }); // q75
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[75]), languageId, chapterId: chapter3.id } }); // q76
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[76]), languageId, chapterId: chapter3.id } }); // q77
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[77]), languageId, chapterId: chapter3.id } }); // q78
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[78]), languageId, chapterId: chapter3.id } }); // q79
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[79]), languageId, chapterId: chapter3.id } }); // q80
+  totalQuestionsCreated += 10;
+  console.log(`  ✓ Chapter 3: ${chapter3.title} (3 units, 15 lessons, 10 questions on Functions & Scope)`);
+
+  console.log(`\n✅ Created structure: 3 chapters, 9 units, 46 lessons, ${totalQuestionsCreated} questions (30 new tailored questions: 10 per chapter matching content)\n`);
+  return [chapter1, chapter2, chapter3];
 }
 
 // Helper to create question data based on type

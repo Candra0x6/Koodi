@@ -450,7 +450,7 @@ function LearnContent() {
           <Button 
             onClick={() => setIsChapterListOpen(!isChapterListOpen)}
             className={cn(
-              "rounded-xl w-full p-5 flex justify-between items-center h-16 transition-colors duration-300 border-b-4",
+              "rounded-xl w-full p-5 flex justify-between items-center h-22 transition-colors duration-300 border-b-4",
               currentHeaderColor.bg,
               currentHeaderColor.border
             )}

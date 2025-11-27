@@ -15,8 +15,8 @@ function OnboardingContent() {
   const { state } = useOnboarding();
   
   return (
-    <div className="min-h-screen bg-linear-to-br from-indigo-100 to-blue-100 flex flex-col items-center justify-center p-4">
-      <div className="w-full mb-8">
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
+      <div className="w-full max-w-4xl mb-8">
         <OnboardingStepper />
       </div>
 

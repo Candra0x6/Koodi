@@ -1,8 +1,7 @@
 'use client';
 
 import { useOnboarding } from '@/lib/contexts/onboarding-context';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { Button, Card, Input } from '@/components/duolingo-ui';
 import { useState } from 'react';
 
 export function SignupScreen() {
@@ -29,58 +28,61 @@ export function SignupScreen() {
   };
 
   return (
-    <Card className="w-full max-w-2xl p-8">
-      <h2 className="text-3xl font-bold text-gray-900 mb-2">Sign Up</h2>
-      <p className="text-gray-600 mb-8">Choose how you want to join</p>
+    <Card className="w-full p-8">
+      <h2 className="text-3xl font-extrabold text-foreground mb-2 text-center">Create your profile</h2>
+      <p className="text-muted-foreground mb-8 text-center font-medium">Choose how you want to join Koodi</p>
 
       <div className="space-y-4 mb-8">
         {/* Email Signup */}
-        <div className="border-2 border-gray-200 rounded-lg p-6">
-          <h3 className="font-semibold text-gray-900 mb-4">Email & Password</h3>
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg mb-3 focus:outline-none focus:ring-2 focus:ring-indigo-600"
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-600"
-          />
+        <div className="border-2 border-border rounded-3xl p-6 bg-muted/20">
+          <h3 className="font-bold text-foreground mb-4 text-lg">Email & Password</h3>
+          <div className="space-y-3 mb-4">
+            <Input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <Input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
           <Button
             onClick={handleEmailSignup}
             disabled={!email || !password}
-            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-50"
+            className="w-full"
+            variant="primary"
           >
             Continue with Email
           </Button>
         </div>
 
-        {/* Google Signup */}
-        <Button
-          onClick={handleGoogleSignup}
-          variant="outline"
-          className="w-full p-6 text-lg border-2"
-        >
-          🔵 Continue with Google
-        </Button>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Google Signup */}
+          <Button
+            onClick={handleGoogleSignup}
+            variant="outline"
+            className="w-full h-14 text-base"
+          >
+            <span className="mr-2">🔵</span> Google
+          </Button>
 
-        {/* Guest Signup */}
-        <Button
-          onClick={handleGuestSignup}
-          variant="outline"
-          className="w-full p-6 text-lg border-2"
-        >
-          👤 Continue as Guest
-        </Button>
+          {/* Guest Signup */}
+          <Button
+            onClick={handleGuestSignup}
+            variant="outline"
+            className="w-full h-14 text-base"
+          >
+            <span className="mr-2">👤</span> Guest
+          </Button>
+        </div>
       </div>
 
-      <p className="text-center text-sm text-gray-600">
-        Already have an account? <a href="/login" className="text-indigo-600 hover:underline">Login</a>
+      <p className="text-center text-sm font-bold text-muted-foreground">
+        Already have an account? <a href="/login" className="text-primary hover:underline">Login</a>
       </p>
     </Card>
   );

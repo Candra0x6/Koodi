@@ -1,8 +1,8 @@
 'use client';
 
 import { useOnboarding } from '@/lib/contexts/onboarding-context';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { Button, Card } from '@/components/duolingo-ui';
+import { cn } from '@/lib/utils';
 
 const AVATARS = [
   { id: '1', name: 'Wizard', emoji: '🧙' },
@@ -27,23 +27,24 @@ export function AvatarScreen() {
   };
 
   return (
-    <Card className="w-full max-w-2xl p-8">
-      <h2 className="text-3xl font-bold text-gray-900 mb-2">Choose Your Avatar</h2>
-      <p className="text-gray-600 mb-8">Pick a character to represent you on your journey</p>
+    <Card className="w-full p-8">
+      <h2 className="text-3xl font-extrabold text-foreground mb-2 text-center">Choose Your Avatar</h2>
+      <p className="text-muted-foreground mb-8 text-center font-medium">Pick a character to represent you on your journey</p>
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
         {AVATARS.map((avatar) => (
           <button
             key={avatar.id}
             onClick={() => handleSelectAvatar(avatar.id)}
-            className={`p-6 rounded-lg border-2 transition text-center ${
+            className={cn(
+              "p-6 rounded-2xl border-2 border-b-4 transition-all text-center group",
               state.selectedAvatarId === avatar.id
-                ? 'border-indigo-600 bg-indigo-50'
-                : 'border-gray-300 hover:border-indigo-600'
-            }`}
+                ? "border-primary bg-primary/10"
+                : "border-border hover:bg-muted/50 active:border-b-2 active:translate-y-[2px]"
+            )}
           >
-            <div className="text-5xl mb-2">{avatar.emoji}</div>
-            <div className="font-semibold text-gray-900 text-sm">{avatar.name}</div>
+            <div className="text-6xl mb-4 group-hover:scale-110 transition-transform duration-200">{avatar.emoji}</div>
+            <div className="font-bold text-foreground text-lg">{avatar.name}</div>
           </button>
         ))}
       </div>
@@ -51,7 +52,9 @@ export function AvatarScreen() {
       <Button
         onClick={handleContinue}
         disabled={!state.selectedAvatarId}
-        className="w-full bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-50"
+        className="w-full"
+        variant="primary"
+        size="lg"
       >
         Continue
       </Button>

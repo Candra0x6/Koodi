@@ -14,6 +14,7 @@ import type {
   MatchPair,
 } from "@/lib/generated/prisma/client"
 import { useRouter } from "next/navigation"
+import { useMissionProgress } from "@/lib/hooks/use-missions"
 // Type for Question with all nested relations
 type PrismaQuestion = Question & {
   codeSegments: CodeSegment[]
@@ -35,6 +36,8 @@ interface CompletionData {
 export function CodeLessonGame({ lessonId }: { lessonId: string;}) {
 
   const router = useRouter()
+  const { onQuestionAnswered, onMistakeFixed } = useMissionProgress()
+  
   // State for loading questions from database
   const [questions, setQuestions] = React.useState<PrismaQuestion[]>([])
   const [sessionId, setSessionId] = React.useState<string | null>(null)
@@ -57,7 +60,7 @@ export function CodeLessonGame({ lessonId }: { lessonId: string;}) {
 
 
   const onClose = () => {
-    router.push(`/chapters`)
+    router.push(`/dashboard`)
   }
   // Fetch questions from database (dynamic selection)
   React.useEffect(() => {
@@ -262,6 +265,16 @@ export function CodeLessonGame({ lessonId }: { lessonId: string;}) {
           sessionId,
         }),
       })
+      
+      // Update mission progress for question answered
+      if (currentQuestion.type) {
+        onQuestionAnswered(currentQuestion.type, isCorrect)
+      }
+      
+      // Track bug fixes for DEBUG_HUNT questions
+      if (currentQuestion.type === "DEBUG_HUNT" && isCorrect) {
+        onMistakeFixed()
+      }
     } catch (err) {
       console.error('Failed to save answer:', err)
     }

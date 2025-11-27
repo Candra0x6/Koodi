@@ -1,8 +1,8 @@
 'use client';
 
 import { useOnboarding, LearningGoal } from '@/lib/contexts/onboarding-context';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { Card } from '@/components/duolingo-ui';
+import { cn } from '@/lib/utils';
 
 const GOALS: { id: LearningGoal; label: string; description: string; emoji: string }[] = [
   {
@@ -34,23 +34,24 @@ export function GoalScreen() {
   };
 
   return (
-    <Card className="w-full max-w-2xl p-8">
-      <h2 className="text-3xl font-bold text-gray-900 mb-2">What's Your Goal?</h2>
-      <p className="text-gray-600 mb-8">Choose what fits you best</p>
+    <Card className="w-full p-8">
+      <h2 className="text-3xl font-extrabold text-foreground mb-2 text-center">What's Your Goal?</h2>
+      <p className="text-muted-foreground mb-8 text-center font-medium">Choose what fits you best</p>
 
-      <div className="space-y-3">
+      <div className="space-y-4">
         {GOALS.map((goal) => (
           <button
             key={goal.id}
             onClick={() => handleSelectGoal(goal.id)}
-            className="w-full p-6 border-2 border-gray-300 rounded-lg hover:border-indigo-600 hover:bg-indigo-50 transition text-left"
+            className={cn(
+              "w-full p-6 rounded-2xl border-2 border-border border-b-4 hover:bg-muted/50 active:border-b-2 active:translate-y-[2px] transition-all text-left group flex items-center gap-6",
+              "hover:border-primary/50"
+            )}
           >
-            <div className="flex items-start gap-4">
-              <div className="text-3xl">{goal.emoji}</div>
-              <div>
-                <div className="font-bold text-lg text-gray-900">{goal.label}</div>
-                <div className="text-sm text-gray-600">{goal.description}</div>
-              </div>
+            <div className="text-4xl group-hover:scale-110 transition-transform duration-200">{goal.emoji}</div>
+            <div>
+              <div className="font-bold text-xl text-foreground mb-1">{goal.label}</div>
+              <div className="text-sm text-muted-foreground font-medium">{goal.description}</div>
             </div>
           </button>
         ))}

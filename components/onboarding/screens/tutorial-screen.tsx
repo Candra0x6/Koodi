@@ -1,9 +1,9 @@
 'use client';
 
 import { useOnboarding } from '@/lib/contexts/onboarding-context';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { Button, Card } from '@/components/duolingo-ui';
 import { useState } from 'react';
+import { cn } from '@/lib/utils';
 
 const TUTORIALS = [
   {
@@ -46,30 +46,32 @@ export function TutorialScreen() {
   };
 
   return (
-    <Card className="w-full max-w-2xl p-8">
+    <Card className="w-full p-8">
       <div className="text-center">
-        <div className="text-6xl mb-6">{tutorial.emoji}</div>
-        <h2 className="text-3xl font-bold text-gray-900 mb-4">{tutorial.title}</h2>
-        <p className="text-lg text-gray-600 mb-8 max-w-md mx-auto">{tutorial.description}</p>
+        <div className="text-8xl mb-8 animate-bounce">{tutorial.emoji}</div>
+        <h2 className="text-3xl font-extrabold text-foreground mb-4">{tutorial.title}</h2>
+        <p className="text-xl text-muted-foreground mb-12 max-w-md mx-auto font-medium">{tutorial.description}</p>
 
-        <div className="flex gap-2 justify-center mb-8">
+        <div className="flex gap-3 justify-center mb-12">
           {TUTORIALS.map((_, idx) => (
             <div
               key={idx}
-              className={`h-2 rounded-full transition-all ${
-                idx === currentTutorialIndex ? 'w-8 bg-indigo-600' : 'w-2 bg-gray-300'
-              }`}
+              className={cn(
+                "h-3 rounded-full transition-all duration-300",
+                idx === currentTutorialIndex ? "w-10 bg-primary" : "w-3 bg-border"
+              )}
             />
           ))}
         </div>
 
-        <div className="flex gap-3">
-          <Button onClick={handleSkip} variant="outline" className="flex-1">
+        <div className="flex gap-4">
+          <Button onClick={handleSkip} variant="ghost" className="flex-1">
             Skip
           </Button>
           <Button
             onClick={handleNext}
-            className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white"
+            className="flex-1"
+            variant="primary"
           >
             {isLastTutorial ? 'Finish' : 'Next'}
           </Button>

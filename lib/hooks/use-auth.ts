@@ -2,12 +2,16 @@
 
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
-import { User } from '../generated/prisma/client';
+import { User, Language } from '../generated/prisma/client';
 
+// Extended user type with relations
+interface UserWithLanguage extends User {
+  selectedLanguage?: Language | null;
+}
 
 export function useAuth() {
   const { data: session, status } = useSession();
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserWithLanguage | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

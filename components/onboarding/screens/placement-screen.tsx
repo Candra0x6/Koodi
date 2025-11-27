@@ -1,9 +1,9 @@
 'use client';
 
 import { useOnboarding } from '@/lib/contexts/onboarding-context';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { Button, Card, ProgressBar } from '@/components/duolingo-ui';
 import { useState, useEffect } from 'react';
+import { cn } from '@/lib/utils';
 
 interface PlacementQuestion {
   id: string;
@@ -39,8 +39,8 @@ export function PlacementTestScreen() {
 
   if (loading) {
     return (
-      <Card className="w-full max-w-2xl p-8 text-center">
-        <p className="text-gray-600">Loading placement test...</p>
+      <Card className="w-full p-8 text-center">
+        <p className="text-muted-foreground font-bold animate-pulse">Loading placement test...</p>
       </Card>
     );
   }
@@ -48,10 +48,10 @@ export function PlacementTestScreen() {
   if (questions.length === 0) {
     // No questions, skip to next step
     return (
-      <Card className="w-full max-w-2xl p-8">
-        <h2 className="text-3xl font-bold text-gray-900 mb-4">Ready to code?</h2>
-        <p className="text-gray-600 mb-8">Let's set up your avatar and you're all set!</p>
-        <Button onClick={nextStep} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white">
+      <Card className="w-full p-8 text-center">
+        <h2 className="text-3xl font-extrabold text-foreground mb-4">Ready to code?</h2>
+        <p className="text-muted-foreground mb-8 font-medium">Let's set up your avatar and you're all set!</p>
+        <Button onClick={nextStep} className="w-full" variant="primary">
           Continue
         </Button>
       </Card>
@@ -92,35 +92,36 @@ export function PlacementTestScreen() {
     : [];
 
   return (
-    <Card className="w-full max-w-2xl p-8">
-      <div className="mb-6">
-        <div className="flex justify-between items-center mb-2">
-          <h2 className="text-2xl font-bold text-gray-900">Quick Placement Test</h2>
-          <span className="text-sm text-gray-600">
-            {currentQuestionIndex + 1} of {questions.length}
+    <Card className="w-full p-8">
+      <div className="mb-8">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-extrabold text-foreground">Quick Placement Test</h2>
+          <span className="text-sm font-bold text-muted-foreground">
+            {currentQuestionIndex + 1} / {questions.length}
           </span>
         </div>
-        <div className="w-full bg-gray-200 rounded-full h-2">
-          <div
-            className="bg-indigo-600 h-2 rounded-full transition-all"
-            style={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}
-          />
-        </div>
+        <ProgressBar 
+          value={currentQuestionIndex + 1} 
+          max={questions.length} 
+          color="bg-primary"
+          className="h-4"
+        />
       </div>
 
       <div className="mb-8">
-        <h3 className="text-lg font-semibold text-gray-900 mb-6">{currentQuestion.content}</h3>
+        <h3 className="text-xl font-bold text-foreground mb-6">{currentQuestion.content}</h3>
 
         <div className="space-y-3">
           {choices.map((choice: string, idx: number) => (
             <button
               key={idx}
               onClick={() => handleAnswerQuestion(choice)}
-              className={`w-full p-4 border-2 rounded-lg transition text-left font-medium ${
+              className={cn(
+                "w-full p-4 rounded-2xl border-2 border-b-4 transition-all text-left font-bold text-lg",
                 answers[currentQuestion.id] === choice
-                  ? 'border-indigo-600 bg-indigo-50'
-                  : 'border-gray-300 hover:border-indigo-600'
-              }`}
+                  ? "border-primary bg-primary/10 text-primary"
+                  : "border-border hover:bg-muted/50 active:border-b-2 active:translate-y-[2px]"
+              )}
             >
               {choice}
             </button>
@@ -128,18 +129,19 @@ export function PlacementTestScreen() {
         </div>
       </div>
 
-      <div className="flex gap-3">
+      <div className="flex gap-4">
+        {showSkip && (
+          <Button onClick={handleSkip} variant="ghost" className="flex-1">
+            Skip Test
+          </Button>
+        )}
         {isLastQuestion && hasAnsweredAll && (
           <Button
             onClick={handleComplete}
-            className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white"
+            className="flex-1"
+            variant="primary"
           >
             Complete Test
-          </Button>
-        )}
-        {showSkip && (
-          <Button onClick={handleSkip} variant="outline" className="flex-1">
-            Skip Test
           </Button>
         )}
       </div>

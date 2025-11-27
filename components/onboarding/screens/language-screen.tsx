@@ -1,9 +1,9 @@
 'use client';
 
 import { useOnboarding } from '@/lib/contexts/onboarding-context';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { Card } from '@/components/duolingo-ui';
 import { useEffect, useState } from 'react';
+import { cn } from '@/lib/utils';
 
 interface Language {
   id: string;
@@ -46,31 +46,34 @@ export function LanguageScreen() {
   if (loading) {
     return (
       <Card className="w-full max-w-2xl p-8 text-center">
-        <p className="text-gray-600">Loading languages...</p>
+        <p className="text-muted-foreground font-bold animate-pulse">Loading languages...</p>
       </Card>
     );
   }
 
   return (
-    <Card className="w-full max-w-2xl p-8">
-      <h2 className="text-3xl font-bold text-gray-900 mb-2">Choose Your Language</h2>
-      <p className="text-gray-600 mb-8">Pick a language to start learning (Python recommended for beginners)</p>
+    <Card className="w-full p-8">
+      <h2 className="text-3xl font-extrabold text-foreground mb-2 text-center">Choose Your Language</h2>
+      <p className="text-muted-foreground mb-8 text-center font-medium">Pick a language to start learning</p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {languages.map((lang) => (
           <button
             key={lang.id}
             onClick={() => handleSelectLanguage(lang)}
-            className="p-6 border-2 border-gray-300 rounded-lg hover:border-indigo-600 hover:bg-indigo-50 transition text-left"
+            className={cn(
+              "p-6 rounded-2xl border-2 border-border border-b-4 hover:bg-muted/50 active:border-b-2 active:translate-y-[2px] transition-all text-left group",
+              "hover:border-primary/50"
+            )}
           >
-            <div className="text-4xl mb-2">
+            <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-200">
               {lang.slug === 'python' && '🐍'}
               {lang.slug === 'javascript' && '⚡'}
               {lang.slug === 'java' && '☕'}
               {lang.slug === 'cpp' && '⚙️'}
             </div>
-            <div className="font-bold text-lg text-gray-900">{lang.name}</div>
-            <div className="text-sm text-gray-600 mt-2">
+            <div className="font-bold text-xl text-foreground mb-1">{lang.name}</div>
+            <div className="text-sm text-muted-foreground font-medium">
               {lang.slug === 'python' && 'Perfect for beginners'}
               {lang.slug === 'javascript' && 'Great for web development'}
               {lang.slug === 'java' && 'Strong fundamentals'}
