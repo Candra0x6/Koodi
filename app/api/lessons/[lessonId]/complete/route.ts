@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@/lib/generated/prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { auth } from '@/auth';
+import { MissionEngine } from '@/lib/services/mission-engine';
 
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL,
@@ -241,6 +242,36 @@ export async function POST(request: NextRequest) {
           });
         }
       }
+    }
+
+    // ====== MISSION PROGRESS UPDATES ======
+    try {
+      // Ensure missions exist for the user before updating progress
+      await MissionEngine.generateDailyMissions(userId);
+      await MissionEngine.generateWeeklyMissions(userId);
+
+      // Update mission progress for XP gained
+      await MissionEngine.updateProgress(userId, {
+        type: 'XP_GAINED',
+        amount: xpEarned,
+      });
+
+      // Update mission progress for lesson completed
+      await MissionEngine.updateProgress(userId, {
+        type: 'LESSON_COMPLETED',
+        lessonType: lesson.targetDifficulty,
+      });
+
+      // Update mission progress for streak
+      if (newStreak > 0) {
+        await MissionEngine.updateProgress(userId, {
+          type: 'STREAK_UPDATED',
+          streakCount: newStreak,
+        });
+      }
+    } catch (missionError) {
+      // Log but don't fail the request if mission update fails
+      console.error('Error updating mission progress:', missionError);
     }
 
     return NextResponse.json({
