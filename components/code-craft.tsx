@@ -237,7 +237,7 @@ export function CodeCraft({ onClose }: { onClose: () => void }) {
                     </div>
                     <Button
                       size="sm"
-                      variant={canCraft ? "primary" : "disabled"}
+                      variant={canCraft ? "primary" : "secondary"}
                       className={canCraft ? "bg-green-600 border-green-800 hover:bg-green-500" : "opacity-50"}
                       onClick={() => craftItem(recipe)}
                       disabled={!canCraft}

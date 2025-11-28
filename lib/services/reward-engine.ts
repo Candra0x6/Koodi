@@ -101,7 +101,7 @@ export const RewardEngine = {
   async claimMissionReward(
     userId: string,
     missionId: string
-  ): Promise<{ success: boolean; error?: string }> {
+  ): Promise<{ success: boolean; error?: string; reward?: MissionRewardData }> {
     // Get the mission with its reward
     const mission = await prisma.mission.findUnique({
       where: { id: missionId },
@@ -147,7 +147,17 @@ export const RewardEngine = {
       },
     });
 
-    return { success: true };
+    return { 
+      success: true,
+      reward: {
+        xp: mission.reward.xp,
+        gems: mission.reward.gems,
+        hearts: mission.reward.hearts,
+        streakFreeze: mission.reward.streakFreeze,
+        xpBooster: mission.reward.xpBooster,
+        items: mission.reward.items,
+      }
+    };
   },
 
   /**

@@ -105,3 +105,10 @@ Should become:
 - [x] Configure environment variables
 - [x] Implement database schema
 ```
+
+
+## TODO
+- [x] Navbar Responsive
+- [x] Guest user on Boarding
+- [x] Animate Reward claim /Improve the UI
+- [ ] Course add selection (UI & FUNCTIONALITY)

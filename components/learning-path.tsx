@@ -19,6 +19,8 @@ export interface LevelNode {
   position?: number // -1 (left) to 1 (right)
   title?: string
   lessonId?: string // ID of first incomplete lesson to navigate to
+  lessonIndex?: number // Index of first incomplete lesson
+  levelIndex?: number // Index of level in the path
 }
 
 export interface UnitData {
@@ -80,7 +82,7 @@ const PathNode = ({
       : "border-[#46a302]" // Darker yellow
 
   const iconColor = isActive ? "text-white" : isLocked ? "text-[#afafaf]" : "text-white"
-
+  console.log(level)
   return (
     <div
       className="absolute flex justify-center items-center w-full"
@@ -88,7 +90,7 @@ const PathNode = ({
     >
       <div className="relative z-10" style={{ transform: `translateX(${xOffset}px)` }}>
         {/* Floating Start Tooltip for Active Node isActive and first lesson and chapter */}
-        {isActive && level.position === -1 && index === 0 && (
+        {isActive && index === 0 && (level.levelIndex ?? 0) === 1  && (
           <motion.div
             initial={{ y: -10, opacity: 0 }}
             animate={{ y: [0, -8, 0], opacity: 1 }}
@@ -105,7 +107,7 @@ const PathNode = ({
         
         {
 
-          index === 0 && level.status === "active"  && (
+          index === 0 && level.status === "active"  && (level.levelIndex ?? 0) > 1 && (
             
            <motion.div
             initial={{ y: -10, opacity: 0 }}
@@ -116,7 +118,7 @@ const PathNode = ({
             }}
             className="absolute -top-12 left-1/2 -translate-x-1/2 bg-white text-[#58cc02] font-extrabold text-sm py-2 px-3 rounded-xl shadow-lg border-2 border-border uppercase tracking-widest whitespace-nowrap z-20"
           >
-            Skip
+            Skip 
             <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 w-3 h-3 bg-white border-r-2 border-b-2 border-border rotate-45 transform" />
           </motion.div>
         )
@@ -145,7 +147,7 @@ const PathNode = ({
             transition={isActive ? { repeat: Number.POSITIVE_INFINITY, duration: 0.5, ease: "linear", repeatDelay: 1.5 } : {}}
             whileTap={!isLocked ? { scale: 0.95, y: 4 } : {}}
             className={cn(
-              "w-21 h-20 rounded-full flex items-center justify-center transition-colors duration-200  p-2",
+              "w-21 h-20 rounded-full active:translate-y-[4px] active:border-b-0 flex items-center justify-center transition-colors duration-500 p-2",
               bgColor,
               `border-b-8 ${borderColor}`,
               isActive ? "shadow-[0_0_0_8px_rgba(255,255,255,0.5)]" : "",
@@ -170,7 +172,7 @@ const PathNode = ({
                   // Jumping Star animation for active lesson rotated, make delay every loop
                   <motion.div className="" animate={{ y:[0, -6, 0]}} transition={{ repeat: Number.POSITIVE_INFINITY, duration: 2.5, ease: "linear", repeatDelay: 0.5 }}>
 
-{          index !== 0 ?          <Star className="w-8 h-8 text-white fill-white" /> : <FastForward className="h-8 w-8 text-white fill-white" />
+{          index === 0 && (level.levelIndex ?? 0) < 2 ?          <Star className="w-8 h-8 text-white fill-white" /> : <FastForward className="h-8 w-8 text-white fill-white" />
 }                  </motion.div>
                 ) : level.status === "locked" ? (
                   <Lock className="w-6 h-6 text-[#afafaf]" strokeWidth={3} />
@@ -193,9 +195,6 @@ const PathNode = ({
             animate={{ y: [0, -5, 0] }}
             transition={{ repeat: Number.POSITIVE_INFINITY, duration: 3, ease: "easeInOut" }}
           >
-            <div className="relative w-24 h-24 opacity-30 grayscale">
-              <Image src="/majestic-owl.png" alt="Duo" width={96} height={96} className="object-contain" />
-            </div>
             <div className="flex gap-1 justify-center mt-2 opacity-30">
               <Star className="w-4 h-4 fill-gray-300 text-gray-300" />
               <Star className="w-4 h-4 fill-gray-300 text-gray-300" />
@@ -303,9 +302,8 @@ export const LearningPath = ({
   
   // Calculate X offset for the button (same formula as in PathNode)
   const buttonXOffset = openLevelIndex >= 0 ? Math.sin(openLevelIndex * 0.8) * PATH_AMPLITUDE : 0
-
   return (
-    <div className="relative w-full max-w-[300px] mx-auto" style={{ height: totalHeight }}>
+    <div className={`relative w-full max-w-[300px] mx-auto ${unit.levels[0]?.levelIndex !== 1 ? "" : "mt-20"}`} style={{ height: totalHeight }}>
       {/* SVG Path Background (gray) */}
       <svg
         className="absolute top-0 left-0 w-full h-full pointer-events-none z-0 overflow-visible"

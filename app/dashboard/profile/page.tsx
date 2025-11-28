@@ -3,10 +3,12 @@
 import React, { useEffect, useState } from "react"
 import { useAuth } from "@/lib/hooks/use-auth"
 import { Card, Button } from "@/components/duolingo-ui"
-import { User, Calendar, Zap, Gem, Heart, Trophy, Clock, Loader2 } from "lucide-react"
+import { User, Calendar, Zap, Gem, Heart, Trophy, Clock, Loader2, Edit2 } from "lucide-react"
 import { motion } from "framer-motion"
 import Image from "next/image"
 import { format } from "date-fns"
+import { ProfileEditForm } from "@/components/profile/profile-edit-form"
+import { User as PrismaUser } from "@/lib/generated/prisma/client"
 
 interface RewardHistoryItem {
   id: string
@@ -33,6 +35,14 @@ export default function ProfilePage() {
   const { user, isLoading: authLoading } = useAuth()
   const [rewardsData, setRewardsData] = useState<RewardsData | null>(null)
   const [loadingRewards, setLoadingRewards] = useState(true)
+  const [showEditForm, setShowEditForm] = useState(false)
+  const [displayUser, setDisplayUser] = useState<PrismaUser | null>(null)
+
+  useEffect(() => {
+    if (user) {
+      setDisplayUser(user)
+    }
+  }, [user])
 
   useEffect(() => {
     const fetchRewards = async () => {
@@ -56,6 +66,10 @@ export default function ProfilePage() {
     }
   }, [user, authLoading])
 
+  const handleEditSuccess = (updatedUser: PrismaUser) => {
+    setDisplayUser(updatedUser)
+  }
+
   if (authLoading || loadingRewards) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -64,7 +78,7 @@ export default function ProfilePage() {
     )
   }
 
-  if (!user) {
+  if (!user || !displayUser) {
     return (
       <div className="text-center py-20">
         <h2 className="text-2xl font-bold text-gray-700">Please sign in to view your profile</h2>
@@ -72,30 +86,55 @@ export default function ProfilePage() {
     )
   }
 
-  const joinDate = new Date(user.createdAt).toLocaleDateString("en-US", {
+  const joinDate = new Date(displayUser.createdAt).toLocaleDateString("en-US", {
     month: "long",
     year: "numeric",
   })
 
   return (
     <div className="max-w-4xl mx-auto pb-20 space-y-8">
+      {/* Edit Form Modal */}
+      {showEditForm && displayUser && (
+        <ProfileEditForm 
+          user={displayUser}
+          onClose={() => setShowEditForm(false)}
+          onSuccess={handleEditSuccess}
+        />
+      )}
+
       {/* Profile Header */}
       <div className="flex justify-between items-start border-b-2 border-gray-200 pb-8">
-        <div className="space-y-1">
-          <h1 className="text-3xl font-extrabold text-gray-700">{user.username}</h1>
-          <p className="text-gray-500 font-medium">{user.email}</p>
+        <div className="space-y-1 flex-1">
+          <h1 className="text-3xl font-extrabold text-gray-700">{displayUser.username}</h1>
+          <p className="text-gray-500 font-medium">
+            {displayUser.email || <span className="text-orange-500">(No email set)</span>}
+          </p>
+          {displayUser.isGuest && (
+            <p className="text-orange-500 font-bold text-sm">👤 Guest Account</p>
+          )}
           <div className="text-gray-400 font-medium text-sm pt-1">
             Joined {joinDate}
           </div>
         </div>
-        <div className="bg-white border-2 border-gray-200 rounded-xl p-2 shadow-sm">
-             <Image 
+        <div className="flex flex-col gap-3 items-end">
+          <Button
+            onClick={() => setShowEditForm(true)}
+            variant="primary"
+            size="sm"
+            className="flex items-center gap-2"
+          >
+            <Edit2 className="w-4 h-4" />
+            {displayUser.isGuest ? 'Complete Account' : 'Edit Profile'}
+          </Button>
+          <div className="bg-white border-2 border-gray-200 rounded-xl p-2 shadow-sm">
+            <Image 
               src="/diverse-flags.png" 
               alt="Language" 
               width={32} 
               height={32} 
               className="rounded-sm"
             />
+          </div>
         </div>
       </div>
 
@@ -107,7 +146,7 @@ export default function ProfilePage() {
           <div className="border-2 border-gray-200 rounded-2xl p-4 flex items-center gap-4">
              <div className="text-orange-500"><Zap className="w-6 h-6 fill-current" /></div>
              <div>
-                <div className="text-xl font-bold text-gray-700">{user.streak}</div>
+                <div className="text-xl font-bold text-gray-700">{displayUser.streak}</div>
                 <div className="text-gray-400 text-sm font-bold uppercase">Day Streak</div>
              </div>
           </div>
@@ -116,7 +155,7 @@ export default function ProfilePage() {
           <div className="border-2 border-gray-200 rounded-2xl p-4 flex items-center gap-4">
              <div className="text-yellow-500"><Zap className="w-6 h-6 fill-current" /></div>
              <div>
-                <div className="text-xl font-bold text-gray-700">{user.xp}</div>
+                <div className="text-xl font-bold text-gray-700">{displayUser.xp}</div>
                 <div className="text-gray-400 text-sm font-bold uppercase">Total XP</div>
              </div>
           </div>
@@ -134,7 +173,7 @@ export default function ProfilePage() {
           <div className="border-2 border-gray-200 rounded-2xl p-4 flex items-center gap-4">
              <div className="text-red-500"><Heart className="w-6 h-6 fill-current" /></div>
              <div>
-                <div className="text-xl font-bold text-gray-700">{user.hearts}</div>
+                <div className="text-xl font-bold text-gray-700">{displayUser.hearts}</div>
                 <div className="text-gray-400 text-sm font-bold uppercase">Hearts</div>
              </div>
           </div>

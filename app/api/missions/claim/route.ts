@@ -36,6 +36,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       message: "Reward claimed successfully",
+      rewards: result.reward,
     });
   } catch (error) {
     console.error("Error claiming mission reward:", error);

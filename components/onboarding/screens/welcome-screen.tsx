@@ -2,9 +2,60 @@
 
 import { useOnboarding } from '@/lib/contexts/onboarding-context';
 import { Button, Card } from '@/components/duolingo-ui';
+import { signIn } from 'next-auth/react';
+import { useState } from 'react';
 
 export function WelcomeScreen() {
-  const { nextStep } = useOnboarding();
+  const { updateState, goToStep } = useOnboarding();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleGetStarted = () => {
+    goToStep('signup');
+  };
+
+  const handleContinueAsGuest = async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      // Create guest user via API
+      const res = await fetch('/api/auth/guest', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || 'Failed to create guest account');
+      }
+
+      const data = await res.json();
+
+      // Sign in as guest using NextAuth
+      const signInResult = await signIn('guest', {
+        userId: data.userId,
+        redirect: false,
+      });
+
+      if (signInResult?.error) {
+        throw new Error('Failed to sign in as guest');
+      }
+
+      // Update onboarding state and skip signup
+      updateState({ 
+        authMethod: 'guest',
+        userId: data.userId,
+      });
+      
+      // Skip signup screen, go directly to language selection
+      goToStep('language');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <Card className="w-full p-12 text-center">
@@ -13,14 +64,49 @@ export function WelcomeScreen() {
       <p className="text-xl text-muted-foreground mb-8 max-w-md mx-auto font-medium">
         Learn to code with fun, interactive lessons and gamified challenges. Start your coding journey today!
       </p>
-      <Button
-        onClick={nextStep}
-        size="lg"
-        variant="super"
-        className="w-full sm:w-auto px-12 text-lg"
-      >
-        Let's Get Started
-      </Button>
+
+      {error && (
+        <div className="bg-red-50 border-2 border-red-200 text-red-700 px-4 py-3 rounded-2xl mb-6 font-bold">
+          {error}
+        </div>
+      )}
+
+      <div className="space-y-4">
+        <Button
+          onClick={handleGetStarted}
+          size="lg"
+          variant="super"
+          className="w-full sm:w-auto px-12 text-lg"
+        >
+          Let's Get Started
+        </Button>
+        
+        <div className="flex items-center gap-4 my-4">
+          <div className="flex-1 h-px bg-border" />
+          <span className="text-muted-foreground font-medium text-sm">or</span>
+          <div className="flex-1 h-px bg-border" />
+        </div>
+
+        <Button
+          onClick={handleContinueAsGuest}
+          disabled={isLoading}
+          size="lg"
+          variant="outline"
+          className="w-full sm:w-auto px-12 text-lg"
+        >
+          {isLoading ? (
+            <>
+              <span className="mr-2 animate-spin">⏳</span>
+              Creating guest account...
+            </>
+          ) : (
+            <>
+              <span className="mr-2">👤</span>
+              Continue as Guest
+            </>
+          )}
+        </Button>
+      </div>
     </Card>
   );
 }

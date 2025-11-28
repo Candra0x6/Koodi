@@ -356,7 +356,7 @@ export function CodeCrush({ onClose }: { onClose: () => void }) {
                 <span className="font-medium">Target: {targetScore}</span>
                 <span className="font-medium">{Math.round((score / targetScore) * 100)}%</span>
               </div>
-              <ProgressBar progress={(score / targetScore) * 100} variant="success" />
+              <ProgressBar value={(score / targetScore) * 100} color="bg-green-500" />
             </div>
 
             {/* Power-ups */}

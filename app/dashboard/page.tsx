@@ -2,13 +2,15 @@
 
 import { Suspense, useEffect, useState, useRef } from "react"
 import { cn } from "@/lib/utils"
-import { Home, Zap, Target, Shield, User, Bell, Lock, ChevronLeft, ChevronRight, Loader2, Laptop, Book } from "lucide-react"
+import { Home, Zap, Target, Shield, User, Bell, Lock, ChevronLeft, ChevronRight, Loader2, Laptop, Book, Trophy } from "lucide-react"
 import { UnitHeader, type UnitData, type LevelNode, type LevelStatus, LearningPath } from "@/components/learning-path"
 import { useAuth } from "@/lib/hooks/use-auth"
 import Image from "next/image"
 import type { LucideIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { motion, AnimatePresence } from "framer-motion"
+import { usePathname } from "next/navigation"
+import BottomNavigation from "@/components/navigation/bottom-navigation-mobile"
 
 // --- Types ---
 
@@ -76,7 +78,11 @@ function buildUnitData(unit: Unit, chapterTitle: string, color: string): UnitDat
     title: unit.title,
     description: chapterTitle,
     color: color,
-    levels: transformLessonsToLevels(unit.lessons),
+    levels: transformLessonsToLevels(unit.lessons).map((level, index) => ({
+      ...level,
+      lessonIndex: index,
+      levelIndex: unit.unitIndex,
+    })),
   }
 }
 
@@ -93,83 +99,7 @@ const UNIT_COLORS = [
 
 // --- Components ---
 
-interface TopBarProps {
-  streak: number
-  xp: number
-  hearts: number
-}
 
-const TopBar = ({ streak, xp, hearts }: TopBarProps) => (
-  <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur border-b-2 border-border h-16">
-    <div className="container max-w-md mx-auto h-full flex items-center justify-between px-4">
-      {/* Language Flag */}
-      <div className="cursor-pointer hover:bg-muted p-2 rounded-xl transition-colors">
-        <div className="relative w-8 h-6 overflow-hidden rounded-md ring-2 ring-border">
-          <Image
-            src="/diverse-flags.png"
-            alt="Language"
-            width={32}
-            height={24}
-            className="object-cover"
-            style={{ objectPosition: "0 0" }}
-          />
-        </div>
-      </div>
-
-      {/* Stats */}
-      <div className="flex items-center gap-2">
-        <div className="flex items-center gap-1.5 text-orange-500 font-bold px-2 py-1 hover:bg-muted rounded-xl cursor-pointer">
-          <Zap className="w-5 h-5 fill-current" />
-          <span>{streak}</span>
-        </div>
-        <div className="flex items-center gap-1.5 text-blue-400 font-bold px-2 py-1 hover:bg-muted rounded-xl cursor-pointer">
-          <div className="w-5 h-5 rounded-md border-2 border-blue-400 bg-blue-400/20" />
-          <span>{xp}</span>
-        </div>
-        <div className="flex items-center gap-1.5 text-red-500 font-bold px-2 py-1 hover:bg-muted rounded-xl cursor-pointer">
-          <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current">
-            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-          </svg>
-          <span>{hearts}</span>
-        </div>
-      </div>
-    </div>
-  </header>
-)
-
-const BottomNav = () => (
-  <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t-2 border-border h-20 pb-4">
-    <div className="container max-w-md mx-auto h-full flex items-center justify-between px-2">
-      <NavItem icon={Home} active />
-      <NavItem icon={Target} />
-      <NavItem icon={Shield} />
-      <NavItem icon={User} />
-      <NavItem icon={Bell} />
-    </div>
-  </nav>
-)
-
-const NavItem = ({ icon: Icon, active }: { icon: LucideIcon; active?: boolean }) => (
-  <button className="flex-1 h-full flex items-center justify-center p-2 relative group">
-    {active && (
-      <div className="absolute top-2 bottom-2 left-2 right-2 bg-blue-50/50 rounded-xl border-2 border-blue-200 pointer-events-none" />
-    )}
-    <Icon
-      className={cn(
-        "w-7 h-7 transition-colors",
-        active ? "text-blue-500 fill-blue-500" : "text-muted-foreground group-hover:text-blue-400",
-      )}
-      strokeWidth={2.5}
-    />
-  </button>
-)
-
-interface ChapterNavigationProps {
-  currentIndex: number
-  totalChapters: number
-  onPrev: () => void
-  onNext: () => void
-}
 
 interface UnitSectionProps {
   unit: Unit
@@ -186,24 +116,23 @@ const UnitSection = ({ unit, chapterTitle, unitIndex, languageId, onLessonClick,
 
   return (
     <>
-    <div className="flex px-10 space-x-10 items-center justify-center">
+      <div className="flex px-10 space-x-10 items-center justify-center">
 
-
-    <div className={`px-4 h-2 bg-gray-400 rounded-full flex-1 ${unit.unitIndex === 1 ? "hidden" : ""}`} />
-    <h1 className=" text-center ">{ unit.unitIndex === 1? "":unit.title }</h1>
-    <div className={`px-4 h-2 bg-gray-400 rounded-full flex-1 ${unit.unitIndex === 1 ? "hidden" : ""}`} />
-    </div>
-    <div ref={setRef} className={`pt-8 pb-12`} data-unit-index={unitIndex} data-chapter-title={chapterTitle}>
-      
-      {/* Learning Path */}
-      <div className={`flex justify-center ${unitIndex !== 0 ? "mt-20" : ""}`}>
-        <LearningPath unit={unitData} onLevelClick={(level) => {
-          if (level.lessonId) {
-            onLessonClick(level.lessonId)
-          }
-        }} />
+        <div className={`px-4 h-2 bg-gray-300 rounded-full flex-1 ${unit.unitIndex === 1 ? "hidden" : ""}`} />
+        <h1 className=" text-center font-black ">{unit.unitIndex === 1 ? "" : unit.title}</h1>
+        <div className={`px-4 h-2 bg-gray-300 rounded-full flex-1 ${unit.unitIndex === 1 ? "hidden" : ""}`} />
       </div>
-    </div>
+      <div ref={setRef} className={`pt-8 pb-12`} data-unit-index={unitIndex} data-chapter-title={chapterTitle}>
+
+        {/* Learning Path */}
+        <div className={`flex justify-center ${unitIndex !== 0 ? "mt-20" : ""}`}>
+          <LearningPath unit={unitData} onLevelClick={(level) => {
+            if (level.lessonId) {
+              onLessonClick(level.lessonId)
+            }
+          }} />
+        </div>
+      </div>
     </>
   )
 }
@@ -213,13 +142,13 @@ const UnitSection = ({ unit, chapterTitle, unitIndex, languageId, onLessonClick,
 function LearnContent() {
   const { user, isLoading: authLoading } = useAuth()
   const languageId = user?.selectedLanguageId || ""
-
+  const pathname = usePathname()
   const [chapters, setChapters] = useState<Chapter[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [currentChapterIndex, setCurrentChapterIndex] = useState(0)
   const [isChapterListOpen, setIsChapterListOpen] = useState(false)
-  
+
   // State for sticky header
   const [activeUnit, setActiveUnit] = useState<{
     unitIndex: number
@@ -275,17 +204,17 @@ function LearnContent() {
       // Find the unit that is currently active (closest to top but not fully scrolled past)
       // We want the unit whose top is <= headerOffset (e.g. 120px)
       // But we want the *last* such unit.
-      
+
       const headerOffset = 140 // Adjust based on header height + sticky offset
-      
+
       let currentActiveIndex = -1
-      
+
       for (let i = 0; i < unitRefs.current.length; i++) {
         const ref = unitRefs.current[i]
         if (!ref) continue
-        
+
         const rect = ref.getBoundingClientRect()
-        
+
         // If the top of the unit is above the "trigger line", it's a candidate
         if (rect.top <= headerOffset) {
           currentActiveIndex = i
@@ -303,8 +232,8 @@ function LearnContent() {
         // Let's recalculate for simplicity or use data attributes
         const ref = unitRefs.current[currentActiveIndex]
         if (ref) {
-           // We can't easily get data from DOM unless we put it there.
-           // Better to compute the flattened list of units first.
+          // We can't easily get data from DOM unless we put it there.
+          // Better to compute the flattened list of units first.
         }
       }
     }
@@ -318,18 +247,18 @@ function LearnContent() {
 
   // Get units for current chapter
   const displayedUnits = currentChapter ? currentChapter.units.map((unit) => ({
-      ...unit,
-      chapterTitle: currentChapter.title,
-      chapterLevel: currentChapter.levelIndex
-    })) : []
+    ...unit,
+    chapterTitle: currentChapter.title,
+    chapterLevel: currentChapter.levelIndex
+  })) : []
 
   // Update active unit based on scroll
   useEffect(() => {
     const handleScroll = () => {
       const headerOffset = 180 // Sticky header bottom position approx
-      
+
       let activeIndex = 0
-      
+
       unitRefs.current.forEach((ref, index) => {
         if (ref) {
           const rect = ref.getBoundingClientRect()
@@ -338,11 +267,11 @@ function LearnContent() {
           }
         }
       })
-      
+
       if (displayedUnits[activeIndex]) {
         const unit = displayedUnits[activeIndex]
         const color = UNIT_COLORS[activeIndex % UNIT_COLORS.length]
-        
+
         setActiveUnit({
           unitIndex: activeIndex + 1,
           chapterTitle: unit.chapterTitle,
@@ -355,9 +284,9 @@ function LearnContent() {
     window.addEventListener("scroll", handleScroll)
     // Initial set
     if (displayedUnits.length > 0 && !activeUnit) {
-        handleScroll()
+      handleScroll()
     }
-    
+
     return () => window.removeEventListener("scroll", handleScroll)
   }, [displayedUnits, activeUnit])
 
@@ -440,14 +369,13 @@ function LearnContent() {
   }
 
   const currentHeaderColor = activeUnit?.color || UNIT_COLORS[0]
-
   return (
     <div className="min-h-screen bg-background pb-32">
-      
+
       <div className="max-w-full mx-auto bg-background min-h-screen relative">
         {/* Sticky Chapter Header and Navigation */}
         <div className="sticky top-16 z-40">
-          <Button 
+          <Button
             onClick={() => setIsChapterListOpen(!isChapterListOpen)}
             className={cn(
               "rounded-xl w-full p-5 flex justify-between items-center h-22 transition-colors duration-300 border-b-4",
@@ -496,8 +424,8 @@ function LearnContent() {
                         }}
                         className={cn(
                           "w-full text-left p-4 rounded-xl transition-all border-2 border-transparent hover:bg-muted flex items-center gap-4 group",
-                          currentChapterIndex === index 
-                            ? "bg-blue-50 border-blue-200" 
+                          currentChapterIndex === index
+                            ? "bg-blue-50 border-blue-200"
                             : "hover:border-border"
                         )}
                       >
@@ -550,7 +478,6 @@ function LearnContent() {
         </div>
       </div>
 
-      <BottomNav />
     </div>
   )
 }

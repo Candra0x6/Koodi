@@ -20,32 +20,19 @@ export async function POST(request: NextRequest) {
       learningGoal,
       avatarId,
       placementTestScore,
-      authMethod,
-      email,
-      password,
     } = body;
 
     let user;
     let userId: string;
 
-    // If guest user creating account
-    if (authMethod === 'guest' && email && password) {
-      user = await prisma.user.create({
-        data: {
-          email,
-          username: email.split('@')[0],
-          password,
-          selectedLanguageId,
-          learningGoal,
-          avatarId,
-          placementTestScore,
-          onboardingCompleted: true,
-          isGuest: false,
-        },
+    if (session?.user?.id) {
+      // Get current user to check if they're a guest
+      const existingUser = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { isGuest: true },
       });
-      userId = user.id;
-    } else if (session?.user?.id) {
-      // If already authenticated, update existing user
+
+      // Update existing user (works for both guest and regular users)
       user = await prisma.user.update({
         where: { id: session.user.id },
         data: {
@@ -54,7 +41,7 @@ export async function POST(request: NextRequest) {
           avatarId,
           placementTestScore,
           onboardingCompleted: true,
-          isGuest: false,
+          // Keep isGuest status as-is (guest users stay guest until they add email/password)
         },
       });
       userId = user.id;

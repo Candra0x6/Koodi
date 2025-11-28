@@ -63,7 +63,7 @@ export function CodeRunner({ onClose }: { onClose: () => void }) {
   const [shieldActive, setShieldActive] = useState(false)
   const [multiplier, setMultiplier] = useState(1)
 
-  const requestRef = useRef<number>()
+  const requestRef = useRef<number | undefined>(undefined)
   const lastSpawnTime = useRef<number>(0)
   const scoreRef = useRef(0)
 

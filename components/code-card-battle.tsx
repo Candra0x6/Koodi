@@ -123,7 +123,7 @@ export function CodeCardBattle({ onClose }: { onClose: () => void }) {
   }, [])
 
   const drawCards = (count: number) => {
-    const newCards = []
+    const newCards: Array<Card & { id: string }> = []
     for (let i = 0; i < count; i++) {
       const randomCard = CARDS[Math.floor(Math.random() * CARDS.length)]
       newCards.push({ ...randomCard, id: `${randomCard.id}-${Date.now()}-${i}` })
@@ -253,7 +253,7 @@ export function CodeCardBattle({ onClose }: { onClose: () => void }) {
 
               {/* Health Bar */}
               <div className="w-full max-w-md">
-                <ProgressBar progress={(enemyHealth / currentEnemy.maxHealth) * 100} variant="danger" />
+                <ProgressBar value={(enemyHealth / currentEnemy.maxHealth) * 100} color="bg-red-500" />
               </div>
             </div>
 
@@ -344,7 +344,7 @@ export function CodeCardBattle({ onClose }: { onClose: () => void }) {
             <h2 className="text-4xl font-bold text-red-600">Defeated!</h2>
             <p className="text-xl text-muted-foreground">The bugs won this time...</p>
             <div className="flex gap-4">
-              <Button variant="danger" size="lg" onClick={handleRetry}>
+              <Button variant="destructive" size="lg" onClick={handleRetry}>
                 Try Again
               </Button>
               <Button variant="outline" size="lg" onClick={onClose}>

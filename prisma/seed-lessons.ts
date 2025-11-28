@@ -1372,6 +1372,462 @@ const LESSON_QUESTIONS = [
     explanation: 'These are key function terminology.',
     difficulty: 1,
   },
+
+  // ===== PYTHON CHAPTER 1: Variables, Data Types, Operations (q81-q90) =====
+  {
+    id: 'q81',
+    type: 'MULTIPLE_CHOICE',
+    instruction: 'Python variable declaration',
+    description: 'How do you declare a variable in Python?',
+    codeBlock: '',
+    options: [
+      { id: 'q81o1', text: 'var age = 25;', isCorrect: false, index: 1 },
+      { id: 'q81o2', text: 'age = 25', isCorrect: true, index: 2 },
+      { id: 'q81o3', text: 'int age = 25;', isCorrect: false, index: 3 },
+    ],
+    explanation: 'Python variables are declared by assignment without type keyword.',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q82',
+    type: 'PREDICT_OUTPUT',
+    instruction: 'Python string concatenation',
+    description: 'What does this print?',
+    codeBlock: 'name = "Alice"\nage = 25\nprint(name + str(age))',
+    options: [
+      { id: 'q82o1', text: 'Alice25', isCorrect: true, index: 1 },
+      { id: 'q82o2', text: 'Alice 25', isCorrect: false, index: 2 },
+      { id: 'q82o3', text: 'Error', isCorrect: false, index: 3 },
+    ],
+    explanation: 'str() converts integer to string for concatenation.',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q83',
+    type: 'MULTIPLE_CHOICE',
+    instruction: 'Python data type check',
+    description: 'What type is the value 3.14?',
+    codeBlock: '',
+    options: [
+      { id: 'q83o1', text: 'int', isCorrect: false, index: 1 },
+      { id: 'q83o2', text: 'float', isCorrect: true, index: 2 },
+      { id: 'q83o3', text: 'decimal', isCorrect: false, index: 3 },
+    ],
+    explanation: 'Numbers with decimal points are float type in Python.',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q84',
+    type: 'FILL_BLANK',
+    instruction: 'Python type conversion',
+    description: 'Convert string to integer.',
+    codeBefore: 'num = ',
+    codeAfter: '("42")',
+    options: [
+      { id: 'q84o1', text: 'int', isCorrect: true, index: 1 },
+      { id: 'q84o2', text: 'float', isCorrect: false, index: 2 },
+      { id: 'q84o3', text: 'str', isCorrect: false, index: 3 },
+    ],
+    explanation: 'int() converts strings to integers.',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q85',
+    type: 'PREDICT_OUTPUT',
+    instruction: 'Python arithmetic',
+    description: 'What is the result?',
+    codeBlock: 'print(10 // 3)\nprint(10 % 3)',
+    options: [
+      { id: 'q85o1', text: '3\n1', isCorrect: true, index: 1 },
+      { id: 'q85o2', text: '3.33\n1', isCorrect: false, index: 2 },
+      { id: 'q85o3', text: '3\n0.33', isCorrect: false, index: 3 },
+    ],
+    explanation: '// is floor division, % is modulo (remainder).',
+    difficulty: 2,
+  },
+
+  {
+    id: 'q86',
+    type: 'DEBUG_HUNT',
+    instruction: 'Fix the Python variable error',
+    description: 'Find the bug in this code.',
+    codeSegments: [
+      { id: 'cs86_1', code: 'x = 5', isBug: false, correction: null, index: 0 },
+      { id: 'cs86_2', code: '\ny = "10"', isBug: false, correction: null, index: 1 },
+      { id: 'cs86_3', code: '\nprint(x + y)', isBug: true, correction: 'print(x + int(y))', index: 2 },
+    ],
+    explanation: 'Cannot add int and string directly. Need to convert string to int.',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q87',
+    type: 'MULTIPLE_CHOICE',
+    instruction: 'Python boolean values',
+    description: 'Which is correct boolean in Python?',
+    codeBlock: '',
+    options: [
+      { id: 'q87o1', text: 'true', isCorrect: false, index: 1 },
+      { id: 'q87o2', text: 'True', isCorrect: true, index: 2 },
+      { id: 'q87o3', text: 'TRUE', isCorrect: false, index: 3 },
+    ],
+    explanation: 'Python uses True and False (capitalized).',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q88',
+    type: 'FILL_BLANK',
+    instruction: 'Python f-string formatting',
+    description: 'Format a variable into a string.',
+    codeBefore: 'name = "Bob"\nprint(',
+    codeAfter: '"Hello {name}")',
+    options: [
+      { id: 'q88o1', text: 'f', isCorrect: true, index: 1 },
+      { id: 'q88o2', text: 'r', isCorrect: false, index: 2 },
+      { id: 'q88o3', text: 's', isCorrect: false, index: 3 },
+    ],
+    explanation: 'f-strings use f prefix for variable interpolation.',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q89',
+    type: 'REORDER',
+    instruction: 'Order Python statements',
+    description: 'Arrange to get correct output.',
+    items: [
+      { id: 'py89_1', text: 'x = 10', index: 1 },
+      { id: 'py89_2', text: 'y = 20', index: 2 },
+      { id: 'py89_3', text: 'print(x + y)', index: 3 },
+    ],
+    correctOrder: [1, 2, 3],
+    explanation: 'Variables must be declared before use.',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q90',
+    type: 'MULTIPLE_CHOICE',
+    instruction: 'Python variable naming',
+    description: 'Which is a valid variable name?',
+    codeBlock: '',
+    options: [
+      { id: 'q90o1', text: '2name', isCorrect: false, index: 1 },
+      { id: 'q90o2', text: 'my_name', isCorrect: true, index: 2 },
+      { id: 'q90o3', text: 'my-name', isCorrect: false, index: 3 },
+    ],
+    explanation: 'Variables must start with letter or underscore, not number.',
+    difficulty: 1,
+  },
+
+  // ===== PYTHON CHAPTER 2: Control Flow & Logic (q91-q100) =====
+  {
+    id: 'q91',
+    type: 'PREDICT_OUTPUT',
+    instruction: 'Python if statement',
+    description: 'What is printed?',
+    codeBlock: 'x = 15\nif x > 10:\n    print("Greater")\nelse:\n    print("Less")',
+    options: [
+      { id: 'q91o1', text: 'Greater', isCorrect: true, index: 1 },
+      { id: 'q91o2', text: 'Less', isCorrect: false, index: 2 },
+      { id: 'q91o3', text: 'Error', isCorrect: false, index: 3 },
+    ],
+    explanation: '15 is greater than 10, so "Greater" is printed.',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q92',
+    type: 'MULTIPLE_CHOICE',
+    instruction: 'Python elif usage',
+    description: 'What does elif mean?',
+    codeBlock: '',
+    options: [
+      { id: 'q92o1', text: 'else if', isCorrect: true, index: 1 },
+      { id: 'q92o2', text: 'else loop', isCorrect: false, index: 2 },
+      { id: 'q92o3', text: 'else for', isCorrect: false, index: 3 },
+    ],
+    explanation: 'elif is short for "else if" in Python.',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q93',
+    type: 'PREDICT_OUTPUT',
+    instruction: 'Python for loop',
+    description: 'What does this print?',
+    codeBlock: 'for i in range(3):\n    print(i)',
+    options: [
+      { id: 'q93o1', text: '0\n1\n2', isCorrect: true, index: 1 },
+      { id: 'q93o2', text: '1\n2\n3', isCorrect: false, index: 2 },
+      { id: 'q93o3', text: '0\n1\n2\n3', isCorrect: false, index: 3 },
+    ],
+    explanation: 'range(3) produces 0, 1, 2 (not including 3).',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q94',
+    type: 'FILL_BLANK',
+    instruction: 'Python while loop',
+    description: 'Complete the loop.',
+    codeBefore: 'x = 0\nwhile x < 5:',
+    codeAfter: '\n    x += 1',
+    options: [
+      { id: 'q94o1', text: 'pass', isCorrect: false, index: 1 },
+      { id: 'q94o2', text: 'print(x)', isCorrect: true, index: 2 },
+      { id: 'q94o3', text: 'break', isCorrect: false, index: 3 },
+    ],
+    explanation: 'The body should print x in a while loop.',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q95',
+    type: 'PREDICT_OUTPUT',
+    instruction: 'Python break statement',
+    description: 'What is printed?',
+    codeBlock: 'for i in range(5):\n    if i == 3:\n        break\n    print(i)',
+    options: [
+      { id: 'q95o1', text: '0\n1\n2', isCorrect: true, index: 1 },
+      { id: 'q95o2', text: '0\n1\n2\n3', isCorrect: false, index: 2 },
+      { id: 'q95o3', text: '3\n4', isCorrect: false, index: 3 },
+    ],
+    explanation: 'break exits the loop when i == 3.',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q96',
+    type: 'MULTIPLE_CHOICE',
+    instruction: 'Python comparison operator',
+    description: 'What does != mean?',
+    codeBlock: '',
+    options: [
+      { id: 'q96o1', text: 'greater than', isCorrect: false, index: 1 },
+      { id: 'q96o2', text: 'not equal', isCorrect: true, index: 2 },
+      { id: 'q96o3', text: 'not greater', isCorrect: false, index: 3 },
+    ],
+    explanation: '!= is the "not equal to" comparison operator.',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q97',
+    type: 'DEBUG_HUNT',
+    instruction: 'Fix indentation error',
+    description: 'Find the Python indentation bug.',
+    codeSegments: [
+      { id: 'cs97_1', code: 'if x > 5:', isBug: false, correction: null, index: 0 },
+      { id: 'cs97_2', code: '\nprint("Yes")', isBug: true, correction: '    print("Yes")', index: 1 },
+    ],
+    explanation: 'Python requires indentation for code blocks.',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q98',
+    type: 'PREDICT_OUTPUT',
+    instruction: 'Python logical operators',
+    description: 'What is printed?',
+    codeBlock: 'x = 5\ny = 10\nif x < 10 and y > 5:\n    print("Both true")',
+    options: [
+      { id: 'q98o1', text: 'Both true', isCorrect: true, index: 1 },
+      { id: 'q98o2', text: 'Nothing', isCorrect: false, index: 2 },
+      { id: 'q98o3', text: 'Error', isCorrect: false, index: 3 },
+    ],
+    explanation: 'Both conditions are true, so "Both true" prints.',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q99',
+    type: 'MULTIPLE_CHOICE',
+    instruction: 'Python logical NOT',
+    description: 'What does "not True" return?',
+    codeBlock: '',
+    options: [
+      { id: 'q99o1', text: 'True', isCorrect: false, index: 1 },
+      { id: 'q99o2', text: 'False', isCorrect: true, index: 2 },
+      { id: 'q99o3', text: 'None', isCorrect: false, index: 3 },
+    ],
+    explanation: '"not True" inverts the boolean to False.',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q100',
+    type: 'REORDER',
+    instruction: 'Order if-elif-else',
+    description: 'Arrange in correct order.',
+    items: [
+      { id: 'py100_1', text: 'if x < 0:', index: 1 },
+      { id: 'py100_2', text: '    print("Negative")', index: 2 },
+      { id: 'py100_3', text: 'elif x == 0:', index: 3 },
+      { id: 'py100_4', text: '    print("Zero")', index: 4 },
+      { id: 'py100_5', text: 'else:', index: 5 },
+      { id: 'py100_6', text: '    print("Positive")', index: 6 },
+    ],
+    correctOrder: [1, 2, 3, 4, 5, 6],
+    explanation: 'if-elif-else structure checks conditions in order.',
+    difficulty: 1,
+  },
+
+  // ===== PYTHON CHAPTER 3: Functions & Parameters (q101-q110) =====
+  {
+    id: 'q101',
+    type: 'PREDICT_OUTPUT',
+    instruction: 'Python function definition',
+    description: 'What is printed?',
+    codeBlock: 'def greet(name):\n    return "Hello " + name\nprint(greet("Alice"))',
+    options: [
+      { id: 'q101o1', text: 'Hello Alice', isCorrect: true, index: 1 },
+      { id: 'q101o2', text: 'Hello', isCorrect: false, index: 2 },
+      { id: 'q101o3', text: 'Error', isCorrect: false, index: 3 },
+    ],
+    explanation: 'The function returns and prints the greeting string.',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q102',
+    type: 'MULTIPLE_CHOICE',
+    instruction: 'Python function parameters',
+    description: 'What is a parameter?',
+    codeBlock: '',
+    options: [
+      { id: 'q102o1', text: 'Value passed to function', isCorrect: false, index: 1 },
+      { id: 'q102o2', text: 'Variable in function definition', isCorrect: true, index: 2 },
+      { id: 'q102o3', text: 'Function name', isCorrect: false, index: 3 },
+    ],
+    explanation: 'Parameters are variables defined in the function definition.',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q103',
+    type: 'PREDICT_OUTPUT',
+    instruction: 'Python function with multiple parameters',
+    description: 'What is printed?',
+    codeBlock: 'def add(a, b):\n    return a + b\nprint(add(3, 5))',
+    options: [
+      { id: 'q103o1', text: '8', isCorrect: true, index: 1 },
+      { id: 'q103o2', text: '35', isCorrect: false, index: 2 },
+      { id: 'q103o3', text: 'Error', isCorrect: false, index: 3 },
+    ],
+    explanation: 'add(3, 5) returns 3 + 5 = 8.',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q104',
+    type: 'FILL_BLANK',
+    instruction: 'Python default parameters',
+    description: 'Add a default value.',
+    codeBefore: 'def greet(name',
+    codeAfter: '):\n    return "Hello " + name',
+    options: [
+      { id: 'q104o1', text: '="World"', isCorrect: true, index: 1 },
+      { id: 'q104o2', text: ':="World"', isCorrect: false, index: 2 },
+      { id: 'q104o3', text: '= "World', isCorrect: false, index: 3 },
+    ],
+    explanation: 'Default parameters use = syntax.',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q105',
+    type: 'PREDICT_OUTPUT',
+    instruction: 'Python return value',
+    description: 'What does this return?',
+    codeBlock: 'def square(x):\n    return x * x\nresult = square(4)\nprint(result)',
+    options: [
+      { id: 'q105o1', text: '16', isCorrect: true, index: 1 },
+      { id: 'q105o2', text: '8', isCorrect: false, index: 2 },
+      { id: 'q105o3', text: 'None', isCorrect: false, index: 3 },
+    ],
+    explanation: 'square(4) returns 16, stored in result.',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q106',
+    type: 'MULTIPLE_CHOICE',
+    instruction: 'Python void function',
+    description: 'What does a function return if no return statement?',
+    codeBlock: '',
+    options: [
+      { id: 'q106o1', text: 'Error', isCorrect: false, index: 1 },
+      { id: 'q106o2', text: 'None', isCorrect: true, index: 2 },
+      { id: 'q106o3', text: 'null', isCorrect: false, index: 3 },
+    ],
+    explanation: 'Python functions without return statement return None.',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q107',
+    type: 'DEBUG_HUNT',
+    instruction: 'Fix function error',
+    description: 'Find the bug in this function.',
+    codeSegments: [
+      { id: 'cs107_1', code: 'def multiply(a, b)', isBug: true, correction: 'def multiply(a, b):', index: 0 },
+      { id: 'cs107_2', code: '\n    return a * b', isBug: false, correction: null, index: 1 },
+    ],
+    explanation: 'Function definition needs a colon (:) at the end.',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q108',
+    type: 'PREDICT_OUTPUT',
+    instruction: 'Python function scope',
+    description: 'What is printed?',
+    codeBlock: 'def test():\n    x = 10\n    return x\nprint(test())',
+    options: [
+      { id: 'q108o1', text: '10', isCorrect: true, index: 1 },
+      { id: 'q108o2', text: 'None', isCorrect: false, index: 2 },
+      { id: 'q108o3', text: 'Error', isCorrect: false, index: 3 },
+    ],
+    explanation: 'The function returns 10.',
+    difficulty: 1,
+  },
+
+  {
+    id: 'q109',
+    type: 'MULTIPLE_CHOICE',
+    instruction: 'Python *args usage',
+    description: 'What does *args allow?',
+    codeBlock: '',
+    options: [
+      { id: 'q109o1', text: 'Unlimited keyword arguments', isCorrect: false, index: 1 },
+      { id: 'q109o2', text: 'Unlimited positional arguments', isCorrect: true, index: 2 },
+      { id: 'q109o3', text: 'Pointer arguments', isCorrect: false, index: 3 },
+    ],
+    explanation: '*args allows functions to accept any number of positional arguments.',
+    difficulty: 2,
+  },
+
+  {
+    id: 'q110',
+    type: 'REORDER',
+    instruction: 'Order function code',
+    description: 'Arrange to create a working function.',
+    items: [
+      { id: 'py110_1', text: 'def power(base, exp):', index: 1 },
+      { id: 'py110_2', text: '    result = base ** exp', index: 2 },
+      { id: 'py110_3', text: '    return result', index: 3 },
+      { id: 'py110_4', text: 'print(power(2, 3))', index: 4 },
+    ],
+    correctOrder: [1, 2, 3, 4],
+    explanation: 'Function definition comes before function call.',
+    difficulty: 1,
+  },
 ];
 
 // Helper function to create chapter structure for a language (no loops, unique content)
@@ -1575,8 +2031,19 @@ async function createChapterStructure(languageId: string, languageName: string) 
   await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[57]), languageId, chapterId: chapter1.id } }); // q58
   await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[58]), languageId, chapterId: chapter1.id } }); // q59
   await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[59]), languageId, chapterId: chapter1.id } }); // q60
-  totalQuestionsCreated += 10;
-  console.log(`  ✓ Chapter 1: ${chapter1.title} (3 units, 16 lessons, 10 questions on Variables & Data Types)`);
+  // Python specific Chapter 1 questions (q81-q90)
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[80]), languageId, chapterId: chapter1.id } }); // q81
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[81]), languageId, chapterId: chapter1.id } }); // q82
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[82]), languageId, chapterId: chapter1.id } }); // q83
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[83]), languageId, chapterId: chapter1.id } }); // q84
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[84]), languageId, chapterId: chapter1.id } }); // q85
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[85]), languageId, chapterId: chapter1.id } }); // q86
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[86]), languageId, chapterId: chapter1.id } }); // q87
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[87]), languageId, chapterId: chapter1.id } }); // q88
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[88]), languageId, chapterId: chapter1.id } }); // q89
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[89]), languageId, chapterId: chapter1.id } }); // q90
+  totalQuestionsCreated += 30;
+  console.log(`  ✓ Chapter 1: ${chapter1.title} (3 units, 16 lessons, 30 questions on Variables & Data Types)`);
 
   // -------------------- Chapter 2 --------------------
   const chapter2 = await prisma.chapter.create({
@@ -1761,8 +2228,19 @@ async function createChapterStructure(languageId: string, languageName: string) 
   await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[67]), languageId, chapterId: chapter2.id } }); // q68
   await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[68]), languageId, chapterId: chapter2.id } }); // q69
   await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[69]), languageId, chapterId: chapter2.id } }); // q70
-  totalQuestionsCreated += 10;
-  console.log(`  ✓ Chapter 2: ${chapter2.title} (3 units, 15 lessons, 10 questions on Control Flow & Logic)`);
+  // Python specific Chapter 2 questions (q91-q100)
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[90]), languageId, chapterId: chapter2.id } }); // q91
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[91]), languageId, chapterId: chapter2.id } }); // q92
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[92]), languageId, chapterId: chapter2.id } }); // q93
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[93]), languageId, chapterId: chapter2.id } }); // q94
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[94]), languageId, chapterId: chapter2.id } }); // q95
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[95]), languageId, chapterId: chapter2.id } }); // q96
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[96]), languageId, chapterId: chapter2.id } }); // q97
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[97]), languageId, chapterId: chapter2.id } }); // q98
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[98]), languageId, chapterId: chapter2.id } }); // q99
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[99]), languageId, chapterId: chapter2.id } }); // q100
+  totalQuestionsCreated += 30;
+  console.log(`  ✓ Chapter 2: ${chapter2.title} (3 units, 15 lessons, 30 questions on Control Flow & Logic)`);
 
   // -------------------- Chapter 3 --------------------
   const chapter3 = await prisma.chapter.create({
@@ -1947,10 +2425,21 @@ async function createChapterStructure(languageId: string, languageName: string) 
   await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[77]), languageId, chapterId: chapter3.id } }); // q78
   await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[78]), languageId, chapterId: chapter3.id } }); // q79
   await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[79]), languageId, chapterId: chapter3.id } }); // q80
-  totalQuestionsCreated += 10;
-  console.log(`  ✓ Chapter 3: ${chapter3.title} (3 units, 15 lessons, 10 questions on Functions & Scope)`);
+  // Python specific Chapter 3 questions (q101-q110)
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[100]), languageId, chapterId: chapter3.id } }); // q101
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[101]), languageId, chapterId: chapter3.id } }); // q102
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[102]), languageId, chapterId: chapter3.id } }); // q103
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[103]), languageId, chapterId: chapter3.id } }); // q104
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[104]), languageId, chapterId: chapter3.id } }); // q105
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[105]), languageId, chapterId: chapter3.id } }); // q106
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[106]), languageId, chapterId: chapter3.id } }); // q107
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[107]), languageId, chapterId: chapter3.id } }); // q108
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[108]), languageId, chapterId: chapter3.id } }); // q109
+  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[109]), languageId, chapterId: chapter3.id } }); // q110
+  totalQuestionsCreated += 30;
+  console.log(`  ✓ Chapter 3: ${chapter3.title} (3 units, 15 lessons, 30 questions on Functions & Scope)`);
 
-  console.log(`\n✅ Created structure: 3 chapters, 9 units, 46 lessons, ${totalQuestionsCreated} questions (30 new tailored questions: 10 per chapter matching content)\n`);
+  console.log(`\n✅ Created structure: 3 chapters, 9 units, 46 lessons, ${totalQuestionsCreated} questions (90 Python-specific questions: 30 per chapter - Variables/Data Types, Control Flow/Logic, Functions/Scope)\n`);
   return [chapter1, chapter2, chapter3];
 }
 

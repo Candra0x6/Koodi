@@ -16,112 +16,107 @@ import Image from 'next/image'
 import { useAuth } from "@/lib/hooks/use-auth"
 import { useMissions } from "@/lib/hooks/use-missions"
 import { Toaster } from "react-hot-toast"
+import { LISTNAVITEMS } from '@/lib/constant/nav-items'
+import BottomNavigation from '@/components/navigation/bottom-navigation-mobile'
 
-const listNavItems = [
-  { name: "LEARN", icon: Home, href: "/dashboard" },
-  { name: "PRACTICE", icon: Zap, href: "/dashboard/practice" },
-    { name: "LEADERBOARD", icon: Shield, href: "/dashboard/leaderboard" },
-    { name: "QUESTS", icon: Star, href: "/dashboard/quests" },
-    { name: "SHOP", icon: Gem, href: "/dashboard/shop" },
-    { name: "PROFILE", icon: User, href: "/dashboard/profile" },
-]
+
 function layout({ children }: { children: React.ReactNode }) {
-    const pathname = usePathname()
-    const isSamePath = (path: string) => pathname === path
-    const router = useRouter()
-    const { user, isAuthenticated, isLoading } = useAuth()
-    
-    // Mission system integration
-    const { missions, isLoading: missionsLoading, claimReward, refetch } = useMissions()
-    const [claimedReward, setClaimedReward] = useState<{
-      xp?: number
-      gems?: number
-      hearts?: number
-    } | null>(null)
-    
-    // Handle mission claim
-    const handleClaimMission = async (missionId: string) => {
-      const result = await claimReward(missionId)
-      if (result) {
-        setClaimedReward(result)
-        // Refetch missions after claiming
-        refetch()
-      }
+  const pathname = usePathname()
+  const isSamePath = (path: string) => pathname === path
+  const router = useRouter()
+  const { user, isAuthenticated, isLoading } = useAuth()
+
+  // Mission system integration
+  const { missions, isLoading: missionsLoading, claimReward, refetch } = useMissions()
+  const [claimedReward, setClaimedReward] = useState<{
+    xp?: number
+    gems?: number
+    hearts?: number
+  } | null>(null)
+
+  // Handle mission claim
+  const handleClaimMission = async (missionId: string) => {
+    const result = await claimReward(missionId)
+    if (result) {
+      setClaimedReward(result)
+      // Refetch missions after claiming
+      refetch()
     }
-    
-    // Calculate daily XP progress (XP earned today)
-    const [dailyXp, setDailyXp] = useState(0)
-    const dailyGoal = 10 // Default daily goal
-    
-    // Language icon mapping
-    const languageIcons: Record<string, string> = {
-      python: "/python.png",
-      javascript: "/javascript.png",
-      java: "/java.png",
-      typescript: "/typescript.png",
-    }
-    
-    const selectedLanguageSlug = user?.selectedLanguage?.slug || "python"
-    const languageIcon = languageIcons[selectedLanguageSlug] || "/python.png"
-    const languageName = user?.selectedLanguage?.name || "Python"
+  }
+
+  // Calculate daily XP progress (XP earned today)
+  const [dailyXp, setDailyXp] = useState(0)
+  const dailyGoal = 10 // Default daily goal
+
+  // Language icon mapping
+  const languageIcons: Record<string, string> = {
+    python: "/python.png",
+    javascript: "/javascript.png",
+    java: "/java.png",
+    typescript: "/typescript.png",
+  }
+
+  const selectedLanguageSlug = user?.selectedLanguage?.slug || "python"
+  const languageIcon = languageIcons[selectedLanguageSlug] || "/python.png"
+  const languageName = user?.selectedLanguage?.name || "Python"
   return (
     <div className="">
-    <Toaster position="top-center" />    <div className="container mx-auto px-4 py-8 flex flex-col lg:flex-row gap-8">
+      <Toaster position="top-center" />    <div className="container mx-auto px-4 py-8 flex flex-col lg:flex-row gap-8">
         {/* Sidebar Navigation (Desktop) */}
         <aside className="hidden lg:flex flex-col gap-2 w-64 shrink-0 sticky top-24 h-[calc(100vh-8rem)]">
-         {listNavItems.map((item, i) => (
-           <div
-           onClick={() => {router.push(item.href)}}
-           className={`w-full text-left flex justify-start gap-3 p-5  border-2 ${ isSamePath(item.href) ? "bg-[#DDF4FF] border-[#84D8FF]" : "border-transparent"} rounded-xl  `}
-         >
-           <item.icon className={`w-5 h-5 ${ isSamePath(item.href) ? "text-[#49bff6]" : "text-gray-400"}`} /> <span className={`font-bold ${ isSamePath(item.href) ? "text-[#49bff6]" : "text-gray-400"}`}>{item.name}</span>
-         </div>  
-        )) 
-         }
+          {LISTNAVITEMS.map((item, i) => (
+            <div
+              onClick={() => { router.push(item.href) }}
+              className={`w-full text-left flex justify-start gap-3 p-5  border-2 ${isSamePath(item.href) ? "bg-[#DDF4FF] border-[#84D8FF]" : "border-transparent"} rounded-xl  `}
+            >
+              <item.icon className={`w-5 h-5 ${isSamePath(item.href) ? "text-[#49bff6]" : "text-gray-400"}`} /> <span className={`font-bold ${isSamePath(item.href) ? "text-[#49bff6]" : "text-gray-400"}`}>{item.name}</span>
+            </div>
+          ))
+          }
         </aside>
 
         {/* Main Content */}
         <main className="flex-1 space-y-12 max-w-3xl">
-         
-        {children}
+
+          {children}
         </main>
         {/* Right Sidebar (Desktop) */}
-          <div className="hidden lg:flex flex-col gap-6 w-80 shrink-0">
-         <div className="flex justify-between items-center mb-2">
+        <div className="hidden lg:flex flex-col gap-6 w-80 shrink-0">
+          <div className="flex justify-between items-center mb-2">
 
-          {/* Language */}
-          <div className='flex items-center gap-x-2'>
-            <Image src={languageIcon} alt={languageName} width={30} height={30} />
-          </div>
-          {/* Streak */}
-          <div className="flex items-center justify-end gap-1">
-            <span className='text-2xl'>🔥</span>
-            <p className="font-bold text-gray-700 text-lg">{user?.streak ?? 0}</p>
-          </div>
-          {/* Gems/XP */}
-          <div className="flex items-center justify-end gap-1">
-            <span className='text-2xl'>💎</span>
-            <p className="font-bold text-gray-700 text-lg">{user?.xp ?? 0}</p>
-          </div>
-          {/* Hearts */}
-          <div className="flex items-center justify-end gap-1">
-            <span className='text-2xl'>❤️</span>
-            <p className="font-bold text-gray-700 text-lg">{user?.hearts ?? 5}</p>
+            {/* Language */}
+            <div className='flex items-center gap-x-2'>
+              <Image src={languageIcon} alt={languageName} width={30} height={30} />
+            </div>
+            {/* Streak */}
+            <div className="flex items-center justify-end gap-1">
+              <span className='text-2xl'>🔥</span>
+              <p className="font-bold text-gray-700 text-lg">{user?.streak ?? 0}</p>
+            </div>
+            {/* Gems/XP */}
+            <div className="flex items-center justify-end gap-1">
+              <span className='text-2xl'>💎</span>
+              <p className="font-bold text-gray-700 text-lg">{user?.xp ?? 0}</p>
+            </div>
+            {/* Hearts */}
+            <div className="flex items-center justify-end gap-1">
+              <span className='text-2xl'>❤️</span>
+              <p className="font-bold text-gray-700 text-lg">{user?.hearts ?? 5}</p>
+            </div>
+
           </div>
 
-         </div>
-          
           {/* Dynamic Mission List */}
-          <MissionList 
+          <MissionList
             missions={missions}
             title="Daily Quests"
             onClaim={handleClaimMission}
             isLoading={missionsLoading}
             emptyMessage="Complete lessons to unlock quests!"
           />
-          
+
           {/* Reward Popup */}
-          <RewardPopup 
+          <RewardPopup
             isOpen={!!claimedReward}
             reward={claimedReward ? {
               id: "claimed",
@@ -184,8 +179,8 @@ function layout({ children }: { children: React.ReactNode }) {
 
           {/* User Profile Card - Show for authenticated users */}
           {isAuthenticated && !user?.isGuest && user && (
-            <Card 
-              className="p-4 space-y-3 border-2 border-gray-200 shadow-none cursor-pointer hover:bg-gray-50 transition-colors" 
+            <Card
+              className="p-4 space-y-3 border-2 border-gray-200 shadow-none cursor-pointer hover:bg-gray-50 transition-colors"
               onClick={() => router.push('/dashboard/profile')}
             >
               <div className="flex items-center gap-3">
@@ -214,10 +209,12 @@ function layout({ children }: { children: React.ReactNode }) {
             </Card>
           )}
         </div>
+
+        {/* Mobile Bottom Navigation */}
+        <BottomNavigation />
       </div>
     </div>
   )
 }
 
 export default layout
-      

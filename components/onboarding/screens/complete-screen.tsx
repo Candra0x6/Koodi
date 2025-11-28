@@ -9,67 +9,39 @@ import { useRouter } from 'next/navigation';
 export function CompleteScreen() {
   const { state } = useOnboarding();
   const { data: session } = useSession();
-  const languageId = session?.user?.languageId || state.selectedLanguageId;
-  const router = useRouter()
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleCreateAccount = async () => {
-    if (state.authMethod === 'guest') {
-      setLoading(true);
-      try {
-        // Create user account from guest
-        const res = await fetch('/api/onboarding/complete', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email: state.email,
-            password: state.password,
-            authMethod: state.authMethod,
-            selectedLanguageId: state.selectedLanguageId,
-            learningGoal: state.learningGoal,
-            avatarId: state.selectedAvatarId,
-            placementTestScore: state.placementTestScore,
-          }),
-        });
+  const handleCompleteOnboarding = async () => {
+    setLoading(true);
+    setError(null);
 
-        if (!res.ok) {
-          const errorData = await res.json();
-          throw new Error(errorData.message || 'Failed to create account');
-        }
+    try {
+      const res = await fetch('/api/onboarding/complete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          selectedLanguageId: state.selectedLanguageId,
+          learningGoal: state.learningGoal,
+          avatarId: state.selectedAvatarId,
+          placementTestScore: state.placementTestScore,
+        }),
+      });
 
-        const data = await res.json();
-        router.push(`/dashboard`);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
-        setLoading(false);
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || 'Failed to complete onboarding');
       }
-    } else {
-      // Already logged in, just complete onboarding
-      setLoading(true);
-      try {
-        const res = await fetch('/api/onboarding/complete', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            selectedLanguageId: state.selectedLanguageId,
-            learningGoal: state.learningGoal,
-            avatarId: state.selectedAvatarId,
-            placementTestScore: state.placementTestScore,
-          }),
-        });
 
-        if (!res.ok) {
-          throw new Error('Failed to complete onboarding');
-        }
-
-        router.push(`/chapters?languageId=${state.selectedLanguageId}`);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
-        setLoading(false);
-      }
+      router.push(`/dashboard`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+      setLoading(false);
     }
   };
+
+  const isGuest = state.authMethod === 'guest' || session?.user?.isGuest;
 
   return (
     <Card className="w-full p-8">
@@ -79,6 +51,12 @@ export function CompleteScreen() {
         <p className="text-muted-foreground mb-8 font-medium">
           Ready to start learning {state.selectedLanguageName}?
         </p>
+
+        {isGuest && (
+          <div className="bg-amber-50 border-2 border-amber-200 text-amber-700 px-4 py-3 rounded-2xl mb-6 font-medium text-sm">
+            👤 You're using a guest account. You can add your email and password later in your profile settings.
+          </div>
+        )}
 
         {error && (
           <div className="bg-red-50 border-2 border-red-200 text-red-700 px-4 py-3 rounded-2xl mb-6 font-bold">
@@ -114,7 +92,7 @@ export function CompleteScreen() {
         </div>
 
         <Button
-          onClick={handleCreateAccount}
+          onClick={handleCompleteOnboarding}
           disabled={loading}
           size="lg"
           variant="super"

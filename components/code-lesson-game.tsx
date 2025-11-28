@@ -403,7 +403,7 @@ export function CodeLessonGame({ lessonId }: { lessonId: string;}) {
             className={cn(
               "p-4 rounded-2xl border-2 border-b-4 cursor-pointer transition-all active:border-b-2 active:translate-y-[2px] font-mono text-sm md:text-base",
               selectedOptionId === option.id
-                ? "bg-muted border-transparent text-transparent cursor-default"
+                ? "bg-card border-blue-500 cursor-default"
                 : "bg-card border-border hover:bg-muted/50",
             )}
           >

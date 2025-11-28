@@ -277,9 +277,7 @@ export async function createChapterStructure(
       include: {
         units: {
           include: {
-            lessons: {
-              include: { questions: true },
-            },
+            lessons: true,
           },
         },
       },
