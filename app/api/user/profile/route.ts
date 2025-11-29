@@ -16,9 +16,6 @@ export async function GET() {
 
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-      include: {
-        selectedLanguage: true,
-      },
     });
 
     if (!user) {
@@ -28,9 +25,42 @@ export async function GET() {
       );
     }
 
+    // Get active language for this user
+    const activeLanguageProgress = await prisma.userLanguageProgress.findFirst({
+      where: {
+        userId: session.user.id,
+        isActive: true,
+      },
+      include: {
+        language: true,
+      },
+    });
+
+    // Calculate daily XP (XP earned today)
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+
+    const dailyXpResult = await prisma.xPLog.aggregate({
+      where: {
+        userId: session.user.id,
+        createdAt: { gte: startOfToday },
+      },
+      _sum: {
+        amount: true,
+      },
+    });
+
+    const dailyXp = dailyXpResult._sum.amount ?? 0;
+
+    const userWithLanguage = {
+      ...user,
+      selectedLanguage: activeLanguageProgress?.language || null,
+      dailyXp,
+    };
+
     return NextResponse.json({
         message : 'User profile fetched successfully',
-        result : user
+        result : userWithLanguage
     });
   } catch (error) {
     console.error('Error fetching user profile:', error);
@@ -147,14 +177,27 @@ export async function POST(request: NextRequest) {
     const updatedUser = await prisma.user.update({
       where: { id: session.user.id },
       data: updateData,
+    });
+
+    // Get active language for updated user
+    const activeLanguageProgress = await prisma.userLanguageProgress.findFirst({
+      where: {
+        userId: session.user.id,
+        isActive: true,
+      },
       include: {
-        selectedLanguage: true,
+        language: true,
       },
     });
 
+    const userWithLanguage = {
+      ...updatedUser,
+      selectedLanguage: activeLanguageProgress?.language || null,
+    };
+
     return NextResponse.json({
       message: 'Profile updated successfully',
-      result: updatedUser,
+      result: userWithLanguage,
     });
   } catch (error) {
     console.error('Error updating profile:', error);

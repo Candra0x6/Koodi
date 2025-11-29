@@ -58,7 +58,7 @@ async function main() {
     },
     {
       languageId: pythonLang.id,
-      type: 'CODE_OUTPUT' as const,
+      type: 'PREDICT_OUTPUT' as const,
       content: 'What will be printed?\nword = "Python"\nprint(word[0])',
       explanation: 'Python uses 0-based indexing. word[0] is the first character "P".',
       choices: ['P', 'Python', '0', 'Pyt'],
@@ -67,7 +67,7 @@ async function main() {
     },
     {
       languageId: pythonLang.id,
-      type: 'DEBUG_CODE' as const,
+      type: 'DEBUG_HUNT' as const,
       content: 'What is wrong with this code?\ndef greet(name)\n    print("Hello " + name)',
       explanation: 'Python requires a colon (:) after function definitions. It should be "def greet(name):"',
       choices: [

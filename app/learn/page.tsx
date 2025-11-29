@@ -215,7 +215,7 @@ const UnitSection = ({ unit, chapterTitle, unitIndex, languageId, onLessonClick 
 
 function LearnContent() {
   const { user, isLoading: authLoading } = useAuth()
-  const languageId = user?.selectedLanguageId || ""
+  const languageId = user?.selectedLanguage?.id || ""
 
   const [chapters, setChapters] = useState<Chapter[]>([])
   const [loading, setLoading] = useState(true)

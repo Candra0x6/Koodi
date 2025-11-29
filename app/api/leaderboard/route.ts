@@ -20,18 +20,41 @@ export async function GET(request: NextRequest) {
     const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 100);
     const languageId = searchParams.get('languageId');
 
-    const users = await prisma.user.findMany({
-      where: languageId ? { selectedLanguageId: languageId } : undefined,
-      select: {
-        id: true,
-        username: true,
-        avatarId: true,
-        xp: true,
-        streak: true,
-      },
-      orderBy: [{ xp: 'desc' }, { streak: 'desc' }],
-      take: limit,
-    });
+    // If filtering by language, get users who are learning that language
+    let users;
+    if (languageId) {
+      const userProgresses = await prisma.userLanguageProgress.findMany({
+        where: { languageId },
+        include: {
+          user: {
+            select: {
+              id: true,
+              username: true,
+              avatarId: true,
+              xp: true,
+              streak: true,
+            },
+          },
+        },
+        orderBy: [{ user: { xp: 'desc' } }, { user: { streak: 'desc' } }],
+        take: limit,
+      });
+
+      users = userProgresses.map((p) => p.user);
+    } else {
+      // Get top users globally
+      users = await prisma.user.findMany({
+        select: {
+          id: true,
+          username: true,
+          avatarId: true,
+          xp: true,
+          streak: true,
+        },
+        orderBy: [{ xp: 'desc' }, { streak: 'desc' }],
+        take: limit,
+      });
+    }
 
     const leaderboard = users.map((user, index) => ({
       rank: index + 1,

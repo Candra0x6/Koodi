@@ -38,7 +38,7 @@ interface Lesson {
 
 function ChaptersContent() {
   const {user} = useAuth()
-  const languageId = user?.selectedLanguageId || '';
+  const languageId = user?.selectedLanguage?.id || '';
   console.log('Language ID in ChaptersPage:', languageId);
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [expandedChapters, setExpandedChapters] = useState<Set<string>>(new Set());

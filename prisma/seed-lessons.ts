@@ -1830,8 +1830,11 @@ const LESSON_QUESTIONS = [
   },
 ];
 
+// JavaScript-specific questions - for now use the same questions but can be extended
+const JS_LESSON_QUESTIONS = LESSON_QUESTIONS;
+
 // Helper function to create chapter structure for a language (no loops, unique content)
-async function createChapterStructure(languageId: string, languageName: string) {
+async function createChapterStructure(languageId: string, languageName: string, questionArray: any[] = LESSON_QUESTIONS) {
   console.log(`\n📚 Creating chapter structure for ${languageName} (no loops, unique lessons/questions)...`);
 
   let totalQuestionsCreated = 0;
@@ -2021,27 +2024,27 @@ async function createChapterStructure(languageId: string, languageName: string) 
   });
 
   // Questions for Chapter 1 (Variables, Data Types, Operations)
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[50]), languageId, chapterId: chapter1.id } }); // q51
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[51]), languageId, chapterId: chapter1.id } }); // q52
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[52]), languageId, chapterId: chapter1.id } }); // q53
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[53]), languageId, chapterId: chapter1.id } }); // q54
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[54]), languageId, chapterId: chapter1.id } }); // q55
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[55]), languageId, chapterId: chapter1.id } }); // q56
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[56]), languageId, chapterId: chapter1.id } }); // q57
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[57]), languageId, chapterId: chapter1.id } }); // q58
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[58]), languageId, chapterId: chapter1.id } }); // q59
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[59]), languageId, chapterId: chapter1.id } }); // q60
-  // Python specific Chapter 1 questions (q81-q90)
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[80]), languageId, chapterId: chapter1.id } }); // q81
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[81]), languageId, chapterId: chapter1.id } }); // q82
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[82]), languageId, chapterId: chapter1.id } }); // q83
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[83]), languageId, chapterId: chapter1.id } }); // q84
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[84]), languageId, chapterId: chapter1.id } }); // q85
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[85]), languageId, chapterId: chapter1.id } }); // q86
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[86]), languageId, chapterId: chapter1.id } }); // q87
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[87]), languageId, chapterId: chapter1.id } }); // q88
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[88]), languageId, chapterId: chapter1.id } }); // q89
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[89]), languageId, chapterId: chapter1.id } }); // q90
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[50]), languageId, chapterId: chapter1.id } }); // q51
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[51]), languageId, chapterId: chapter1.id } }); // q52
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[52]), languageId, chapterId: chapter1.id } }); // q53
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[53]), languageId, chapterId: chapter1.id } }); // q54
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[54]), languageId, chapterId: chapter1.id } }); // q55
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[55]), languageId, chapterId: chapter1.id } }); // q56
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[56]), languageId, chapterId: chapter1.id } }); // q57
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[57]), languageId, chapterId: chapter1.id } }); // q58
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[58]), languageId, chapterId: chapter1.id } }); // q59
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[59]), languageId, chapterId: chapter1.id } }); // q60
+  // Language specific Chapter 1 questions (q81-q90)
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[80]), languageId, chapterId: chapter1.id } }); // q81
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[81]), languageId, chapterId: chapter1.id } }); // q82
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[82]), languageId, chapterId: chapter1.id } }); // q83
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[83]), languageId, chapterId: chapter1.id } }); // q84
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[84]), languageId, chapterId: chapter1.id } }); // q85
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[85]), languageId, chapterId: chapter1.id } }); // q86
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[86]), languageId, chapterId: chapter1.id } }); // q87
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[87]), languageId, chapterId: chapter1.id } }); // q88
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[88]), languageId, chapterId: chapter1.id } }); // q89
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[89]), languageId, chapterId: chapter1.id } }); // q90
   totalQuestionsCreated += 30;
   console.log(`  ✓ Chapter 1: ${chapter1.title} (3 units, 16 lessons, 30 questions on Variables & Data Types)`);
 
@@ -2218,27 +2221,27 @@ async function createChapterStructure(languageId: string, languageName: string) 
   });
 
   // Questions for Chapter 2 (Control Flow, Loops, Boolean Logic)
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[60]), languageId, chapterId: chapter2.id } }); // q61
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[61]), languageId, chapterId: chapter2.id } }); // q62
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[62]), languageId, chapterId: chapter2.id } }); // q63
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[63]), languageId, chapterId: chapter2.id } }); // q64
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[64]), languageId, chapterId: chapter2.id } }); // q65
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[65]), languageId, chapterId: chapter2.id } }); // q66
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[66]), languageId, chapterId: chapter2.id } }); // q67
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[67]), languageId, chapterId: chapter2.id } }); // q68
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[68]), languageId, chapterId: chapter2.id } }); // q69
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[69]), languageId, chapterId: chapter2.id } }); // q70
-  // Python specific Chapter 2 questions (q91-q100)
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[90]), languageId, chapterId: chapter2.id } }); // q91
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[91]), languageId, chapterId: chapter2.id } }); // q92
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[92]), languageId, chapterId: chapter2.id } }); // q93
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[93]), languageId, chapterId: chapter2.id } }); // q94
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[94]), languageId, chapterId: chapter2.id } }); // q95
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[95]), languageId, chapterId: chapter2.id } }); // q96
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[96]), languageId, chapterId: chapter2.id } }); // q97
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[97]), languageId, chapterId: chapter2.id } }); // q98
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[98]), languageId, chapterId: chapter2.id } }); // q99
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[99]), languageId, chapterId: chapter2.id } }); // q100
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[60]), languageId, chapterId: chapter2.id } }); // q61
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[61]), languageId, chapterId: chapter2.id } }); // q62
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[62]), languageId, chapterId: chapter2.id } }); // q63
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[63]), languageId, chapterId: chapter2.id } }); // q64
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[64]), languageId, chapterId: chapter2.id } }); // q65
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[65]), languageId, chapterId: chapter2.id } }); // q66
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[66]), languageId, chapterId: chapter2.id } }); // q67
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[67]), languageId, chapterId: chapter2.id } }); // q68
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[68]), languageId, chapterId: chapter2.id } }); // q69
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[69]), languageId, chapterId: chapter2.id } }); // q70
+  // Language specific Chapter 2 questions (q91-q100)
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[90]), languageId, chapterId: chapter2.id } }); // q91
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[91]), languageId, chapterId: chapter2.id } }); // q92
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[92]), languageId, chapterId: chapter2.id } }); // q93
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[93]), languageId, chapterId: chapter2.id } }); // q94
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[94]), languageId, chapterId: chapter2.id } }); // q95
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[95]), languageId, chapterId: chapter2.id } }); // q96
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[96]), languageId, chapterId: chapter2.id } }); // q97
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[97]), languageId, chapterId: chapter2.id } }); // q98
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[98]), languageId, chapterId: chapter2.id } }); // q99
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[99]), languageId, chapterId: chapter2.id } }); // q100
   totalQuestionsCreated += 30;
   console.log(`  ✓ Chapter 2: ${chapter2.title} (3 units, 15 lessons, 30 questions on Control Flow & Logic)`);
 
@@ -2415,27 +2418,27 @@ async function createChapterStructure(languageId: string, languageName: string) 
   });
 
   // Questions for Chapter 3 (Functions, Parameters, Returns, Scope)
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[70]), languageId, chapterId: chapter3.id } }); // q71
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[71]), languageId, chapterId: chapter3.id } }); // q72
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[72]), languageId, chapterId: chapter3.id } }); // q73
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[73]), languageId, chapterId: chapter3.id } }); // q74
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[74]), languageId, chapterId: chapter3.id } }); // q75
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[75]), languageId, chapterId: chapter3.id } }); // q76
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[76]), languageId, chapterId: chapter3.id } }); // q77
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[77]), languageId, chapterId: chapter3.id } }); // q78
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[78]), languageId, chapterId: chapter3.id } }); // q79
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[79]), languageId, chapterId: chapter3.id } }); // q80
-  // Python specific Chapter 3 questions (q101-q110)
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[100]), languageId, chapterId: chapter3.id } }); // q101
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[101]), languageId, chapterId: chapter3.id } }); // q102
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[102]), languageId, chapterId: chapter3.id } }); // q103
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[103]), languageId, chapterId: chapter3.id } }); // q104
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[104]), languageId, chapterId: chapter3.id } }); // q105
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[105]), languageId, chapterId: chapter3.id } }); // q106
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[106]), languageId, chapterId: chapter3.id } }); // q107
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[107]), languageId, chapterId: chapter3.id } }); // q108
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[108]), languageId, chapterId: chapter3.id } }); // q109
-  await prisma.question.create({ data: { ...createQuestionData(LESSON_QUESTIONS[109]), languageId, chapterId: chapter3.id } }); // q110
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[70]), languageId, chapterId: chapter3.id } }); // q71
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[71]), languageId, chapterId: chapter3.id } }); // q72
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[72]), languageId, chapterId: chapter3.id } }); // q73
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[73]), languageId, chapterId: chapter3.id } }); // q74
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[74]), languageId, chapterId: chapter3.id } }); // q75
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[75]), languageId, chapterId: chapter3.id } }); // q76
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[76]), languageId, chapterId: chapter3.id } }); // q77
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[77]), languageId, chapterId: chapter3.id } }); // q78
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[78]), languageId, chapterId: chapter3.id } }); // q79
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[79]), languageId, chapterId: chapter3.id } }); // q80
+  // Language specific Chapter 3 questions (q101-q110)
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[100]), languageId, chapterId: chapter3.id } }); // q101
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[101]), languageId, chapterId: chapter3.id } }); // q102
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[102]), languageId, chapterId: chapter3.id } }); // q103
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[103]), languageId, chapterId: chapter3.id } }); // q104
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[104]), languageId, chapterId: chapter3.id } }); // q105
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[105]), languageId, chapterId: chapter3.id } }); // q106
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[106]), languageId, chapterId: chapter3.id } }); // q107
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[107]), languageId, chapterId: chapter3.id } }); // q108
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[108]), languageId, chapterId: chapter3.id } }); // q109
+  await prisma.question.create({ data: { ...createQuestionData(questionArray[109]), languageId, chapterId: chapter3.id } }); // q110
   totalQuestionsCreated += 30;
   console.log(`  ✓ Chapter 3: ${chapter3.title} (3 units, 15 lessons, 30 questions on Functions & Scope)`);
 
@@ -2537,10 +2540,10 @@ function getUnitTitle(chapterNum: number, unitNum: number): string {
 }
 
 async function main() {
-  console.log('🌱 Seeding lesson data...');
+  console.log('🌱 Seeding lesson data for Python and JavaScript...\n');
 
   try {
-    // Ensure Python language exists
+    // Seed Python
     const pythonLang = await prisma.language.upsert({
       where: { slug: 'python' },
       update: {},
@@ -2550,12 +2553,27 @@ async function main() {
       },
     });
 
-    console.log(`✓ Language: ${pythonLang.name}`);
-
-    // Create chapter structure
+    console.log(`📚 Language: ${pythonLang.name}`);
     await createChapterStructure(pythonLang.id, pythonLang.name);
+    console.log(`✓ ${pythonLang.name} structure created\n`);
 
-    console.log('\n✅ Lesson data seeding completed successfully!');
+    // Seed JavaScript
+    const jsLang = await prisma.language.upsert({
+      where: { slug: 'javascript' },
+      update: {},
+      create: {
+        name: 'JavaScript',
+        slug: 'javascript',
+      },
+    });
+
+    console.log(`📚 Language: ${jsLang.name}`);
+    await createChapterStructure(jsLang.id, jsLang.name, JS_LESSON_QUESTIONS);
+    console.log(`✓ ${jsLang.name} structure created\n`);
+
+    console.log('✅ Lesson data seeding completed successfully!');
+    console.log('   - Python: 3 chapters with 9 units and 46 lessons');
+    console.log('   - JavaScript: 3 chapters with 9 units and 46 lessons');
   } catch (error) {
     console.error('❌ Error during seeding:', error);
     throw error;

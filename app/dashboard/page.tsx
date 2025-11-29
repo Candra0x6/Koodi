@@ -1,10 +1,10 @@
 "use client"
 
-import { Suspense, useEffect, useState, useRef } from "react"
+import { Suspense, useEffect, useState, useRef, useCallback } from "react"
 import { cn } from "@/lib/utils"
 import { Home, Zap, Target, Shield, User, Bell, Lock, ChevronLeft, ChevronRight, Loader2, Laptop, Book, Trophy } from "lucide-react"
 import { UnitHeader, type UnitData, type LevelNode, type LevelStatus, LearningPath } from "@/components/learning-path"
-import { useAuth } from "@/lib/hooks/use-auth"
+import { useAuth, LANGUAGE_CHANGED_EVENT } from "@/lib/hooks/use-auth"
 import Image from "next/image"
 import type { LucideIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -141,7 +141,7 @@ const UnitSection = ({ unit, chapterTitle, unitIndex, languageId, onLessonClick,
 
 function LearnContent() {
   const { user, isLoading: authLoading } = useAuth()
-  const languageId = user?.selectedLanguageId || ""
+  const languageId = user?.selectedLanguage?.id || ""
   const pathname = usePathname()
   const [chapters, setChapters] = useState<Chapter[]>([])
   const [loading, setLoading] = useState(true)
@@ -159,42 +159,76 @@ function LearnContent() {
 
   const unitRefs = useRef<(HTMLDivElement | null)[]>([])
 
+  // Reset refs and activeUnit when displayedUnits changes
   useEffect(() => {
-    const loadChapters = async () => {
-      if (!languageId) {
-        setLoading(false)
-        return
-      }
+    unitRefs.current = []
+    setActiveUnit(null)
+  }, [currentChapterIndex, languageId])
 
-      try {
-        const res = await fetch(`/api/chapters?languageId=${languageId}`)
-        if (!res.ok) {
-          throw new Error("Failed to load chapters")
-        }
-
-        const data = await res.json()
-        setChapters(data.chapters || [])
-
-        // Find the first chapter with incomplete units
-        if (data.chapters && data.chapters.length > 0) {
-          const activeChapterIdx = data.chapters.findIndex(
-            (ch: Chapter) => ch.units.some((u: Unit) => !u.userProgress?.completed)
-          )
-          const chapterIdx = activeChapterIdx >= 0 ? activeChapterIdx : 0
-          setCurrentChapterIndex(chapterIdx)
-        }
-      } catch (err) {
-        console.error("Error loading chapters:", err)
-        setError(err instanceof Error ? err.message : "Failed to load data")
-      } finally {
-        setLoading(false)
-      }
+  // Memoized function to load chapters
+  const loadChapters = useCallback(async (langId: string) => {
+    if (!langId) {
+      setLoading(false)
+      return
     }
 
-    if (!authLoading) {
-      loadChapters()
+    try {
+      setLoading(true)
+      const res = await fetch(`/api/chapters?languageId=${langId}`)
+      if (!res.ok) {
+        throw new Error("Failed to load chapters")
+      }
+
+      const data = await res.json()
+      setChapters(data.chapters || [])
+
+      // Find the first chapter with incomplete units
+      if (data.chapters && data.chapters.length > 0) {
+        const activeChapterIdx = data.chapters.findIndex(
+          (ch: Chapter) => ch.units.some((u: Unit) => !u.userProgress?.completed)
+        )
+        const chapterIdx = activeChapterIdx >= 0 ? activeChapterIdx : 0
+        setCurrentChapterIndex(chapterIdx)
+      }
+    } catch (err) {
+      console.error("Error loading chapters:", err)
+      setError(err instanceof Error ? err.message : "Failed to load data")
+    } finally {
+      setLoading(false)
     }
-  }, [languageId, authLoading])
+  }, [])
+
+  // Initial load of chapters
+  useEffect(() => {
+    if (!authLoading && languageId) {
+      loadChapters(languageId)
+    } else if (!authLoading && !languageId) {
+      setLoading(false)
+    }
+  }, [languageId, authLoading, loadChapters])
+
+  // Listen for language change events to refetch chapters
+  useEffect(() => {
+    const handleLanguageChange = async () => {
+      // Small delay to ensure user data is updated first
+      setTimeout(async () => {
+        // Refetch user to get the new languageId
+        const res = await fetch('/api/user/profile')
+        if (res.ok) {
+          const userData = await res.json()
+          const newLanguageId = userData.result?.selectedLanguage?.id
+          if (newLanguageId) {
+            loadChapters(newLanguageId)
+          }
+        }
+      }, 100)
+    }
+
+    window.addEventListener(LANGUAGE_CHANGED_EVENT, handleLanguageChange)
+    return () => {
+      window.removeEventListener(LANGUAGE_CHANGED_EVENT, handleLanguageChange)
+    }
+  }, [loadChapters])
 
   // Scroll spy logic
   useEffect(() => {
@@ -272,23 +306,37 @@ function LearnContent() {
         const unit = displayedUnits[activeIndex]
         const color = UNIT_COLORS[activeIndex % UNIT_COLORS.length]
 
-        setActiveUnit({
-          unitIndex: activeIndex + 1,
-          chapterTitle: unit.chapterTitle,
-          unitTitle: unit.title,
-          color
+        setActiveUnit((prev) => {
+          // Only update if values actually changed to prevent unnecessary re-renders
+          if (
+            prev?.unitIndex !== activeIndex + 1 ||
+            prev?.chapterTitle !== unit.chapterTitle ||
+            prev?.unitTitle !== unit.title
+          ) {
+            return {
+              unitIndex: activeIndex + 1,
+              chapterTitle: unit.chapterTitle,
+              unitTitle: unit.title,
+              color
+            }
+          }
+          return prev
         })
       }
     }
 
-    window.addEventListener("scroll", handleScroll)
-    // Initial set
-    if (displayedUnits.length > 0 && !activeUnit) {
+    // Initial set with a small delay to ensure refs are populated
+    const timeoutId = setTimeout(() => {
       handleScroll()
-    }
+    }, 100)
 
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [displayedUnits, activeUnit])
+    window.addEventListener("scroll", handleScroll)
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll)
+      clearTimeout(timeoutId)
+    }
+  }, [displayedUnits]) // Re-run when displayedUnits changes
 
   const handlePrevChapter = () => {
     setCurrentChapterIndex((prev) => Math.max(0, prev - 1))

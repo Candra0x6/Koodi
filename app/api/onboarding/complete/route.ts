@@ -36,7 +36,6 @@ export async function POST(request: NextRequest) {
       user = await prisma.user.update({
         where: { id: session.user.id },
         data: {
-          selectedLanguageId,
           learningGoal,
           avatarId,
           placementTestScore,
@@ -51,6 +50,26 @@ export async function POST(request: NextRequest) {
         { status: 401 }
       );
     }
+
+    // Create UserLanguageProgress for this language
+    await prisma.userLanguageProgress.upsert({
+      where: {
+        userId_languageId: {
+          userId,
+          languageId: selectedLanguageId,
+        },
+      },
+      update: {
+        isActive: true,
+        skillLevel: 'BEGINNER',
+      },
+      create: {
+        userId,
+        languageId: selectedLanguageId,
+        skillLevel: 'BEGINNER',
+        isActive: true,
+      },
+    });
 
     // Get the selected language
     const language = await prisma.language.findUnique({

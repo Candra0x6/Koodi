@@ -9,12 +9,15 @@ import {
   MissionList,
   RewardPopup,
 } from "@/components/duolingo-ui"
+import { LanguageSelector } from "@/components/language/language-selector"
+import { AddLanguageModal } from "@/components/language/add-language-modal"
 import { Confetti, type ConfettiRef } from "@/components/confetti"
 import { Home, Zap, Shield, User, Settings, Bell, Star, Flame, Gem, MoreHorizontal, X, Archive, Loader2 } from "lucide-react"
 import { usePathname, useRouter } from 'next/navigation'
 import Image from 'next/image'
-import { useAuth } from "@/lib/hooks/use-auth"
+import { useAuth, LANGUAGE_CHANGED_EVENT } from "@/lib/hooks/use-auth"
 import { useMissions } from "@/lib/hooks/use-missions"
+import { useUserLanguages } from "@/lib/hooks/use-user-languages"
 import { Toaster } from "react-hot-toast"
 import { LISTNAVITEMS } from '@/lib/constant/nav-items'
 import BottomNavigation from '@/components/navigation/bottom-navigation-mobile'
@@ -26,8 +29,25 @@ function layout({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const { user, isAuthenticated, isLoading } = useAuth()
 
+  // Language management
+  const {
+    languages,
+    activeLanguage,
+    isLoading: languagesLoading,
+    addLanguage,
+    switchLanguage,
+  } = useUserLanguages()
+  const [showAddLanguage, setShowAddLanguage] = useState(false)
+
+  // Handle language switch with page refresh
+  const handleLanguageSwitch = async (languageId: string) => {
+    await switchLanguage(languageId)
+    // Dispatch custom event to notify all components about language change
+    window.dispatchEvent(new CustomEvent(LANGUAGE_CHANGED_EVENT))
+  }
+
   // Mission system integration
-  const { missions, isLoading: missionsLoading, claimReward, refetch } = useMissions()
+  const { dailyMissions, isLoading: missionsLoading, claimReward, refetch } = useMissions()
   const [claimedReward, setClaimedReward] = useState<{
     xp?: number
     gems?: number
@@ -44,9 +64,51 @@ function layout({ children }: { children: React.ReactNode }) {
     }
   }
 
-  // Calculate daily XP progress (XP earned today)
-  const [dailyXp, setDailyXp] = useState(0)
-  const dailyGoal = 10 // Default daily goal
+  // Daily XP goal - get from user data
+  const dailyXp = user?.dailyXp ?? 0
+  const [dailyGoal, setDailyGoal] = useState(50)
+  const [showEditGoal, setShowEditGoal] = useState(false)
+  const [editGoalValue, setEditGoalValue] = useState(50)
+  const [isUpdatingGoal, setIsUpdatingGoal] = useState(false)
+
+  // Update dailyGoal when user data loads
+  useEffect(() => {
+    if (user?.dailyXpGoal) {
+      setDailyGoal(user.dailyXpGoal)
+      setEditGoalValue(user.dailyXpGoal)
+    }
+  }, [user?.dailyXpGoal])
+
+  // Handle updating daily goal
+  const handleUpdateGoal = async () => {
+    if (editGoalValue < 10 || editGoalValue > 500) return
+    
+    setIsUpdatingGoal(true)
+    try {
+      const res = await fetch('/api/user/daily-goal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ dailyXpGoal: editGoalValue }),
+      })
+      
+      if (res.ok) {
+        setDailyGoal(editGoalValue)
+        setShowEditGoal(false)
+      }
+    } catch (error) {
+      console.error('Failed to update goal:', error)
+    } finally {
+      setIsUpdatingGoal(false)
+    }
+  }
+
+  // Goal options
+  const goalOptions = [
+    { value: 10, label: 'Casual', description: '10 XP per day' },
+    { value: 20, label: 'Regular', description: '20 XP per day' },
+    { value: 50, label: 'Serious', description: '50 XP per day' },
+    { value: 100, label: 'Intense', description: '100 XP per day' },
+  ]
 
   // Language icon mapping
   const languageIcons: Record<string, string> = {
@@ -56,9 +118,26 @@ function layout({ children }: { children: React.ReactNode }) {
     typescript: "/typescript.png",
   }
 
-  const selectedLanguageSlug = user?.selectedLanguage?.slug || "python"
-  const languageIcon = languageIcons[selectedLanguageSlug] || "/python.png"
-  const languageName = user?.selectedLanguage?.name || "Python"
+  // Get all available languages (for add language modal)
+  const [allLanguages, setAllLanguages] = useState<any[]>([])
+
+  useEffect(() => {
+    const fetchAllLanguages = async () => {
+      try {
+        const res = await fetch('/api/languages')
+        if (res.ok) {
+          const data = await res.json()
+          // Filter out already selected languages
+          const selectedLangIds = new Set(languages.map(l => l.languageId))
+          setAllLanguages(data.filter((lang: any) => !selectedLangIds.has(lang.id)))
+        }
+      } catch (error) {
+        console.error('Failed to fetch languages:', error)
+      }
+    }
+
+    fetchAllLanguages()
+  }, [languages])
   return (
     <div className="">
       <Toaster position="top-center" />    <div className="container mx-auto px-4 py-8 flex flex-col lg:flex-row gap-8">
@@ -82,19 +161,25 @@ function layout({ children }: { children: React.ReactNode }) {
         </main>
         {/* Right Sidebar (Desktop) */}
         <div className="hidden lg:flex flex-col gap-6 w-80 shrink-0">
-          <div className="flex justify-between items-center mb-2">
+          {/* Language Selector */}
+          {!languagesLoading && (
+            <LanguageSelector
+              activeLanguage={activeLanguage}
+              allLanguages={languages}
+              onLanguageSwitch={handleLanguageSwitch}
+              onAddLanguage={() => setShowAddLanguage(true)}
+            />
+          )}
 
-            {/* Language */}
-            <div className='flex items-center gap-x-2'>
-              <Image src={languageIcon} alt={languageName} width={30} height={30} />
-            </div>
+          {/* Stats Row */}
+          <div className="flex justify-between items-center">
             {/* Streak */}
-            <div className="flex items-center justify-end gap-1">
+            <div className="flex items-center justify-center gap-1">
               <span className='text-2xl'>🔥</span>
               <p className="font-bold text-gray-700 text-lg">{user?.streak ?? 0}</p>
             </div>
             {/* Gems/XP */}
-            <div className="flex items-center justify-end gap-1">
+            <div className="flex items-center justify-center gap-1">
               <span className='text-2xl'>💎</span>
               <p className="font-bold text-gray-700 text-lg">{user?.xp ?? 0}</p>
             </div>
@@ -108,7 +193,7 @@ function layout({ children }: { children: React.ReactNode }) {
 
           {/* Dynamic Mission List */}
           <MissionList
-            missions={missions}
+            missions={dailyMissions}
             title="Daily Quests"
             onClaim={handleClaimMission}
             isLoading={missionsLoading}
@@ -134,7 +219,10 @@ function layout({ children }: { children: React.ReactNode }) {
           <Card className="p-4 space-y-4 border-2 border-gray-200 shadow-none">
             <div className="flex items-center justify-between">
               <h3 className="font-bold text-lg text-gray-700">XP Progress</h3>
-              <button className="text-blue-400 font-bold text-xs uppercase hover:text-blue-500 transition-colors">
+              <button 
+                onClick={() => setShowEditGoal(true)}
+                className="text-blue-400 font-bold text-xs uppercase hover:text-blue-500 transition-colors"
+              >
                 Edit Goal
               </button>
             </div>
@@ -153,6 +241,69 @@ function layout({ children }: { children: React.ReactNode }) {
               </div>
             </div>
           </Card>
+
+          {/* Edit Goal Modal */}
+          {showEditGoal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+              <div className="w-full max-w-sm bg-white rounded-3xl shadow-2xl overflow-hidden">
+                <div className="p-6 border-b border-gray-100">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-bold text-xl text-gray-800">Daily Goal</h3>
+                    <button 
+                      onClick={() => setShowEditGoal(false)}
+                      className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                    >
+                      <X className="w-5 h-5 text-gray-500" />
+                    </button>
+                  </div>
+                  <p className="text-sm text-gray-500 mt-1">Choose your daily XP target</p>
+                </div>
+                
+                <div className="p-4 space-y-2">
+                  {goalOptions.map((option) => (
+                    <button
+                      key={option.value}
+                      onClick={() => setEditGoalValue(option.value)}
+                      className={`w-full p-4 rounded-2xl border-2 transition-all flex items-center justify-between ${
+                        editGoalValue === option.value
+                          ? 'bg-blue-50 border-blue-400'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      <div className="text-left">
+                        <p className={`font-bold ${editGoalValue === option.value ? 'text-blue-600' : 'text-gray-700'}`}>
+                          {option.label}
+                        </p>
+                        <p className="text-sm text-gray-500">{option.description}</p>
+                      </div>
+                      {editGoalValue === option.value && (
+                        <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                          <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                          </svg>
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="p-4 border-t border-gray-100">
+                  <Button
+                    variant="primary"
+                    onClick={handleUpdateGoal}
+                    disabled={isUpdatingGoal}
+                    className="w-full bg-blue-500 border-blue-600 hover:bg-blue-400"
+                  >
+                    {isUpdatingGoal ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      'Save Goal'
+                    )}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Create Profile - Show only for guests or unauthenticated */}
           {(!isAuthenticated || user?.isGuest) && (
@@ -212,6 +363,14 @@ function layout({ children }: { children: React.ReactNode }) {
 
         {/* Mobile Bottom Navigation */}
         <BottomNavigation />
+
+        {/* Add Language Modal */}
+        <AddLanguageModal
+          isOpen={showAddLanguage}
+          onClose={() => setShowAddLanguage(false)}
+          availableLanguages={allLanguages}
+          onAddLanguage={addLanguage}
+        />
       </div>
     </div>
   )

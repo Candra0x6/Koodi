@@ -111,4 +111,4 @@ Should become:
 - [x] Navbar Responsive
 - [x] Guest user on Boarding
 - [x] Animate Reward claim /Improve the UI
-- [ ] Course add selection (UI & FUNCTIONALITY)
+- [x] Course add selection (UI & FUNCTIONALITY)

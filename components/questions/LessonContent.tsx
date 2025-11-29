@@ -718,7 +718,7 @@ export default function LessonContent({
   lessonId,
 }: LessonContentProps) {
   const {user} = useAuth()
-  const languageId = user?.selectedLanguageId
+  const languageId = user?.selectedLanguage?.id
   const [lesson, setLesson] = useState<Lesson | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

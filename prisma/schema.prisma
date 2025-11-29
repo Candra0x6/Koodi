@@ -16,10 +16,6 @@ model User {
   isGuest   Boolean  @default(false)
   createdAt DateTime @default(now())
 
-  // onboarding choice
-  selectedLanguageId String?
-  selectedLanguage   Language? @relation(fields: [selectedLanguageId], references: [id])
-
   // onboarding data
   learningGoal        LearningGoal?
   avatarId            String?
@@ -33,6 +29,10 @@ model User {
   longestStreak  Int       @default(0)
   lastStreakDate DateTime? // Last day a lesson was completed
   lastActiveAt   DateTime?
+  dailyXpGoal    Int       @default(50) // User's daily XP goal
+
+  // language progress tracking
+  languageProgresses UserLanguageProgress[]
 
   progresses        UserUnitProgress[]
   completedLessons  UserLessonCompletion[]
@@ -48,11 +48,43 @@ model Language {
   name String
   slug String @unique // e.g. python, java
 
-  chapters       Chapter[]
-  users          User[]
-  placementTests PlacementTest[]
-  questions      Question[]
-  missions       Mission[]
+  chapters              Chapter[]
+  userLanguageProgress  UserLanguageProgress[]
+  placementTests        PlacementTest[]
+  questions             Question[]
+  missions              Mission[]
+}
+
+// User language progress — tracks which languages user is learning and their progress per language
+model UserLanguageProgress {
+  id         String  @id @default(cuid())
+  userId     String
+  languageId String
+  
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  language Language @relation(fields: [languageId], references: [id])
+
+  // Current chapter progress in this language
+  currentChapterId String?
+  currentChapter   Chapter? @relation(fields: [currentChapterId], references: [id])
+
+  // Skill level for this language
+  skillLevel SkillLevel @default(BEGINNER)
+
+  // Progress tracking
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@unique([userId, languageId])
+  @@index([userId])
+  @@index([languageId])
+}
+
+enum SkillLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
 }
 
 model Chapter {
@@ -63,8 +95,9 @@ model Chapter {
   languageId String
   language   Language @relation(fields: [languageId], references: [id])
 
-  units     Unit[]
-  questions Question[]
+  units                       Unit[]
+  questions                   Question[]
+  userLanguageProgressChapters UserLanguageProgress[]
 }
 
 model Unit {
