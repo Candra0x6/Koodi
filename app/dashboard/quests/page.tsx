@@ -36,7 +36,7 @@ export default function QuestsPage() {
   const dailyProgress = totalDaily > 0 ? (completedDaily / totalDaily) * 100 : 0
 
   return (
-    <div className="max-w-2xl mx-auto pb-20">
+    <div className="pb-20 w-full">
       {/* Header */}
       <div className="flex items-center gap-4 mb-8">
         <div className="w-16 h-16 bg-yellow-400 rounded-2xl flex items-center justify-center shadow-lg transform -rotate-3">

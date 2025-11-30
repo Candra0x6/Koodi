@@ -70,15 +70,15 @@ export default function LeaderboardPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto pb-20 space-y-6">
-      <div className="text-center space-y-2 mb-8">
-        <div className="w-20 h-20 bg-yellow-100 rounded-2xl flex items-center justify-center mx-auto mb-4 transform rotate-3">
-          <Shield className="w-10 h-10 text-yellow-600" />
+    <div className="w-full pb-20 space-y-6">
+       <div className="flex items-center gap-4 mb-8">
+        <div className="w-16 h-16 bg-yellow-400 rounded-2xl flex items-center justify-center shadow-lg transform -rotate-3">
+          <Shield className="w-8 h-8 text-yellow-900 fill-current" />
         </div>
-        <h1 className="text-3xl font-extrabold text-gray-700">Leaderboard</h1>
-        <p className="text-gray-500 font-medium">
-          Compete with others and climb the ranks!
-        </p>
+        <div>
+          <h1 className="text-2xl font-extrabold text-gray-700">Leaderboard</h1>
+          <p className="text-gray-500 font-medium">Compete with others and climb the ranks!</p>
+        </div>
       </div>
 
       <div className="space-y-3">

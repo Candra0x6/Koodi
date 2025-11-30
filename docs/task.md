@@ -112,3 +112,6 @@ Should become:
 - [x] Guest user on Boarding
 - [x] Animate Reward claim /Improve the UI
 - [x] Course add selection (UI & FUNCTIONALITY)
+- [ ] Hearth mechanism (Gems)
+- [ ] Fix ui code lessons  
+- [ ] Make better question pick

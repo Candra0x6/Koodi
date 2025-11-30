@@ -418,11 +418,11 @@ function LearnContent() {
 
   const currentHeaderColor = activeUnit?.color || UNIT_COLORS[0]
   return (
-    <div className="min-h-screen bg-background pb-32">
+    <div className="min-h-screen bg-background pb-32 w-full">
 
       <div className="max-w-full mx-auto bg-background min-h-screen relative">
         {/* Sticky Chapter Header and Navigation */}
-        <div className="sticky top-16 z-40">
+        <div className="sticky top-10 z-40 ">
           <Button
             onClick={() => setIsChapterListOpen(!isChapterListOpen)}
             className={cn(

@@ -82,7 +82,7 @@ function layout({ children }: { children: React.ReactNode }) {
   // Handle updating daily goal
   const handleUpdateGoal = async () => {
     if (editGoalValue < 10 || editGoalValue > 500) return
-    
+
     setIsUpdatingGoal(true)
     try {
       const res = await fetch('/api/user/daily-goal', {
@@ -90,7 +90,7 @@ function layout({ children }: { children: React.ReactNode }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ dailyXpGoal: editGoalValue }),
       })
-      
+
       if (res.ok) {
         setDailyGoal(editGoalValue)
         setShowEditGoal(false)
@@ -139,10 +139,11 @@ function layout({ children }: { children: React.ReactNode }) {
     fetchAllLanguages()
   }, [languages])
   return (
-    <div className="">
-      <Toaster position="top-center" />    <div className="container mx-auto px-4 py-8 flex flex-col lg:flex-row gap-8">
+    <div className="w-full mx-auto">
+      <Toaster position="top-center" />    
+      <div className="mx-auto w-full items-start pt-10 justify-center flex flex-col lg:flex-row gap-8">
         {/* Sidebar Navigation (Desktop) */}
-        <aside className="hidden lg:flex flex-col gap-2 w-64 shrink-0 sticky top-24 h-[calc(100vh-8rem)]">
+        <aside className="hidden lg:flex flex-col gap-2  ">
           {LISTNAVITEMS.map((item, i) => (
             <div
               onClick={() => { router.push(item.href) }}
@@ -155,7 +156,7 @@ function layout({ children }: { children: React.ReactNode }) {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 space-y-12 max-w-3xl">
+        <main className="flex-1 space-y-12 max-w-2xl">
 
           {children}
         </main>
@@ -219,7 +220,7 @@ function layout({ children }: { children: React.ReactNode }) {
           <Card className="p-4 space-y-4 border-2 border-gray-200 shadow-none">
             <div className="flex items-center justify-between">
               <h3 className="font-bold text-lg text-gray-700">XP Progress</h3>
-              <button 
+              <button
                 onClick={() => setShowEditGoal(true)}
                 className="text-blue-400 font-bold text-xs uppercase hover:text-blue-500 transition-colors"
               >
@@ -249,7 +250,7 @@ function layout({ children }: { children: React.ReactNode }) {
                 <div className="p-6 border-b border-gray-100">
                   <div className="flex items-center justify-between">
                     <h3 className="font-bold text-xl text-gray-800">Daily Goal</h3>
-                    <button 
+                    <button
                       onClick={() => setShowEditGoal(false)}
                       className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                     >
@@ -258,17 +259,16 @@ function layout({ children }: { children: React.ReactNode }) {
                   </div>
                   <p className="text-sm text-gray-500 mt-1">Choose your daily XP target</p>
                 </div>
-                
+
                 <div className="p-4 space-y-2">
                   {goalOptions.map((option) => (
                     <button
                       key={option.value}
                       onClick={() => setEditGoalValue(option.value)}
-                      className={`w-full p-4 rounded-2xl border-2 transition-all flex items-center justify-between ${
-                        editGoalValue === option.value
+                      className={`w-full p-4 rounded-2xl border-2 transition-all flex items-center justify-between ${editGoalValue === option.value
                           ? 'bg-blue-50 border-blue-400'
                           : 'border-gray-200 hover:border-gray-300'
-                      }`}
+                        }`}
                     >
                       <div className="text-left">
                         <p className={`font-bold ${editGoalValue === option.value ? 'text-blue-600' : 'text-gray-700'}`}>

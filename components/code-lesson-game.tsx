@@ -362,7 +362,10 @@ export function CodeLessonGame({ lessonId }: { lessonId: string;}) {
         <pre className="whitespace-pre-wrap">
           {currentQuestion.codeSegments?.map((segment) => {
             const isSelected = selectedSegmentId === segment.id
-            const isRevealed = gameState === "feedback" && segment.isBug
+            const isBug = segment.isBug
+            const showCorrect = gameState === "feedback" && isBug && feedbackStatus === "correct"
+            const showWrongSelection = gameState === "feedback" && isSelected && !isBug && feedbackStatus === "incorrect"
+            const showActualBug = gameState === "feedback" && isBug && feedbackStatus === "incorrect"
 
             return (
               <motion.span
@@ -371,11 +374,9 @@ export function CodeLessonGame({ lessonId }: { lessonId: string;}) {
                 className={cn(
                   "cursor-pointer px-1 rounded transition-colors border-2 border-transparent inline-block",
                   isSelected && gameState === "playing" && "bg-blue-500/30 border-blue-500",
-                  isRevealed && feedbackStatus === "correct" && "bg-green-500/30 border-green-500 text-green-400",
-                  isRevealed &&
-                    feedbackStatus === "incorrect" &&
-                    segment.id === selectedSegmentId &&
-                    "bg-red-500/30 border-red-500",
+                  showCorrect && "bg-green-500/30 border-green-500 text-green-400",
+                  showWrongSelection && "bg-red-500/30 border-red-500 text-red-400",
+                  showActualBug && "bg-green-500/30 border-green-500 text-green-400",
                   gameState === "playing" && !isSelected && "hover:bg-white/10",
                 )}
                 whileTap={{ scale: 0.95 }}
@@ -396,56 +397,101 @@ export function CodeLessonGame({ lessonId }: { lessonId: string;}) {
         <pre>{currentQuestion.codeBlock}</pre>
       </div>
       <div className="grid gap-3">
-        {currentQuestion.options?.map((option) => (
-          <div
-            key={option.id}
-            onClick={() => gameState === "playing" && setSelectedOptionId(option.id)}
-            className={cn(
-              "p-4 rounded-2xl border-2 border-b-4 cursor-pointer transition-all active:border-b-2 active:translate-y-[2px] font-mono text-sm md:text-base",
-              selectedOptionId === option.id
-                ? "bg-card border-blue-500 cursor-default"
-                : "bg-card border-border hover:bg-muted/50",
-            )}
-          >
-            {option.text}
-          </div>
-        ))}
+        {currentQuestion.options?.map((option) => {
+          const isSelected = selectedOptionId === option.id
+          const showCorrect = gameState === "feedback" && option.isCorrect
+          const showIncorrect = gameState === "feedback" && isSelected && !option.isCorrect
+
+          return (
+            <div
+              key={option.id}
+              onClick={() => gameState === "playing" && setSelectedOptionId(option.id)}
+              className={cn(
+                "p-4 rounded-2xl border-2 border-b-4 cursor-pointer transition-all active:border-b-2 active:translate-y-[2px] font-mono text-sm md:text-base",
+                gameState === "playing" && isSelected && "bg-card border-blue-500 cursor-default",
+                gameState === "playing" && !isSelected && "bg-card border-border hover:bg-muted/50",
+                showCorrect && "bg-green-100 border-green-500 text-green-700",
+                showIncorrect && "bg-red-100 border-red-500 text-red-700",
+                gameState === "feedback" && !showCorrect && !showIncorrect && "bg-card border-border opacity-50",
+              )}
+            >
+              {option.text}
+            </div>
+          )
+        })}
       </div>
     </div>
   )
 
-  const renderReorder = () => (
-    <div className="flex flex-col gap-6">
-      <Reorder.Group axis="y" values={reorderItems} onReorder={setReorderItems} className="flex flex-col gap-3">
-        {reorderItems.map((item) => (
-          <Reorder.Item key={item.id} value={item}>
-            <div
-              className={cn(
-                "p-4 rounded-2xl border-2 border-b-4 cursor-grab active:cursor-grabbing bg-card border-border hover:bg-muted/50 flex items-center gap-4 font-mono text-sm md:text-base select-none",
-                gameState === "feedback" && "pointer-events-none",
-              )}
-            >
-              <GripVertical className="text-muted-foreground w-5 h-5 shrink-0" />
-              <span>{item.text}</span>
-            </div>
-          </Reorder.Item>
-        ))}
-      </Reorder.Group>
-    </div>
-  )
+  const renderReorder = () => {
+    const correctOrder = currentQuestion.correctOrder || []
+    const currentOrder = reorderItems.map((item) => item.index)
+    const isOrderCorrect = JSON.stringify(currentOrder) === JSON.stringify(correctOrder)
+
+    return (
+      <div className="flex flex-col gap-6">
+        <Reorder.Group axis="y" values={reorderItems} onReorder={setReorderItems} className="flex flex-col gap-3">
+          {reorderItems.map((item, idx) => {
+            const isInCorrectPosition = gameState === "feedback" && item.index === correctOrder[idx]
+            const isInWrongPosition = gameState === "feedback" && item.index !== correctOrder[idx]
+
+            return (
+              <Reorder.Item key={item.id} value={item}>
+                <div
+                  className={cn(
+                    "p-4 rounded-2xl border-2 border-b-4 cursor-grab active:cursor-grabbing flex items-center gap-4 font-mono text-sm md:text-base select-none",
+                    gameState === "playing" && "bg-card border-border hover:bg-muted/50",
+                    gameState === "feedback" && "pointer-events-none",
+                    gameState === "feedback" && isOrderCorrect && "bg-green-100 border-green-500 text-green-700",
+                    isInCorrectPosition && !isOrderCorrect && "bg-green-100 border-green-500 text-green-700",
+                    isInWrongPosition && "bg-red-100 border-red-500 text-red-700",
+                  )}
+                >
+                  <GripVertical className={cn(
+                    "w-5 h-5 shrink-0",
+                    gameState === "playing" && "text-muted-foreground",
+                    isInCorrectPosition && "text-green-600",
+                    isInWrongPosition && "text-red-600",
+                  )} />
+                  <span>{item.text}</span>
+                </div>
+              </Reorder.Item>
+            )
+          })}
+        </Reorder.Group>
+      </div>
+    )
+  }
 
   const renderFillBlank = () => {
     const selectedOption = currentQuestion.options?.find((o) => o.id === selectedOptionId)
+    const correctOption = currentQuestion.options?.find((o) => o.isCorrect)
+    const showCorrect = gameState === "feedback" && feedbackStatus === "correct"
+    const showIncorrect = gameState === "feedback" && feedbackStatus === "incorrect"
 
     return (
       <div className="flex flex-col gap-8">
-        <div className="bg-[#1e1e1e] p-6 rounded-2xl font-mono text-lg md:text-xl text-white shadow-inner leading-relaxed">
+        <div className={cn(
+          "bg-[#1e1e1e] p-6 rounded-2xl font-mono text-lg md:text-xl text-white shadow-inner leading-relaxed",
+          showCorrect && "ring-2 ring-green-500",
+          showIncorrect && "ring-2 ring-red-500",
+        )}>
           <span>{currentQuestion.codeBefore}</span>
-          <span className="inline-flex items-center justify-center min-w-[80px] h-[1.5em] mx-1 align-middle border-b-2 border-white/30 bg-white/5 rounded px-2 relative top-[1px]">
+          <span className={cn(
+            "inline-flex items-center justify-center min-w-[80px] h-[1.5em] mx-1 align-middle border-b-2 rounded px-2 relative top-[1px]",
+            gameState === "playing" && "border-white/30 bg-white/5",
+            showCorrect && "border-green-500 bg-green-500/20",
+            showIncorrect && "border-red-500 bg-red-500/20",
+          )}>
             {selectedOption ? (
               <motion.span
                 layoutId={`option-${selectedOption.id}`}
-                className="text-blue-400 font-bold"
+                className={cn(
+                  "font-bold",
+                  gameState === "playing" && "text-blue-400",
+                  showCorrect && "text-green-400",
+                  showIncorrect && "text-red-400",
+                )}
                 transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
               >
                 {selectedOption.text}
@@ -460,20 +506,33 @@ export function CodeLessonGame({ lessonId }: { lessonId: string;}) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {currentQuestion.options?.map((option) => {
             const isSelected = selectedOptionId === option.id
+            const isCorrectOption = option.isCorrect
+            const showOptionCorrect = gameState === "feedback" && isCorrectOption
+            const showOptionIncorrect = gameState === "feedback" && isSelected && !isCorrectOption
+
             return (
               <button
                 key={option.id}
                 onClick={() => gameState === "playing" && setSelectedOptionId(option.id)}
                 className={cn(
                   "h-14 rounded-xl border-2 border-b-4 font-mono text-lg font-medium transition-all relative",
-                  isSelected
-                    ? "bg-muted border-transparent text-transparent cursor-default"
-                    : "bg-card border-border hover:bg-muted/50 active:border-b-2 active:translate-y-[2px]",
+                  gameState === "playing" && isSelected && "bg-muted border-transparent text-transparent cursor-default",
+                  gameState === "playing" && !isSelected && "bg-card border-border hover:bg-muted/50 active:border-b-2 active:translate-y-[2px]",
+                  showOptionCorrect && "bg-green-100 border-green-500",
+                  showOptionIncorrect && "bg-red-100 border-red-500",
+                  gameState === "feedback" && !showOptionCorrect && !showOptionIncorrect && "bg-card border-border opacity-50",
                 )}
                 disabled={gameState !== "playing"}
               >
-                <span className={cn("absolute inset-0 flex items-center justify-center", isSelected && "opacity-0")}>
-                  {isSelected ? (
+                <span className={cn(
+                  "absolute inset-0 flex items-center justify-center",
+                  gameState === "playing" && isSelected && "opacity-0",
+                  showOptionCorrect && "text-green-700",
+                  showOptionIncorrect && "text-red-700",
+                )}>
+                  {gameState === "playing" && isSelected ? (
+                    option.text
+                  ) : gameState === "feedback" ? (
                     option.text
                   ) : (
                     <motion.span layoutId={`option-${option.id}`} className="text-foreground">
@@ -489,56 +548,91 @@ export function CodeLessonGame({ lessonId }: { lessonId: string;}) {
     )
   }
 
-  const renderPredictOutput = () => (
-    <div className="flex flex-col gap-6">
-      <div className="bg-[#1e1e1e] p-6 rounded-2xl font-mono text-lg text-white shadow-inner relative overflow-hidden">
-        <div className="absolute top-0 right-0 p-2 opacity-20">
-          <Terminal className="w-12 h-12" />
-        </div>
-        <pre>{currentQuestion.codeBlock}</pre>
-        <div className="mt-4 pt-4 border-t border-white/10 text-muted-foreground flex items-center gap-2">
-          <span className="text-green-400">➜</span>
-          <span className="animate-pulse">_</span>
-        </div>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-        {currentQuestion.options?.map((option) => (
-          <div
-            key={option.id}
-            onClick={() => gameState === "playing" && setSelectedOptionId(option.id)}
-            className={cn(
-              "p-4 rounded-2xl border-2 border-b-4 cursor-pointer transition-all active:border-b-2 active:translate-y-[2px] font-mono text-center font-bold text-lg",
-              selectedOptionId === option.id
-                ? "bg-blue-100 border-blue-500 text-blue-600"
-                : "bg-card border-border hover:bg-muted/50",
-            )}
-          >
-            {option.text}
+  const renderPredictOutput = () => {
+    const selectedOption = currentQuestion.options?.find((o) => o.id === selectedOptionId)
+    const showCorrect = gameState === "feedback" && feedbackStatus === "correct"
+    const showIncorrect = gameState === "feedback" && feedbackStatus === "incorrect"
+
+    return (
+      <div className="flex flex-col gap-6">
+        <div className="bg-[#1e1e1e] p-6 rounded-2xl font-mono text-lg text-white shadow-inner relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-2 opacity-20">
+            <Terminal className="w-12 h-12" />
           </div>
-        ))}
+          <pre>{currentQuestion.codeBlock}</pre>
+          <div className={cn(
+            "mt-4 pt-4 border-t border-white/10 flex items-center gap-2",
+            gameState === "playing" && "text-muted-foreground",
+            showCorrect && "text-green-400",
+            showIncorrect && "text-red-400",
+          )}>
+            <span className="text-green-400">➜</span>
+            {gameState === "feedback" && selectedOption ? (
+              <span className={cn(
+                "font-bold",
+                showCorrect && "text-green-400",
+                showIncorrect && "text-red-400",
+              )}>{selectedOption.text}</span>
+            ) : (
+              <span className="animate-pulse">_</span>
+            )}
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          {currentQuestion.options?.map((option) => {
+            const isSelected = selectedOptionId === option.id
+            const isCorrectOption = option.isCorrect
+            const showOptionCorrect = gameState === "feedback" && isCorrectOption
+            const showOptionIncorrect = gameState === "feedback" && isSelected && !isCorrectOption
+
+            return (
+              <div
+                key={option.id}
+                onClick={() => gameState === "playing" && setSelectedOptionId(option.id)}
+                className={cn(
+                  "p-4 rounded-2xl border-2 border-b-4 cursor-pointer transition-all active:border-b-2 active:translate-y-[2px] font-mono text-center font-bold text-lg",
+                  gameState === "playing" && isSelected && "bg-blue-100 border-blue-500 text-blue-600",
+                  gameState === "playing" && !isSelected && "bg-card border-border hover:bg-muted/50",
+                  showOptionCorrect && "bg-green-100 border-green-500 text-green-700",
+                  showOptionIncorrect && "bg-red-100 border-red-500 text-red-700",
+                  gameState === "feedback" && !showOptionCorrect && !showOptionIncorrect && "bg-card border-border opacity-50",
+                )}
+              >
+                {option.text}
+              </div>
+            )
+          })}
+        </div>
       </div>
-    </div>
-  )
+    )
+  }
 
   const renderLogicPuzzle = () => {
     const isUnlocked = gameState === "feedback" && feedbackStatus === "correct"
+    const isLocked = gameState === "feedback" && feedbackStatus === "incorrect"
 
     return (
       <div className="flex flex-col gap-8 items-center">
         <motion.div
           className="relative w-40 h-40 flex items-center justify-center"
-          animate={isUnlocked ? { scale: [1, 1.1, 1], rotate: [0, -5, 5, 0] } : {}}
+          animate={isUnlocked ? { scale: [1, 1.1, 1], rotate: [0, -5, 5, 0] } : isLocked ? { x: [0, -10, 10, -10, 10, 0] } : {}}
+          transition={isLocked ? { duration: 0.4 } : undefined}
         >
           <div
             className={cn(
               "w-32 h-32 rounded-3xl flex items-center justify-center shadow-xl transition-colors duration-500",
-              isUnlocked ? "bg-yellow-400" : "bg-slate-700",
+              isUnlocked && "bg-yellow-400",
+              isLocked && "bg-red-500",
+              gameState === "playing" && "bg-slate-700",
             )}
           >
             {isUnlocked ? (
               <Unlock className="w-16 h-16 text-yellow-900" />
             ) : (
-              <Lock className="w-16 h-16 text-slate-400" />
+              <Lock className={cn(
+                "w-16 h-16",
+                isLocked ? "text-red-200" : "text-slate-400",
+              )} />
             )}
           </div>
           {isUnlocked && (
@@ -550,27 +644,50 @@ export function CodeLessonGame({ lessonId }: { lessonId: string;}) {
               OPEN!
             </motion.div>
           )}
+          {isLocked && (
+            <motion.div
+              initial={{ opacity: 0, y: 0 }}
+              animate={{ opacity: 1, y: -50 }}
+              className="absolute top-0 text-red-500 font-bold text-2xl"
+            >
+              WRONG!
+            </motion.div>
+          )}
         </motion.div>
 
-        <div className="bg-slate-100 p-4 rounded-xl border-2 border-slate-200 font-mono font-bold text-slate-600">
+        <div className={cn(
+          "p-4 rounded-xl border-2 font-mono font-bold",
+          gameState === "playing" && "bg-slate-100 border-slate-200 text-slate-600",
+          isUnlocked && "bg-green-100 border-green-300 text-green-700",
+          isLocked && "bg-red-100 border-red-300 text-red-700",
+        )}>
           {currentQuestion.logicCondition}
         </div>
 
         <div className="grid grid-cols-1 gap-3 w-full">
-          {currentQuestion.options?.map((option) => (
-            <div
-              key={option.id}
-              onClick={() => gameState === "playing" && setSelectedOptionId(option.id)}
-              className={cn(
-                "p-4 rounded-2xl border-2 border-b-4 cursor-pointer transition-all active:border-b-2 active:translate-y-[2px] font-mono text-center font-bold",
-                selectedOptionId === option.id
-                  ? "bg-blue-100 border-blue-500 text-blue-600"
-                  : "bg-card border-border hover:bg-muted/50",
-              )}
-            >
-              {option.text}
-            </div>
-          ))}
+          {currentQuestion.options?.map((option) => {
+            const isSelected = selectedOptionId === option.id
+            const isCorrectOption = option.isCorrect
+            const showOptionCorrect = gameState === "feedback" && isCorrectOption
+            const showOptionIncorrect = gameState === "feedback" && isSelected && !isCorrectOption
+
+            return (
+              <div
+                key={option.id}
+                onClick={() => gameState === "playing" && setSelectedOptionId(option.id)}
+                className={cn(
+                  "p-4 rounded-2xl border-2 border-b-4 cursor-pointer transition-all active:border-b-2 active:translate-y-[2px] font-mono text-center font-bold",
+                  gameState === "playing" && isSelected && "bg-blue-100 border-blue-500 text-blue-600",
+                  gameState === "playing" && !isSelected && "bg-card border-border hover:bg-muted/50",
+                  showOptionCorrect && "bg-green-100 border-green-500 text-green-700",
+                  showOptionIncorrect && "bg-red-100 border-red-500 text-red-700",
+                  gameState === "feedback" && !showOptionCorrect && !showOptionIncorrect && "bg-card border-border opacity-50",
+                )}
+              >
+                {option.text}
+              </div>
+            )
+          })}
         </div>
       </div>
     )

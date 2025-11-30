@@ -92,7 +92,7 @@ export default function ProfilePage() {
   })
 
   return (
-    <div className="max-w-4xl mx-auto pb-20 space-y-8">
+    <div className="w-full pb-20 space-y-8">
       {/* Edit Form Modal */}
       {showEditForm && displayUser && (
         <ProfileEditForm 
