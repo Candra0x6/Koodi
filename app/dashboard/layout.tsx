@@ -2,10 +2,9 @@
 import React from 'react'
 
 import { useState, useRef, useEffect } from "react"
+import { Card } from "@/components/ui/card"
+import { ProgressBar } from "@/components/duolingo-ui"
 import {
-  Button,
-  Card,
-  ProgressBar,
   MissionList,
   RewardPopup,
 } from "@/components/duolingo-ui"
@@ -21,6 +20,7 @@ import { useUserLanguages } from "@/lib/hooks/use-user-languages"
 import { Toaster } from "react-hot-toast"
 import { LISTNAVITEMS } from '@/lib/constant/nav-items'
 import BottomNavigation from '@/components/navigation/bottom-navigation-mobile'
+import { Button } from '@/components/ui/button'
 
 
 function layout({ children }: { children: React.ReactNode }) {
@@ -147,9 +147,9 @@ function layout({ children }: { children: React.ReactNode }) {
           {LISTNAVITEMS.map((item, i) => (
             <div
               onClick={() => { router.push(item.href) }}
-              className={`w-full text-left flex justify-start gap-3 p-5  border-2 ${isSamePath(item.href) ? "bg-[#DDF4FF] border-[#84D8FF]" : "border-transparent"} rounded-xl  `}
+              className={`w-full text-left flex justify-start gap-3 p-5  border-2 ${isSamePath(item.href) ? "bg-secondary/20 border-secondary" : "border-transparent"} rounded-xl  `}
             >
-              <item.icon className={`w-5 h-5 ${isSamePath(item.href) ? "text-[#49bff6]" : "text-gray-400"}`} /> <span className={`font-bold ${isSamePath(item.href) ? "text-[#49bff6]" : "text-gray-400"}`}>{item.name}</span>
+              <item.icon className={`w-5 h-5 ${isSamePath(item.href) ? "text-secondary" : "text-muted-foreground"}`} /> <span className={`font-bold ${isSamePath(item.href) ? "text-secondary" : "text-muted-foreground"}`}>{item.name}</span>
             </div>
           ))
           }
@@ -312,8 +312,8 @@ function layout({ children }: { children: React.ReactNode }) {
               <div className="space-y-3">
                 <Button
                   variant="primary"
-                  onClick={() => router.push('/register')}
-                  className="w-full bg-green-500 border-green-600 hover:bg-green-400 text-white uppercase tracking-widest"
+                  onClick={() => router.push('/dashboard/profile')}
+                  className="w-full text-white"
                 >
                   Create a profile
                 </Button>

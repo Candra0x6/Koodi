@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { ChevronDown, Plus } from 'lucide-react'
-import { Button } from '@/components/duolingo-ui'
+import { Button } from '@/components/ui/button'
 import Image from 'next/image'
 import toast from 'react-hot-toast'
 

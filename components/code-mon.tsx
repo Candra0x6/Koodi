@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { X, Heart, Zap, Shield, Sword } from "lucide-react"
-import { Button, ProgressBar, Badge } from "@/components/duolingo-ui"
+import { Button } from "@/components/ui/button"
+import { ProgressBar, Badge } from "@/components/duolingo-ui"
 import { cn } from "@/lib/utils"
 
 type Phase = "intro" | "player-turn" | "enemy-turn" | "attack" | "win" | "lose"

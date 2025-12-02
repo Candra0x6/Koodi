@@ -1,7 +1,9 @@
 'use client';
 
 import { useOnboarding } from '@/lib/contexts/onboarding-context';
-import { Button, Card, ProgressBar } from '@/components/duolingo-ui';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { ProgressBar } from '@/components/duolingo-ui';
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 

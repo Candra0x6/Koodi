@@ -3,7 +3,8 @@
 import { useState, useEffect, useRef, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { X, Shield } from "lucide-react"
-import { Button, Badge } from "@/components/duolingo-ui"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/duolingo-ui"
 import { cn } from "@/lib/utils"
 
 // Game Constants

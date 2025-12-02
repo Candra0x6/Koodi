@@ -3,7 +3,8 @@
 import * as React from "react"
 import { motion, AnimatePresence, Reorder } from "framer-motion"
 import { X, Heart, Zap, RotateCcw, GripVertical, Terminal, Lock, Unlock, Timer } from "lucide-react"
-import { Button, ProgressBar, FeedbackSheet } from "@/components/duolingo-ui"
+import { Button } from "@/components/ui/button"
+import { ProgressBar, FeedbackSheet } from "@/components/duolingo-ui"
 import { Confetti } from "@/components/confetti"
 import { cn } from "@/lib/utils"
 import type {
@@ -363,7 +364,7 @@ export function CodeLessonGame({ lessonId }: { lessonId: string;}) {
   console.log("Segmenrs ",selectedSegmentId)
   const renderDebugHunt = () => (
     <div className="flex flex-col gap-6">
-      <div className="bg-[#1e1e1e] p-6 rounded-2xl font-mono text-lg text-white shadow-inner overflow-x-auto">
+      <div className="bg-slate-900 p-6 rounded-2xl font-mono text-lg text-white shadow-inner overflow-x-auto">
         <pre className="whitespace-pre-wrap">
           {currentQuestion.codeSegments?.map((segment) => {
             const isSelected = selectedSegmentId === segment.id
@@ -398,7 +399,7 @@ export function CodeLessonGame({ lessonId }: { lessonId: string;}) {
 
   const renderMultipleChoice = () => (
     <div className="flex flex-col gap-6">
-      <div className="bg-[#1e1e1e] p-6 rounded-2xl font-mono text-lg text-white shadow-inner">
+      <div className="bg-slate-900 p-6 rounded-2xl font-mono text-lg text-white shadow-inner">
         <pre>{currentQuestion.codeBlock}</pre>
       </div>
       <div className="grid gap-3">
@@ -477,7 +478,7 @@ export function CodeLessonGame({ lessonId }: { lessonId: string;}) {
     return (
       <div className="flex flex-col gap-8">
         <div className={cn(
-          "bg-[#1e1e1e] p-6 rounded-2xl font-mono text-lg md:text-xl text-white shadow-inner leading-relaxed",
+          "bg-code-editor-bg p-6 rounded-2xl font-mono text-lg md:text-xl text-white shadow-inner leading-relaxed",
           showCorrect && "ring-2 ring-green-500",
           showIncorrect && "ring-2 ring-red-500",
         )}>
@@ -560,7 +561,7 @@ export function CodeLessonGame({ lessonId }: { lessonId: string;}) {
 
     return (
       <div className="flex flex-col gap-6">
-        <div className="bg-[#1e1e1e] p-6 rounded-2xl font-mono text-lg text-white shadow-inner relative overflow-hidden">
+        <div className="bg-slate-900 p-6 rounded-2xl font-mono text-lg text-white shadow-inner relative overflow-hidden">
           <div className="absolute top-0 right-0 p-2 opacity-20">
             <Terminal className="w-12 h-12" />
           </div>
@@ -854,7 +855,7 @@ export function CodeLessonGame({ lessonId }: { lessonId: string;}) {
         <button onClick={onClose} className="text-muted-foreground hover:bg-muted p-2 rounded-full transition-colors">
           <X className="w-6 h-6" />
         </button>
-        <ProgressBar value={progress} className="flex-1" color="bg-[#58cc02]" />
+        <ProgressBar value={progress} className="flex-1" color="bg-primary" />
         <div className="flex items-center gap-1.5 text-red-500 font-bold">
           <Heart className="w-6 h-6 fill-current animate-pulse" />
           <span className="text-lg">{hearts}</span>

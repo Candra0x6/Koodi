@@ -1,7 +1,8 @@
 'use client';
 
 import { useOnboarding } from '@/lib/contexts/onboarding-context';
-import { Button, Card } from '@/components/duolingo-ui';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
 const AVATARS = [

@@ -1,7 +1,7 @@
 'use client';
 
 import { useOnboarding } from '@/lib/contexts/onboarding-context';
-import { Card } from '@/components/duolingo-ui';
+import { Card } from '@/components/ui/card';
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 

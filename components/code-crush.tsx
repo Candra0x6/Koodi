@@ -3,7 +3,8 @@
 import * as React from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { X, Zap, Hammer, Bomb, Repeat, Type, Braces, Code2, Variable, GitBranch } from "lucide-react"
-import { Button, ProgressBar } from "@/components/duolingo-ui"
+import { Button } from "@/components/ui/button"
+import { ProgressBar } from "@/components/duolingo-ui"
 import { Confetti } from "@/components/confetti"
 import { cn } from "@/lib/utils"
 

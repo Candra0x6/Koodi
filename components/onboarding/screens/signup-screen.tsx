@@ -1,9 +1,12 @@
 'use client';
 
 import { useOnboarding } from '@/lib/contexts/onboarding-context';
-import { Button, Card, Input } from '@/components/duolingo-ui';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
+import Image from 'next/image';
 
 export function SignupScreen() {
   const { updateState, nextStep } = useOnboarding();
@@ -76,8 +79,7 @@ const [isLoading, setIsLoading] = useState(false);
 
   return (
     <>
-    
-    
+  
     <Card className="w-full p-8">
       <h2 className="text-3xl font-extrabold text-foreground mb-2 text-center">Create your profile</h2>
       <p className="text-muted-foreground mb-8 text-center font-medium">Choose how you want to join Koodi</p>
@@ -122,7 +124,7 @@ const [isLoading, setIsLoading] = useState(false);
 
           {/* Guest Signup */}
           <Button
-            onClick={handleGuestSignup}
+            onClick={handleContinueAsGuest}
             variant="outline"
             className="w-full h-14 text-base"
           >
@@ -134,33 +136,8 @@ const [isLoading, setIsLoading] = useState(false);
       <p className="text-center text-sm font-bold text-muted-foreground">
         Already have an account? <a href="/login" className="text-primary hover:underline">Login</a>
       </p>
-       <div className="flex items-center justify-center gap-4 my-4">
-          <div className="flex-1 h-px bg-border" />
-          <span className="text-muted-foreground font-medium text-sm">or</span>
-          <div className="flex-1 h-px bg-border" />
-        </div>
-<div className="w-full flex justify-center">
+     
 
-        <Button
-          onClick={handleContinueAsGuest}
-          disabled={isLoading}
-          size="lg"
-          variant="outline"
-          className="w-full sm:w-auto px-12 text-lg"
-        >
-          {isLoading ? (
-            <>
-              <span className="mr-2 animate-spin">⏳</span>
-              Creating guest account...
-            </>
-          ) : (
-            <>
-              <span className="mr-2">👤</span>
-              Continue as Guest
-            </>
-          )}
-        </Button>
-</div>
     </Card>
       
     </>

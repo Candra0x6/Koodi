@@ -4,7 +4,7 @@ import React, { useState } from "react"
 import { motion } from "framer-motion"
 import { Check, Lock, Star, BookOpen, FastForward } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/duolingo-ui"
+import { Button } from "@/components/ui/button"
 import Image from "next/image"
 
 // --- Types ---
@@ -66,22 +66,22 @@ const PathNode = ({
 
   // Node Colors - Green for completed, bright green for active, gray for locked
   const bgColor = isCompleted
-    ? "bg-[#58cc02]"
+    ? "bg-primary"
     : isActive
-      ? "bg-[#58cc02]"
+      ? "bg-primary"
       : isLocked
-        ? "bg-[#e5e5e5]"
+        ? "bg-border"
         : isChest
           ? "bg-transparent"
-          : "bg-[#ffc800]"
+          : "bg-accent"
 
   const borderColor = isActive
-    ? "border-[#46a302]" // Darker green
+    ? "border-primary-depth" // Darker green
     : isLocked
-      ? "border-[#cecece]" // Darker gray
-      : "border-[#46a302]" // Darker yellow
+      ? "border-muted" // Darker gray
+      : "border-primary-depth" // Darker yellow
 
-  const iconColor = isActive ? "text-white" : isLocked ? "text-[#afafaf]" : "text-white"
+  const iconColor = isActive ? "text-white" : isLocked ? "text-muted-foreground" : "text-white"
   console.log(level)
   return (
     <div
@@ -98,7 +98,7 @@ const PathNode = ({
               y: { repeat: Number.POSITIVE_INFINITY, duration: 1.5, ease: "easeInOut" },
               opacity: { duration: 0.3 },
             }}
-            className="absolute -top-16 left-1/2 -translate-x-1/2 bg-white text-[#58cc02] font-extrabold text-sm py-2 px-3 rounded-xl shadow-lg border-2 border-border uppercase tracking-widest whitespace-nowrap z-20"
+            className="absolute -top-16 left-1/2 -translate-x-1/2 bg-white text-primary font-extrabold text-sm py-2 px-3 rounded-xl shadow-lg border-2 border-border uppercase tracking-widest whitespace-nowrap z-20"
           >
             Start
             <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 w-3 h-3 bg-white border-r-2 border-b-2 border-border rotate-45 transform" />
@@ -116,7 +116,7 @@ const PathNode = ({
               y: { repeat: Number.POSITIVE_INFINITY, duration: 1.5, ease: "easeInOut" },
               opacity: { duration: 0.3 },
             }}
-            className="absolute -top-12 left-1/2 -translate-x-1/2 bg-white text-[#58cc02] font-extrabold text-sm py-2 px-3 rounded-xl shadow-lg border-2 border-border uppercase tracking-widest whitespace-nowrap z-20"
+            className="absolute -top-12 left-1/2 -translate-x-1/2 bg-white text-primary font-extrabold text-sm py-2 px-3 rounded-xl shadow-lg border-2 border-border uppercase tracking-widest whitespace-nowrap z-20"
           >
             Skip 
             <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 w-3 h-3 bg-white border-r-2 border-b-2 border-border rotate-45 transform" />
@@ -129,11 +129,11 @@ const PathNode = ({
           {/* Progress Ring for Active Node */}
           {/* {isActive && (
             <motion.div
-              className="absolute -inset-2 rounded-full border-[6px] border-[#ffffff] z-0"
+              className="absolute -inset-2 rounded-full border-[6px] border-white z-0"
               animate={{ scale: [1, 1.1, 1] }}
               transition={{ repeat: Number.POSITIVE_INFINITY, duration: 1.5, ease: "easeInOut" }}
             >
-              <div className="absolute -inset-[6px] rounded-full border-[6px] border-[#ffc800] border-l-transparent border-b-transparent -rotate-45" />
+              <div className="absolute -inset-[6px] rounded-full border-[6px] border-accent border-l-transparent border-b-transparent -rotate-45" />
             </motion.div>
           )} */}
           <motion.button
@@ -175,7 +175,7 @@ const PathNode = ({
 {          index === 0 && (level.levelIndex ?? 0) < 2 ?          <Star className="w-8 h-8 text-white fill-white" /> : <FastForward className="h-8 w-8 text-white fill-white" />
 }                  </motion.div>
                 ) : level.status === "locked" ? (
-                  <Lock className="w-6 h-6 text-[#afafaf]" strokeWidth={3} />
+                  <Lock className="w-6 h-6 text-muted-foreground" strokeWidth={3} />
                 ) : (
                   <Check className="w-8 h-8 text-white stroke-[4]" />
                 )}
@@ -209,13 +209,13 @@ const PathNode = ({
 
 export const UnitHeader = ({ unit, className }: { unit: UnitData; className?: string }) => {
   return (
-    <div className={cn("bg-[#58cc02] text-white p-4 rounded-b-none sticky top-16 z-30", className)}>
+    <div className={cn("bg-primary text-primary-foreground p-4 rounded-b-none sticky top-16 z-30", className)}>
       <div className="container mx-auto max-w-lg flex items-center justify-between">
         <div>
           <h2 className="text-xl font-extrabold uppercase tracking-wide opacity-90">{unit.title}</h2>
           <p className="text-lg font-bold">{unit.description}</p>
         </div>
-        <Button variant="secondary" className="bg-[#58cc02] border-[#46a302] hover:bg-[#46a302] px-3 rounded-2xl">
+        <Button variant="secondary" className="bg-primary border-primary-depth hover:bg-primary-depth px-3 rounded-2xl text-primary-foreground">
           <BookOpen className="w-6 h-6 text-white" />
         </Button>
       </div>
@@ -351,18 +351,18 @@ export const LearningPath = ({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.8, y: -10 }}
           transition={{ type: "spring", duration: 0.3 }}
-          className="absolute bg-white rounded-2xl shadow-2xl border-2 border-[#58cc02] p-4 w-56 z-50 pointer-events-auto"
+          className="absolute bg-white rounded-2xl shadow-2xl border-2 border-primary p-4 w-56 z-50 pointer-events-auto"
           style={{ 
             top: `${openLevelIndex * LEVEL_HEIGHT + START_OFFSET + 90}px`,
             left: `calc(50% + ${buttonXOffset}px - 112px)`
           }}
         >
           {/* Arrow pointing to button */}
-          <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-t-2 border-l-2 border-[#58cc02] rotate-45"></div>
+          <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-t-2 border-l-2 border-primary rotate-45"></div>
 
           {/* Content */}
           <div className="text-center">
-            <h3 className="font-bold text-[#58cc02] text-lg mb-2">{openLevel.title}</h3>
+            <h3 className="font-bold text-primary text-lg mb-2">{openLevel.title}</h3>
             <p className="text-sm text-gray-600 mb-4">
               {openLevel.status === "completed" ? "Completed! Great job! 🎉" : "Ready to start this lesson?"}
             </p>
@@ -375,7 +375,7 @@ export const LearningPath = ({
                 onLevelClick?.(openLevel)
                 setOpenTooltip(null)
               }}
-              className="w-full bg-[#58cc02] text-white font-bold py-2 px-4 rounded-xl hover:bg-[#46a302] transition-colors flex items-center justify-center gap-2"
+              className="w-full bg-primary text-primary-foreground font-bold py-2 px-4 rounded-xl hover:bg-primary-depth transition-colors flex items-center justify-center gap-2"
             >
               <Star className="w-4 h-4" />
               {openLevel.status === "completed" ? "Review" : "Start Lesson"}

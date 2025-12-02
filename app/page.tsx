@@ -304,7 +304,7 @@ export default function LandingPage() {
                             className="space-y-4 absolute inset-0"
                           >
                             {/* Multiple Choice */}
-                            <div className="bg-[#1e1e1e] p-6 rounded-2xl font-mono text-base md:text-lg text-white shadow-inner border-2 border-slate-800 leading-relaxed">
+                            <div className="bg-code-editor-bg p-6 rounded-2xl font-mono text-base md:text-lg text-white shadow-inner border-2 border-code-editor-border leading-relaxed">
                               <span className="text-purple-400">let</span> x = <span className="text-orange-400">5</span>;<br/>
                               <span className="text-blue-400">console</span>.<span className="text-yellow-400">log</span>(x + <span className="text-orange-400">3</span>);
                             </div>
@@ -339,7 +339,7 @@ export default function LandingPage() {
                             className="space-y-4 absolute inset-0"
                           >
                             {/* Debug Hunt */}
-                            <div className="bg-[#1e1e1e] p-6 rounded-2xl font-mono text-base md:text-lg text-white shadow-inner border-2 border-slate-800 leading-relaxed">
+                            <div className="bg-code-editor-bg p-6 rounded-2xl font-mono text-base md:text-lg text-white shadow-inner border-2 border-code-editor-border leading-relaxed">
                               <span className="text-purple-400">function</span> <span className="text-blue-400">isEven</span>(n) {"{"}<br/>
                               &nbsp;&nbsp;<motion.span 
                                   className="inline-block px-1 rounded cursor-pointer border-2 border-transparent"
@@ -399,7 +399,7 @@ export default function LandingPage() {
                             className="space-y-4 absolute inset-0"
                           >
                             {/* Fill in the Blank */}
-                            <div className="bg-[#1e1e1e] p-6 rounded-2xl font-mono text-base md:text-lg text-white shadow-inner border-2 border-slate-800 leading-relaxed">
+                            <div className="bg-code-editor-bg p-6 rounded-2xl font-mono text-base md:text-lg text-white shadow-inner border-2 border-code-editor-border leading-relaxed">
                               <span className="text-purple-400">if</span> (score &gt; <span className="text-orange-400">10</span>) {"{"}<br/>
                               &nbsp;&nbsp;<span className="inline-block min-w-[60px] border-b-2 border-white/20 text-center">
                                 <motion.span
@@ -441,7 +441,7 @@ export default function LandingPage() {
                             className="space-y-4 absolute inset-0"
                           >
                             {/* Predict Output */}
-                            <div className="bg-[#1e1e1e] p-6 rounded-2xl font-mono text-base md:text-lg text-white shadow-inner border-2 border-slate-800 leading-relaxed relative overflow-hidden">
+                            <div className="bg-code-editor-bg p-6 rounded-2xl font-mono text-base md:text-lg text-white shadow-inner border-2 border-code-editor-border leading-relaxed relative overflow-hidden">
                               <div className="absolute top-2 right-2 opacity-20"><Terminal className="w-6 h-6" /></div>
                               <span className="text-blue-400">print</span>(<span className="text-green-400">"Hi "</span> + <span className="text-green-400">"Dev"</span>);
                               <div className="mt-4 pt-4 border-t border-white/10 flex items-center gap-2 text-green-400">

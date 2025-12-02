@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react"
 import { useAuth } from "@/lib/hooks/use-auth"
-import { Card, Avatar } from "@/components/duolingo-ui"
+import { Card } from "@/components/ui/card"
+import { Avatar } from "@/components/duolingo-ui"
 import { Trophy, Flame, Loader2, Shield } from "lucide-react"
 import { motion } from "framer-motion"
 

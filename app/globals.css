@@ -8,10 +8,14 @@
   --background: #ffffff;
   --foreground: #3c3c3c;
   
-  /* Duolingo Green */
-  --primary: #58cc02;
+  /* Code Editor */
+  --code-editor-bg: #1e1e1e;
+  --code-editor-border: #2c3e50;
+  
+  /* Primary Gold */
+  --primary: #FEBD4D;
   --primary-foreground: #ffffff;
-  --primary-depth: #46a302;
+  --primary-depth: #E8A935;
   
   /* Duolingo Blue */
   --secondary: #1cb0f6;
@@ -49,10 +53,10 @@
   --background: #131f24;
   --foreground: #ffffff;
   
-  --primary: #58cc02;
+  --primary: #FEBD4D;
   --primary-foreground: #ffffff;
-  --primary-depth: #46a302;
-  
+  --primary-depth: #E8A935;
+    
   --secondary: #1cb0f6;
   --secondary-foreground: #ffffff;
   --secondary-depth: #1899d6;
@@ -114,6 +118,9 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  
+  --color-code-editor-bg: var(--code-editor-bg);
+  --color-code-editor-border: var(--code-editor-border);
   
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);

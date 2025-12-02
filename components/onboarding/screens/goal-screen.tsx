@@ -1,7 +1,7 @@
 'use client';
 
 import { useOnboarding, LearningGoal } from '@/lib/contexts/onboarding-context';
-import { Card } from '@/components/duolingo-ui';
+import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
 const GOALS: { id: LearningGoal; label: string; description: string; emoji: string }[] = [

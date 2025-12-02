@@ -1,7 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Button, Input, Card } from '@/components/duolingo-ui';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card } from '@/components/ui/card';
 import { Loader2, X } from 'lucide-react';
 import { User } from '@/lib/generated/prisma/client';
 

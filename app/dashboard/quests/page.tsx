@@ -2,7 +2,8 @@
 
 import React, { useState } from "react"
 import { useMissions } from "@/lib/hooks/use-missions"
-import { MissionList, RewardPopup, Button } from "@/components/duolingo-ui"
+import { Button } from "@/components/ui/button"
+import { MissionList, RewardPopup } from "@/components/duolingo-ui"
 import { Star, Calendar, Zap, Trophy } from "lucide-react"
 import { motion } from "framer-motion"
 

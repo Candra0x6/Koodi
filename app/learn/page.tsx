@@ -159,7 +159,7 @@ interface ChapterNavigationProps {
 }
 
 const ChapterNavigation = ({ currentIndex, totalChapters, onPrev, onNext }: ChapterNavigationProps) => (
-  <div className="flex items-center justify-between px-4 py-2 bg-[#46a302]">
+  <div className="flex items-center justify-between px-4 py-2 bg-primary-depth">
     <button
       onClick={onPrev}
       disabled={currentIndex === 0}
@@ -195,7 +195,7 @@ const UnitSection = ({ unit, chapterTitle, unitIndex, languageId, onLessonClick 
     <div className="pt-8 pb-12 ">
       {/* Unit Header */}
       <div className="px-4 mb-8">
-        <h2 className="text-2xl font-bold text-[#58cc02] mb-2">Unit {unitIndex + 1}</h2>
+        <h2 className="text-2xl font-bold text-primary mb-2">Unit {unitIndex + 1}</h2>
         <p className="text-muted-foreground">{unit.title}</p>
       </div>
 
@@ -280,7 +280,7 @@ function LearnContent() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 animate-spin text-[#58cc02] mx-auto mb-4" />
+          <Loader2 className="w-12 h-12 animate-spin text-primary mx-auto mb-4" />
           <p className="text-muted-foreground">Loading your learning path...</p>
         </div>
       </div>
@@ -297,7 +297,7 @@ function LearnContent() {
           <p className="text-muted-foreground mb-4">{error}</p>
           <button
             onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-[#58cc02] text-white rounded-xl font-bold hover:bg-[#46a302] transition-colors"
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-xl font-bold hover:bg-primary-depth transition-colors"
           >
             Try Again
           </button>
@@ -316,7 +316,7 @@ function LearnContent() {
           <p className="text-muted-foreground mb-4">Please complete onboarding to select a language.</p>
           <button
             onClick={() => (window.location.href = "/onboarding")}
-            className="px-4 py-2 bg-[#58cc02] text-white rounded-xl font-bold hover:bg-[#46a302] transition-colors"
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-xl font-bold hover:bg-primary-depth transition-colors"
           >
             Start Onboarding
           </button>
@@ -348,7 +348,7 @@ function LearnContent() {
 
       <div className="max-w-full mx-auto bg-background min-h-screen shadow-sm relative">
         {/* Sticky Chapter Header and Navigation */}
-        <div className="sticky top-16 z-40 bg-[#58cc02]">
+        <div className="sticky top-16 z-40 bg-primary">
           <div className="text-center text-white/90 font-bold uppercase text-sm tracking-widest pt-2">
             {currentChapter.title}
           </div>
@@ -387,7 +387,7 @@ export default function LearnPage() {
     <Suspense
       fallback={
         <div className="min-h-screen bg-background flex items-center justify-center">
-          <Loader2 className="w-12 h-12 animate-spin text-[#58cc02]" />
+          <Loader2 className="w-12 h-12 animate-spin text-primary" />
         </div>
       }
     >

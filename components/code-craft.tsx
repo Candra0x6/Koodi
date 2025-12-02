@@ -5,7 +5,7 @@ import type React from "react"
 import { useState } from "react"
 import { motion } from "framer-motion"
 import { X, Hammer, Pickaxe } from "lucide-react"
-import { Button } from "@/components/duolingo-ui"
+import { Button } from "@/components/ui/button"
 import confetti from "canvas-confetti"
 
 type Resource = "variable" | "function" | "loop" | "condition"
@@ -115,10 +115,10 @@ export function CodeCraft({ onClose }: { onClose: () => void }) {
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="w-full max-w-4xl bg-[#3C3C3C] rounded-3xl overflow-hidden shadow-2xl border-4 border-black/20 flex flex-col max-h-[90vh]"
+        className="w-full max-w-4xl bg-slate-800 rounded-3xl overflow-hidden shadow-2xl border-4 border-black/20 flex flex-col max-h-[90vh]"
       >
         {/* Header */}
-        <div className="bg-[#2C2C2C] p-4 flex items-center justify-between border-b-4 border-black/20">
+        <div className="bg-slate-700 p-4 flex items-center justify-between border-b-4 border-black/20">
           <div className="flex items-center gap-3">
             <div className="bg-green-600 p-2 rounded-xl border-b-4 border-green-800">
               <Pickaxe className="w-6 h-6 text-white" />
@@ -173,7 +173,7 @@ export function CodeCraft({ onClose }: { onClose: () => void }) {
             </div>
 
             {/* Inventory Summary */}
-            <div className="bg-[#2C2C2C] p-4 rounded-xl border-2 border-black/20">
+            <div className="bg-slate-700 p-4 rounded-xl border-2 border-black/20">
               <h4 className="text-gray-400 text-xs font-bold uppercase mb-3">Inventory</h4>
               <div className="flex gap-2 overflow-x-auto pb-2">
                 {Object.entries(inventory).map(([key, count]) => {
@@ -182,7 +182,7 @@ export function CodeCraft({ onClose }: { onClose: () => void }) {
                   return (
                     <div
                       key={key}
-                      className="shrink-0 bg-[#4C4C4C] px-3 py-2 rounded-lg flex items-center gap-2 border-b-2 border-black/20"
+                      className="shrink-0 bg-slate-600 px-3 py-2 rounded-lg flex items-center gap-2 border-b-2 border-black/20"
                     >
                       <span>{res?.icon}</span>
                       <span className="text-white font-bold text-sm">{count}</span>
@@ -209,10 +209,10 @@ export function CodeCraft({ onClose }: { onClose: () => void }) {
                 return (
                   <div
                     key={recipe.id}
-                    className="bg-[#2C2C2C] p-4 rounded-xl border-b-4 border-black/20 flex items-center justify-between gap-4"
+                    className="bg-slate-700 p-4 rounded-xl border-b-4 border-black/20 flex items-center justify-between gap-4"
                   >
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-[#4C4C4C] rounded-lg flex items-center justify-center border-2 border-black/20">
+                      <div className="w-12 h-12 bg-slate-600 rounded-lg flex items-center justify-center border-2 border-black/20">
                         {recipe.icon}
                       </div>
                       <div>
@@ -250,7 +250,7 @@ export function CodeCraft({ onClose }: { onClose: () => void }) {
             </div>
 
             {/* Crafted Items Display */}
-            <div className="bg-[#2C2C2C] p-4 rounded-xl border-2 border-black/20 min-h-[100px]">
+            <div className="bg-slate-700 p-4 rounded-xl border-2 border-black/20 min-h-[100px]">
               <h4 className="text-gray-400 text-xs font-bold uppercase mb-3">Your Builds</h4>
               <div className="grid grid-cols-4 gap-2">
                 {Object.entries(craftedItems).map(([key, count]) => {
@@ -258,7 +258,7 @@ export function CodeCraft({ onClose }: { onClose: () => void }) {
                   const recipe = RECIPES.find((r) => r.id === key)
                   return (
                     <div key={key} className="relative group">
-                      <div className="aspect-square bg-[#4C4C4C] rounded-lg flex items-center justify-center border-b-4 border-black/20">
+                      <div className="aspect-square bg-slate-600 rounded-lg flex items-center justify-center border-b-4 border-black/20">
                         {recipe?.icon}
                       </div>
                       <div className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-blue-700">

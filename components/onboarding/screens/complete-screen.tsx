@@ -2,7 +2,8 @@
 
 import { useOnboarding } from '@/lib/contexts/onboarding-context';
 import { useSession } from 'next-auth/react';
-import { Button, Card } from '@/components/duolingo-ui';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 

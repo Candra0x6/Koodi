@@ -89,12 +89,12 @@ function buildUnitData(unit: Unit, chapterTitle: string, color: string): UnitDat
 // --- Constants ---
 
 const UNIT_COLORS = [
-  { bg: "bg-[#58cc02]", border: "border-[#46a302]", text: "text-[#58cc02]", hex: "#58cc02" }, // Green
-  { bg: "bg-[#ce82ff]", border: "border-[#a568cc]", text: "text-[#ce82ff]", hex: "#ce82ff" }, // Purple
-  { bg: "bg-[#00cd9c]", border: "border-[#00a47d]", text: "text-[#00cd9c]", hex: "#00cd9c" }, // Teal
-  { bg: "bg-[#ff9600]", border: "border-[#cc7800]", text: "text-[#ff9600]", hex: "#ff9600" }, // Orange
-  { bg: "bg-[#ff4b4b]", border: "border-[#cc3c3c]", text: "text-[#ff4b4b]", hex: "#ff4b4b" }, // Red
-  { bg: "bg-[#1cb0f6]", border: "border-[#168dbd]", text: "text-[#1cb0f6]", hex: "#1cb0f6" }, // Blue
+  { bg: "bg-primary", border: "border-primary-depth", text: "text-primary", hex: "var(--primary)" }, // Green
+  { bg: "bg-purple-500", border: "border-purple-700", text: "text-purple-500", hex: "#a855f7" }, // Purple
+  { bg: "bg-cyan-500", border: "border-cyan-700", text: "text-cyan-500", hex: "#06b6d4" }, // Teal
+  { bg: "bg-orange-500", border: "border-orange-700", text: "text-orange-500", hex: "#f97316" }, // Orange
+  { bg: "bg-destructive", border: "border-destructive-depth", text: "text-destructive", hex: "var(--destructive)" }, // Red
+  { bg: "bg-secondary", border: "border-secondary-depth", text: "text-secondary", hex: "var(--secondary)" }, // Blue
 ]
 
 // --- Components ---
@@ -358,7 +358,7 @@ function LearnContent() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 animate-spin text-[#58cc02] mx-auto mb-4" />
+          <Loader2 className="w-12 h-12 animate-spin text-primary mx-auto mb-4" />
           <p className="text-muted-foreground">Loading your learning path...</p>
         </div>
       </div>
@@ -375,7 +375,7 @@ function LearnContent() {
           <p className="text-muted-foreground mb-4">{error}</p>
           <button
             onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-[#58cc02] text-white rounded-xl font-bold hover:bg-[#46a302] transition-colors"
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-xl font-bold hover:bg-primary-depth transition-colors"
           >
             Try Again
           </button>
@@ -394,7 +394,7 @@ function LearnContent() {
           <p className="text-muted-foreground mb-4">Please complete onboarding to select a language.</p>
           <button
             onClick={() => (window.location.href = "/onboarding")}
-            className="px-4 py-2 bg-[#58cc02] text-white rounded-xl font-bold hover:bg-[#46a302] transition-colors"
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-xl font-bold hover:bg-primary-depth transition-colors"
           >
             Start Onboarding
           </button>
@@ -480,7 +480,7 @@ function LearnContent() {
                         <div className={cn(
                           "w-12 h-12 rounded-xl flex items-center justify-center font-bold text-lg border-b-4 transition-transform group-active:translate-y-[2px] group-active:border-b-2",
                           currentChapterIndex === index
-                            ? "bg-primary text-white border-green-700"
+                            ? "bg-primary text-white border-primary-depth"
                             : "bg-muted text-muted-foreground border-gray-300"
                         )}
                         >
@@ -537,7 +537,7 @@ export default function LearnPage() {
     <Suspense
       fallback={
         <div className="min-h-screen bg-background flex items-center justify-center">
-          <Loader2 className="w-12 h-12 animate-spin text-[#58cc02]" />
+          <Loader2 className="w-12 h-12 animate-spin text-primary" />
         </div>
       }
     >

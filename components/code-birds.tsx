@@ -3,7 +3,8 @@
 import { useState, useEffect, useRef } from "react"
 import { motion } from "framer-motion"
 import { X, Play, RotateCcw } from "lucide-react"
-import { Button, Input } from "@/components/duolingo-ui"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import confetti from "canvas-confetti"
 
 interface Projectile {

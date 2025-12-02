@@ -2,13 +2,14 @@
 
 import React, { useEffect, useState } from "react"
 import { useAuth } from "@/lib/hooks/use-auth"
-import { Card, Button } from "@/components/duolingo-ui"
+import { Card } from "@/components/ui/card"
 import { User, Calendar, Zap, Gem, Heart, Trophy, Clock, Loader2, Edit2 } from "lucide-react"
 import { motion } from "framer-motion"
 import Image from "next/image"
 import { format } from "date-fns"
 import { ProfileEditForm } from "@/components/profile/profile-edit-form"
 import { User as PrismaUser } from "@/lib/generated/prisma/client"
+import { Button } from "@/components/ui/button"
 
 interface RewardHistoryItem {
   id: string
