@@ -40,7 +40,7 @@ export function useUserLanguages(): UseUserLanguagesReturn {
       setIsLoading(true)
       setError(null)
 
-      const res = await fetch('/api/user/languages')
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/user/languages`)
       if (!res.ok) {
         throw new Error('Failed to fetch languages')
       }
@@ -58,7 +58,7 @@ export function useUserLanguages(): UseUserLanguagesReturn {
   const addLanguage = useCallback(
     async (languageId: string, skillLevel: string) => {
       try {
-        const res = await fetch('/api/user/languages/add', {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/user/languages/add`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ languageId, skillLevel }),
@@ -82,7 +82,7 @@ export function useUserLanguages(): UseUserLanguagesReturn {
   const switchLanguage = useCallback(
     async (languageId: string) => {
       try {
-        const res = await fetch('/api/user/languages/switch', {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/user/languages/switch`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ languageId }),

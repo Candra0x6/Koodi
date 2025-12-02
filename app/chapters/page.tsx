@@ -53,13 +53,13 @@ function ChaptersContent() {
         
 
         // Get user ID from session
-        const sessionRes = await fetch('/api/auth/session');
+        const sessionRes = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/session`);
         const session = await sessionRes.json();
         if (session?.user?.id) {
           setUserId(session.user.id);
 
           // Fetch resume lesson
-          const resumeRes = await fetch(`/api/lessons/resume?languageId=${languageId}`);
+          const resumeRes = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/lessons/resume?languageId=${languageId}`);
           if (resumeRes.ok) {
             const resumeData = await resumeRes.json();
             if (resumeData.lesson) {
@@ -69,7 +69,7 @@ function ChaptersContent() {
         }
 
         // Fetch chapters for the language
-        const res = await fetch(`/api/chapters?languageId=${languageId}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/chapters?languageId=${languageId}`);
         if (!res.ok) {
           throw new Error('Failed to load chapters');
         }

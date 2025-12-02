@@ -70,7 +70,7 @@ export function ProfileEditForm({ user, onClose, onSuccess }: ProfileEditFormPro
         }
       }
 
-      const response = await fetch('/api/user/profile', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/user/profile`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatePayload),

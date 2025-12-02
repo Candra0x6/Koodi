@@ -274,7 +274,7 @@ const LessonSummary = ({
     const completeLesson = async (): Promise<void> => {
       try {
         setLoading(true);
-        const response = await fetch(`/api/lessons/${lessonId}/complete`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/lessons/${lessonId}/complete`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ lessonId }),
@@ -737,7 +737,7 @@ export default function LessonContent({
   useEffect(() => {
     const loadLesson = async (): Promise<void> => {
       try {
-        const res = await fetch(`/api/lessons/${lessonId}/questions`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/lessons/${lessonId}/questions`);
         if (!res.ok) throw new Error('Failed to load lesson');
 
         const data = await res.json();

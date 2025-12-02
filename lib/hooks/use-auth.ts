@@ -29,7 +29,7 @@ export function useAuth() {
     if (status === 'authenticated' && session?.user?.id) {
       try {
         setLoading(true);
-        const res = await fetch('/api/user/profile');
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/user/profile`);
         if (!res.ok) throw new Error('Failed to fetch user data');
         const userData = await res.json();
         setUser(userData.result);

@@ -174,7 +174,7 @@ function LearnContent() {
 
     try {
       setLoading(true)
-      const res = await fetch(`/api/chapters?languageId=${langId}`)
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/chapters?languageId=${langId}`)
       if (!res.ok) {
         throw new Error("Failed to load chapters")
       }
@@ -213,7 +213,7 @@ function LearnContent() {
       // Small delay to ensure user data is updated first
       setTimeout(async () => {
         // Refetch user to get the new languageId
-        const res = await fetch('/api/user/profile')
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/user/profile`)
         if (res.ok) {
           const userData = await res.json()
           const newLanguageId = userData.result?.selectedLanguage?.id

@@ -47,7 +47,7 @@ export default function ProfilePage() {
   useEffect(() => {
     const fetchRewards = async () => {
       try {
-        const res = await fetch("/api/user/rewards")
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/user/rewards`)
         if (res.ok) {
           const data = await res.json()
           setRewardsData(data)

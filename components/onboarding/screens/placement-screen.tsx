@@ -25,7 +25,7 @@ export function PlacementTestScreen() {
     // Fetch placement test questions
     async function fetchQuestions() {
       try {
-        const res = await fetch(`/api/placement-test?languageId=${state.selectedLanguageId}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/placement-test?languageId=${state.selectedLanguageId}`);
         const data = await res.json();
         setQuestions(data);
       } catch (error) {

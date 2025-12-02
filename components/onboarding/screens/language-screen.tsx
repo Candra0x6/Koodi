@@ -20,7 +20,7 @@ export function LanguageScreen() {
     // Fetch languages from API
     async function fetchLanguages() {
       try {
-        const res = await fetch('/api/languages');
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/languages`);
         const data = await res.json();
         setLanguages(data);
         

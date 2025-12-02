@@ -85,7 +85,7 @@ function layout({ children }: { children: React.ReactNode }) {
 
     setIsUpdatingGoal(true)
     try {
-      const res = await fetch('/api/user/daily-goal', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/user/daily-goal`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ dailyXpGoal: editGoalValue }),
@@ -124,7 +124,7 @@ function layout({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const fetchAllLanguages = async () => {
       try {
-        const res = await fetch('/api/languages')
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/languages`)
         if (res.ok) {
           const data = await res.json()
           // Filter out already selected languages

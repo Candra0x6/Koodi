@@ -67,7 +67,7 @@ export function CodeLessonGame({ lessonId }: { lessonId: string;}) {
     const fetchQuestions = async () => {
       try {
         setLoading(true)
-        const response = await fetch(`/api/lessons/${lessonId}/questions`)
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/lessons/${lessonId}/questions`)
         if (!response.ok) throw new Error('Failed to load lesson')
         
         const data = await response.json()
@@ -148,7 +148,7 @@ export function CodeLessonGame({ lessonId }: { lessonId: string;}) {
     const completeLesson = async (): Promise<void> => {
       try {
         setCompletionLoading(true)
-        const response = await fetch(`/api/lessons/${lessonId}/complete`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/lessons/${lessonId}/complete`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ lessonId, sessionId }),
@@ -255,7 +255,7 @@ export function CodeLessonGame({ lessonId }: { lessonId: string;}) {
 
     // Submit answer to track user history (for adaptive learning)
     try {
-      await fetch('/api/user-answers', {
+      await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/user-answers`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -82,7 +82,7 @@ export function useMissions(): UseMissionsReturn {
       setIsLoading(true);
       setError(null);
 
-      const res = await fetch('/api/missions');
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/missions`);
       if (!res.ok) {
         throw new Error('Failed to fetch missions');
       }
@@ -99,7 +99,7 @@ export function useMissions(): UseMissionsReturn {
 
   const claimReward = useCallback(async (missionId: string): Promise<ClaimRewardResult | null> => {
     try {
-      const res = await fetch('/api/missions/claim', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/missions/claim`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ missionId }),
@@ -172,7 +172,7 @@ export function useMissionProgress() {
     try {
       setIsUpdating(true);
 
-      const res = await fetch('/api/missions/progress', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/missions/progress`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ event }),

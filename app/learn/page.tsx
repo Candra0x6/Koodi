@@ -234,7 +234,7 @@ function LearnContent() {
       }
 
       try {
-        const res = await fetch(`/api/chapters?languageId=${languageId}`)
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/chapters?languageId=${languageId}`)
         if (!res.ok) {
           throw new Error("Failed to load chapters")
         }

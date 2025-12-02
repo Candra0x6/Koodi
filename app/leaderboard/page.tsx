@@ -22,7 +22,7 @@ export default function LeaderboardPage() {
   useEffect(() => {
     const fetchLeaderboard = async () => {
       try {
-        const response = await fetch('/api/leaderboard?limit=100');
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/leaderboard?limit=100`);
         if (!response.ok) throw new Error('Failed to fetch leaderboard');
         const data = (await response.json()) as { leaderboard: LeaderboardUser[] };
         setUsers(data.leaderboard);
