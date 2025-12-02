@@ -288,17 +288,22 @@ export function CodeLessonGame({ lessonId }: { lessonId: string;}) {
     }
   }
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (feedbackStatus === "incorrect") {
       if (hearts === 0) {
         setGameState("failed")
         return
       }
-      setGameState("playing")
-      setSelectedSegmentId(null)
-      setSelectedOptionId(null)
-      if (currentQuestion?.type === "REORDER" && currentQuestion?.items) {
-        setReorderItems(currentQuestion.items)
+      
+      // Move to next question after incorrect answer
+      if (currentQuestionIndex < questions.length - 1) {
+        setCurrentQuestionIndex((prev) => prev + 1)
+        setGameState("playing")
+        setSelectedSegmentId(null)
+        setSelectedOptionId(null)
+      } else {
+        // If this was the last question, mark as completed
+        setGameState("completed")
       }
     } else {
       if (currentQuestionIndex < questions.length - 1) {

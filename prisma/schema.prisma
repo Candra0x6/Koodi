@@ -8,127 +8,300 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  username  String   @unique
-  email     String?  @unique
-  password  String?
-  googleId  String?  @unique
-  isGuest   Boolean  @default(false)
-  createdAt DateTime @default(now())
-
-  // onboarding data
+  id                  String                 @id @default(cuid())
+  username            String                 @unique
+  email               String?                @unique
+  password            String?
+  googleId            String?                @unique
+  isGuest             Boolean                @default(false)
+  createdAt           DateTime               @default(now())
   learningGoal        LearningGoal?
   avatarId            String?
-  onboardingCompleted Boolean       @default(false)
-  placementTestScore  Int? // 0-5 score from placement test
-
-  xp             Int       @default(0)
-  gems           Int       @default(0)
-  hearts         Int       @default(5)
-  streak         Int       @default(0)
-  longestStreak  Int       @default(0)
-  lastStreakDate DateTime? // Last day a lesson was completed
-  lastActiveAt   DateTime?
-  dailyXpGoal    Int       @default(50) // User's daily XP goal
-
-  // language progress tracking
-  languageProgresses UserLanguageProgress[]
-
-  progresses        UserUnitProgress[]
-  completedLessons  UserLessonCompletion[]
-  answers           UserAnswer[]
-  lessonSessions    LessonSession[]
-  questionHistories UserQuestionHistory[]
-  missions          Mission[]
-  xpLogs            XPLog[]
+  onboardingCompleted Boolean                @default(false)
+  placementTestScore  Int?
+  xp                  Int                    @default(0)
+  gems                Int                    @default(0)
+  hearts              Int                    @default(5)
+  streak              Int                    @default(0)
+  longestStreak       Int                    @default(0)
+  lastStreakDate      DateTime?
+  lastActiveAt        DateTime?
+  dailyXpGoal         Int                    @default(50)
+  lessonSessions      LessonSession[]
+  missions            Mission[]
+  answers             UserAnswer[]
+  languageProgresses  UserLanguageProgress[]
+  completedLessons    UserLessonCompletion[]
+  questionHistories   UserQuestionHistory[]
+  progresses          UserUnitProgress[]
+  xpLogs              XPLog[]
 }
 
 model Language {
-  id   String @id @default(cuid())
-  name String
-  slug String @unique // e.g. python, java
-
-  chapters              Chapter[]
-  userLanguageProgress  UserLanguageProgress[]
-  placementTests        PlacementTest[]
-  questions             Question[]
-  missions              Mission[]
+  id                   String                 @id @default(cuid())
+  name                 String
+  slug                 String                 @unique
+  chapters             Chapter[]
+  missions             Mission[]
+  placementTests       PlacementTest[]
+  questions            Question[]
+  userLanguageProgress UserLanguageProgress[]
 }
 
-// User language progress — tracks which languages user is learning and their progress per language
 model UserLanguageProgress {
-  id         String  @id @default(cuid())
-  userId     String
-  languageId String
-  
-  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  language Language @relation(fields: [languageId], references: [id])
-
-  // Current chapter progress in this language
+  id               String     @id @default(cuid())
+  userId           String
+  languageId       String
   currentChapterId String?
-  currentChapter   Chapter? @relation(fields: [currentChapterId], references: [id])
-
-  // Skill level for this language
-  skillLevel SkillLevel @default(BEGINNER)
-
-  // Progress tracking
-  isActive  Boolean   @default(true)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  skillLevel       SkillLevel @default(BEGINNER)
+  isActive         Boolean    @default(true)
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  currentChapter   Chapter?   @relation(fields: [currentChapterId], references: [id])
+  language         Language   @relation(fields: [languageId], references: [id])
+  user             User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, languageId])
   @@index([userId])
   @@index([languageId])
 }
 
-enum SkillLevel {
-  BEGINNER
-  INTERMEDIATE
-  ADVANCED
-}
-
 model Chapter {
-  id         String @id @default(cuid())
-  title      String
-  levelIndex Int // 1,2,3.... (harder every step)
-
-  languageId String
-  language   Language @relation(fields: [languageId], references: [id])
-
-  units                       Unit[]
-  questions                   Question[]
+  id                           String                 @id @default(cuid())
+  title                        String
+  levelIndex                   Int
+  languageId                   String
+  language                     Language               @relation(fields: [languageId], references: [id])
+  questions                    Question[]
+  units                        Unit[]
   userLanguageProgressChapters UserLanguageProgress[]
 }
 
 model Unit {
-  id        String  @id @default(cuid())
-  title     String
-  unitIndex Int
-  chapterId String
-  chapter   Chapter @relation(fields: [chapterId], references: [id])
-
-  lessons Lesson[]
-
+  id                 String             @id @default(cuid())
+  title              String
+  unitIndex          Int
+  chapterId          String
+  lessons            Lesson[]
+  chapter            Chapter            @relation(fields: [chapterId], references: [id])
   userUnitProgresses UserUnitProgress[]
 }
 
 model Lesson {
-  id          String @id @default(cuid())
-  lessonIndex Int
-  hearts      Int    @default(3) // hearts per lesson attempt
-
-  title  String
-  unitId String
-  unit   Unit       @relation(fields: [unitId], references: [id])
-  type   LessonType @default(BOOK)
-
-  // Dynamic question selection config
-  questionCount    Int             @default(5) // how many questions per session
-  targetDifficulty DifficultyLevel @default(EASY)
-  selectionConfig  Json? // optional: custom selection rules
-
-  userLessonCompletions UserLessonCompletion[]
+  id                    String                 @id @default(cuid())
+  lessonIndex           Int
+  hearts                Int                    @default(3)
+  title                 String
+  unitId                String
+  type                  LessonType             @default(BOOK)
+  questionCount         Int                    @default(5)
+  targetDifficulty      DifficultyLevel        @default(EASY)
+  selectionConfig       Json?
+  unit                  Unit                   @relation(fields: [unitId], references: [id])
   lessonSessions        LessonSession[]
+  userLessonCompletions UserLessonCompletion[]
+}
+
+model Question {
+  id                    String                @id @default(cuid())
+  type                  QuestionType
+  instruction           String
+  description           String?
+  codeBlock             String?
+  correctOrder          Int[]
+  codeBefore            String?
+  codeAfter             String?
+  logicCondition        String?
+  explanation           String?
+  difficulty            DifficultyLevel       @default(EASY)
+  languageId            String
+  chapterId             String
+  codeSegments          CodeSegment[]
+  pairs                 MatchPair[]
+  chapter               Chapter               @relation(fields: [chapterId], references: [id])
+  language              Language              @relation(fields: [languageId], references: [id])
+  options               QuestionOption[]
+  items                 ReorderItem[]
+  userAnswers           UserAnswer[]
+  userQuestionHistories UserQuestionHistory[]
+}
+
+model CodeSegment {
+  id         String   @id @default(cuid())
+  questionId String
+  code       String
+  isBug      Boolean
+  correction String?
+  index      Int
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@index([questionId])
+}
+
+model QuestionOption {
+  id         String   @id @default(cuid())
+  questionId String
+  text       String
+  isCorrect  Boolean
+  index      Int
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@index([questionId])
+}
+
+model ReorderItem {
+  id         String   @id @default(cuid())
+  questionId String
+  text       String
+  index      Int
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@index([questionId])
+}
+
+model MatchPair {
+  id         String   @id @default(cuid())
+  questionId String
+  text       String
+  matchId    String
+  index      Int
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@index([questionId])
+}
+
+model Mission {
+  id           String          @id @default(cuid())
+  userId       String
+  type         MissionType
+  category     MissionCategory
+  goal         String
+  targetCount  Int
+  currentCount Int             @default(0)
+  languageId   String?
+  expiresAt    DateTime
+  status       MissionStatus   @default(PENDING)
+  claimedAt    DateTime?
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  language     Language?       @relation(fields: [languageId], references: [id])
+  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reward       MissionReward?
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@index([status])
+}
+
+model MissionReward {
+  id           String   @id @default(cuid())
+  missionId    String   @unique
+  xp           Int      @default(0)
+  gems         Int      @default(0)
+  hearts       Int      @default(0)
+  streakFreeze Int      @default(0)
+  xpBooster    Int      @default(0)
+  items        String[]
+  mission      Mission  @relation(fields: [missionId], references: [id], onDelete: Cascade)
+}
+
+model XPLog {
+  id        String   @id @default(cuid())
+  userId    String
+  amount    Int
+  source    XPSource
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model PlacementTest {
+  id          String       @id @default(cuid())
+  languageId  String
+  type        QuestionType
+  content     String
+  explanation String?
+  choices     String[]
+  answer      String
+  difficulty  Int          @default(1)
+  language    Language     @relation(fields: [languageId], references: [id])
+}
+
+model UserUnitProgress {
+  id         String  @id @default(cuid())
+  userId     String
+  unitId     String
+  isUnlocked Boolean @default(false)
+  completed  Boolean @default(false)
+  progress   Int     @default(0)
+  unit       Unit    @relation(fields: [unitId], references: [id])
+  user       User    @relation(fields: [userId], references: [id])
+
+  @@unique([userId, unitId])
+}
+
+model UserLessonCompletion {
+  id          String    @id @default(cuid())
+  userId      String
+  lessonId    String
+  completed   Boolean   @default(false)
+  hearts      Int       @default(3)
+  attempts    Int       @default(0)
+  xpEarned    Int       @default(0)
+  completedAt DateTime?
+  lesson      Lesson    @relation(fields: [lessonId], references: [id])
+  user        User      @relation(fields: [userId], references: [id])
+
+  @@unique([userId, lessonId])
+}
+
+model UserAnswer {
+  id         String   @id @default(cuid())
+  userId     String
+  questionId String
+  isCorrect  Boolean
+  selected   String?
+  createdAt  DateTime @default(now())
+  question   Question @relation(fields: [questionId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
+}
+
+model LessonSession {
+  id          String    @id @default(cuid())
+  lessonId    String
+  userId      String
+  questionIds String[]
+  startedAt   DateTime  @default(now())
+  completedAt DateTime?
+  heartsUsed  Int       @default(0)
+  xpEarned    Int       @default(0)
+  lesson      Lesson    @relation(fields: [lessonId], references: [id])
+  user        User      @relation(fields: [userId], references: [id])
+
+  @@index([userId, lessonId])
+}
+
+model UserQuestionHistory {
+  id         String   @id @default(cuid())
+  userId     String
+  questionId String
+  attempts   Int      @default(0)
+  correct    Int      @default(0)
+  lastSeenAt DateTime @default(now())
+  mastery    Float    @default(0)
+  question   Question @relation(fields: [questionId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, questionId])
+  @@index([userId])
+}
+
+enum SkillLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
 }
 
 enum LessonType {
@@ -150,96 +323,6 @@ enum DifficultyLevel {
   HARD
 }
 
-model Question {
-  id          String       @id @default(cuid())
-  type        QuestionType
-  instruction String
-  description String?
-
-  // Debug Hunt
-  codeSegments CodeSegment[]
-
-  // Multiple Choice / Predict Output / Line Repair
-  codeBlock String?
-  options   QuestionOption[]
-
-  // Reorder
-  items        ReorderItem[]
-  correctOrder Int[] // Now stored as array instead of string
-
-  // Fill in Blank
-  codeBefore String?
-  codeAfter  String?
-
-  // Logic Puzzle
-  logicCondition String?
-
-  // Match Madness
-  pairs MatchPair[]
-
-  explanation String?
-  difficulty  DifficultyLevel @default(EASY)
-
-  // Dynamic selection - questions belong to language+chapter, not specific lesson
-  languageId String
-  language   Language @relation(fields: [languageId], references: [id])
-  chapterId  String
-  chapter    Chapter  @relation(fields: [chapterId], references: [id])
-
-  userAnswers           UserAnswer[]
-  userQuestionHistories UserQuestionHistory[]
-}
-
-model CodeSegment {
-  id         String   @id @default(cuid())
-  questionId String
-  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
-
-  code       String
-  isBug      Boolean // SAME as JSON
-  correction String? // New: SAME as JSON
-  index      Int
-
-  @@index([questionId])
-}
-
-model QuestionOption {
-  id         String   @id @default(cuid())
-  questionId String
-  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
-
-  text      String
-  isCorrect Boolean
-  index     Int
-
-  @@index([questionId])
-}
-
-model ReorderItem {
-  id         String   @id @default(cuid())
-  questionId String
-  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
-
-  text  String
-  index Int
-
-  @@index([questionId])
-}
-
-model MatchPair {
-  id         String   @id @default(cuid())
-  questionId String
-  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
-
-  // JSON format is: { id, text, matchId }
-  text    String // original text
-  matchId String // id of the matching pair
-
-  index Int
-
-  @@index([questionId])
-}
-
 enum QuestionType {
   DEBUG_HUNT
   MULTIPLE_CHOICE
@@ -252,12 +335,10 @@ enum QuestionType {
 }
 
 enum LearningGoal {
-  BEGINNER // Learn coding from zero
-  IMPROVE // Improve coding skills
-  INTERVIEW // Prepare for interviews
+  BEGINNER
+  IMPROVE
+  INTERVIEW
 }
-
-// ==================== MISSION SYSTEM ====================
 
 enum MissionType {
   DAILY
@@ -283,51 +364,6 @@ enum MissionCategory {
   LOGIC
 }
 
-model Mission {
-  id     String @id @default(cuid())
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  type         MissionType
-  category     MissionCategory
-  goal         String // human readable text
-  targetCount  Int // number needed to complete
-  currentCount Int             @default(0)
-
-  // Reward relation (1:1)
-  reward MissionReward?
-
-  // Optional language-specific mission
-  languageId String?
-  language   Language? @relation(fields: [languageId], references: [id])
-
-  expiresAt DateTime
-  status    MissionStatus @default(PENDING)
-  claimedAt DateTime? // when reward was collected
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([userId])
-  @@index([expiresAt])
-  @@index([status])
-}
-
-model MissionReward {
-  id        String  @id @default(cuid())
-  missionId String  @unique
-  mission   Mission @relation(fields: [missionId], references: [id], onDelete: Cascade)
-
-  xp           Int      @default(0)
-  gems         Int      @default(0)
-  hearts       Int      @default(0) // heart refills
-  streakFreeze Int      @default(0) // streak freeze count
-  xpBooster    Int      @default(0) // XP booster duration in minutes
-  items        String[] // avatar items, badges, cosmetics (stored as item IDs)
-}
-
-// ==================== XP LOGGING ====================
-
 enum XPSource {
   LESSON
   MISSION
@@ -335,108 +371,4 @@ enum XPSource {
   PRACTICE
   BONUS
   ADMIN
-}
-
-model XPLog {
-  id     String @id @default(cuid())
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  amount    Int
-  source    XPSource
-  createdAt DateTime @default(now())
-
-  @@index([userId])
-  @@index([createdAt])
-}
-
-model PlacementTest {
-  id         String   @id @default(cuid())
-  languageId String
-  language   Language @relation(fields: [languageId], references: [id])
-
-  type        QuestionType
-  content     String
-  explanation String?
-  choices     String[]
-  answer      String
-  difficulty  Int          @default(1)
-}
-
-// Progress — where user continues
-//
-model UserUnitProgress {
-  id         String  @id @default(cuid())
-  userId     String
-  unitId     String
-  isUnlocked Boolean @default(false)
-  completed  Boolean @default(false)
-  progress   Int     @default(0) // percentage
-
-  user User @relation(fields: [userId], references: [id])
-  unit Unit @relation(fields: [unitId], references: [id])
-
-  @@unique([userId, unitId])
-}
-
-model UserLessonCompletion {
-  id          String    @id @default(cuid())
-  userId      String
-  lessonId    String
-  completed   Boolean   @default(false)
-  hearts      Int       @default(3) // current hearts in this lesson session
-  attempts    Int       @default(0) // number of failed attempts
-  xpEarned    Int       @default(0) // XP earned from this lesson
-  completedAt DateTime? // when lesson was completed
-
-  user   User   @relation(fields: [userId], references: [id])
-  lesson Lesson @relation(fields: [lessonId], references: [id])
-
-  @@unique([userId, lessonId])
-}
-
-model UserAnswer {
-  id         String   @id @default(cuid())
-  userId     String
-  questionId String
-  isCorrect  Boolean
-  selected   String? // user's choice
-  createdAt  DateTime @default(now())
-
-  user     User     @relation(fields: [userId], references: [id])
-  question Question @relation(fields: [questionId], references: [id])
-}
-
-// Track lesson sessions with dynamically selected questions
-model LessonSession {
-  id       String @id @default(cuid())
-  lessonId String
-  lesson   Lesson @relation(fields: [lessonId], references: [id])
-  userId   String
-  user     User   @relation(fields: [userId], references: [id])
-
-  questionIds String[] // IDs of questions selected for this session
-  startedAt   DateTime  @default(now())
-  completedAt DateTime?
-  heartsUsed  Int       @default(0)
-  xpEarned    Int       @default(0)
-
-  @@index([userId, lessonId])
-}
-
-// Track user's history with each question for adaptive selection
-model UserQuestionHistory {
-  id         String   @id @default(cuid())
-  userId     String
-  user       User     @relation(fields: [userId], references: [id])
-  questionId String
-  question   Question @relation(fields: [questionId], references: [id])
-
-  attempts   Int      @default(0)
-  correct    Int      @default(0)
-  lastSeenAt DateTime @default(now())
-  mastery    Float    @default(0) // 0-1 score based on performance
-
-  @@unique([userId, questionId])
-  @@index([userId])
 }

@@ -181,13 +181,13 @@ function layout({ children }: { children: React.ReactNode }) {
             </div>
             {/* Gems/XP */}
             <div className="flex items-center justify-center gap-1">
-              <span className='text-2xl'>💎</span>
+              <span className='text-2xl'>👾</span>
               <p className="font-bold text-gray-700 text-lg">{user?.xp ?? 0}</p>
             </div>
             {/* Hearts */}
             <div className="flex items-center justify-end gap-1">
-              <span className='text-2xl'>❤️</span>
-              <p className="font-bold text-gray-700 text-lg">{user?.hearts ?? 5}</p>
+              <span className='text-2xl'>💎</span>
+              <p className="font-bold text-gray-700 text-lg">{user?.gems ?? 0}</p>
             </div>
 
           </div>

@@ -408,9 +408,20 @@ export const FeedbackSheet = ({
   onNext: () => void
   correctAnswer?: string
 }) => {
-  if (!isOpen) return null
-
   const isCorrect = status === "correct"
+
+  // Auto-continue on incorrect answer after 2 seconds
+  React.useEffect(() => {
+    if (!isOpen || isCorrect) return
+
+    const timer = setTimeout(() => {
+      onNext()
+    }, 2000)
+
+    return () => clearTimeout(timer)
+  }, [isOpen, isCorrect, onNext])
+
+  if (!isOpen) return null
 
   return (
     <div
@@ -448,18 +459,29 @@ export const FeedbackSheet = ({
               <Flag className="w-6 h-6" />
             </button>
           )}
-          <Button
-            onClick={onNext}
-            className={cn(
-              "w-full md:w-auto min-w-[150px]",
-              isCorrect
-                ? "bg-[#58cc02] border-[#46a302] hover:bg-[#46a302] text-white"
-                : "bg-[#ff4b4b] border-[#ea2b2b] hover:bg-[#ea2b2b] text-white",
-            )}
-            size="lg"
-          >
-            {isCorrect ? "CONTINUE" : "GOT IT"}
-          </Button>
+          {isCorrect ? (
+            <Button
+              onClick={onNext}
+              className={cn(
+                "w-full md:w-auto min-w-[150px]",
+                "bg-[#58cc02] border-[#46a302] hover:bg-[#46a302] text-white",
+              )}
+              size="lg"
+            >
+              CONTINUE
+            </Button>
+          ) : (
+            <Button
+              className={cn(
+                "w-full md:w-auto min-w-[150px]",
+                "bg-[#ff4b4b] border-[#ea2b2b] hover:bg-[#ea2b2b] text-white",
+              )}
+              size="lg"
+              disabled
+            >
+              Continuing...
+            </Button>
+          )}
         </div>
       </div>
     </div>
