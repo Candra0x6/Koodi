@@ -81,31 +81,7 @@ export function WelcomeScreen() {
           Let's Get Started
         </Button>
         
-        <div className="flex items-center gap-4 my-4">
-          <div className="flex-1 h-px bg-border" />
-          <span className="text-muted-foreground font-medium text-sm">or</span>
-          <div className="flex-1 h-px bg-border" />
-        </div>
-
-        <Button
-          onClick={handleContinueAsGuest}
-          disabled={isLoading}
-          size="lg"
-          variant="outline"
-          className="w-full sm:w-auto px-12 text-lg"
-        >
-          {isLoading ? (
-            <>
-              <span className="mr-2 animate-spin">⏳</span>
-              Creating guest account...
-            </>
-          ) : (
-            <>
-              <span className="mr-2">👤</span>
-              Continue as Guest
-            </>
-          )}
-        </Button>
+     
       </div>
     </Card>
   );

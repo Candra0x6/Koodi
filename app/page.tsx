@@ -9,6 +9,7 @@ import { Star, Zap, Brain, Code, Terminal, Map as MapIcon, Trophy, Gift, Laptop,
 import { cn } from "@/lib/utils"
 import { LearningPath, type UnitData } from "@/components/learning-path"
 import { Tiles } from "@/components/ui/tiles"
+import Image from "next/image"
 
 export default function LandingPage() {
   const [demoStep, setDemoStep] = useState(0)
@@ -33,13 +34,10 @@ export default function LandingPage() {
       {/* Header */}
       <header className="w-full border-b-2 border-border px-6 py-4 flex items-center justify-between fixed top-5 bg-background/95 backdrop-blur-sm z-50 max-w-6xl mx-auto rounded-full">
         <div className="flex items-center gap-2">
-          <div className="bg-primary p-2 rounded-xl">
-            <Code className="text-white w-6 h-6" />
-          </div>
-          <h1 className="text-2xl font-bold text-primary tracking-tighter">Koodi</h1>
+          <Image alt="Koodi Logo" src="/logo.svg" width={120} height={120} />
         </div>
         <div className="flex gap-4">
-           <Link href="/login">
+           <Link href="/onboarding">
             <Button variant="ghost" className="font-bold text-muted-foreground hover:text-primary uppercase tracking-widest">
               I have an account
             </Button>
@@ -60,20 +58,17 @@ export default function LandingPage() {
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.5 }}
-              className="hidden lg:flex absolute top-0 -left-12 bg-white p-2 pr-4 rounded-full shadow-lg items-center gap-3 border border-border"
+              className="hidden lg:flex absolute -top-10 left-10 p-2 pr-4 rounded-full items-center gap-3 "
             >
-              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-bold">S</div>
-              <span className="font-bold text-sm text-foreground">Sarah</span>
+              <Image alt="avatar" src="/1.png" width={130} height={130} />
             </motion.div>
-
             <motion.div 
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.5 }}
-              className="hidden lg:flex absolute bottom-10 -right-12 bg-white p-2 pr-4 rounded-full shadow-lg items-center gap-3 border border-border"
+              className="hidden lg:flex absolute bottom-0 -right-12 p-2 pr-4 rounded-full items-center gap-3 "
             >
-              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">M</div>
-              <span className="font-bold text-sm text-foreground">Mike</span>
+              <Image alt="horse" src="/18.png" width={180} height={180} />
             </motion.div>
 
             <motion.h1 
@@ -81,7 +76,7 @@ export default function LandingPage() {
               animate={{ opacity: 1, y: 0 }}
               className="text-5xl md:text-7xl font-extrabold tracking-tight text-foreground leading-[1.1]"
             >
-              Simply The Best <br/>
+              Fun The Best <br/>
               <span className="text-primary">Coding Platform</span> For You
             </motion.h1>
             
@@ -99,7 +94,7 @@ export default function LandingPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
-              <Link href="/register">
+              <Link href="/onboarding">
                 <Button size="lg" className="h-14 px-8 rounded-full text-lg font-bold ">
                   Get Started
                 </Button>
@@ -114,11 +109,9 @@ export default function LandingPage() {
         {/* Features Section (5-Grid) */}
         <section className=" py-20 ">
           <div className="max-w-7xl mx-auto px-6">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">A smarter way to learn programming</h2>
-              <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                Powered by adaptive lessons, rewards, and clean course organization.
-              </p>
+            <div className="text-center mb-16 flex items-center w-fit mx-auto">
+              <h2 className="text-3xl md:text-4xl font-black text-foreground mb-4">Make It Fun. </h2>
+              <Image alt="decorative" src="/11.png" width={70} height={70} className="mx-auto mb-4" />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-6 gap-6 auto-rows-[minmax(300px,auto)]">
@@ -751,7 +744,7 @@ export default function LandingPage() {
                   viewport={{ once: true }}
                   transition={{ delay: 0.2 }}
                 >
-                  <Link href="/register">
+                  <Link href="/onboarding" className="">
                     <Button 
                       size="lg" 
                       className="h-16 px-10 rounded-2xl text-xl font-bold bg-white text-primary hover:bg-gray-100 border-b-8 border-gray-200 active:border-b-0 active:translate-y-2 transition-all"

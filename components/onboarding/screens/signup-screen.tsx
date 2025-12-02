@@ -3,13 +3,60 @@
 import { useOnboarding } from '@/lib/contexts/onboarding-context';
 import { Button, Card, Input } from '@/components/duolingo-ui';
 import { useState } from 'react';
+import { signIn } from 'next-auth/react';
 
 export function SignupScreen() {
   const { updateState, nextStep } = useOnboarding();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [authMethod, setAuthMethod] = useState<'email' | 'google' | 'guest' | null>(null);
+const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
+  
+
+  const handleContinueAsGuest = async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      // Create guest user via API
+      const res = await fetch('/api/auth/guest', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || 'Failed to create guest account');
+      }
+
+      const data = await res.json();
+
+      // Sign in as guest using NextAuth
+      const signInResult = await signIn('guest', {
+        userId: data.userId,
+        redirect: false,
+      });
+
+      if (signInResult?.error) {
+        throw new Error('Failed to sign in as guest');
+      }
+
+      // Update onboarding state and skip signup
+      updateState({ 
+        authMethod: 'guest',
+        userId: data.userId,
+      });
+      
+      // Skip signup screen, go directly to language selection
+      nextStep();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setIsLoading(false);
+    }
+  };
   const handleEmailSignup = () => {
     if (email && password) {
       updateState({ email, password, authMethod: 'email' });
@@ -28,6 +75,9 @@ export function SignupScreen() {
   };
 
   return (
+    <>
+    
+    
     <Card className="w-full p-8">
       <h2 className="text-3xl font-extrabold text-foreground mb-2 text-center">Create your profile</h2>
       <p className="text-muted-foreground mb-8 text-center font-medium">Choose how you want to join Koodi</p>
@@ -84,6 +134,35 @@ export function SignupScreen() {
       <p className="text-center text-sm font-bold text-muted-foreground">
         Already have an account? <a href="/login" className="text-primary hover:underline">Login</a>
       </p>
+       <div className="flex items-center justify-center gap-4 my-4">
+          <div className="flex-1 h-px bg-border" />
+          <span className="text-muted-foreground font-medium text-sm">or</span>
+          <div className="flex-1 h-px bg-border" />
+        </div>
+<div className="w-full flex justify-center">
+
+        <Button
+          onClick={handleContinueAsGuest}
+          disabled={isLoading}
+          size="lg"
+          variant="outline"
+          className="w-full sm:w-auto px-12 text-lg"
+        >
+          {isLoading ? (
+            <>
+              <span className="mr-2 animate-spin">⏳</span>
+              Creating guest account...
+            </>
+          ) : (
+            <>
+              <span className="mr-2">👤</span>
+              Continue as Guest
+            </>
+          )}
+        </Button>
+</div>
     </Card>
+      
+    </>
   );
 }

@@ -95,7 +95,6 @@ export function CompleteScreen() {
           onClick={handleCompleteOnboarding}
           disabled={loading}
           size="lg"
-          variant="super"
           className="w-full py-6 text-lg"
         >
           {loading ? 'Setting up...' : '🚀 Start Learning Now'}
