@@ -173,7 +173,7 @@ export function CodeLessonGame({ lessonId }: { lessonId: string;}) {
   }, [gameState, lessonId, sessionId])
 
   // Match Madness Logic
-  const handleMatchClick = (id: string) => {
+  const handleMatchClick = React.useCallback((id: string) => {
     if (matchedPairs.includes(id)) return
     if (selectedMatchIds.includes(id)) {
       setSelectedMatchIds((prev) => prev.filter((item) => item !== id))
@@ -202,9 +202,9 @@ export function CodeLessonGame({ lessonId }: { lessonId: string;}) {
         }, 800)
       }
     }
-  }
+  }, [matchedPairs, selectedMatchIds, currentQuestion])
 
-  const handleCheck = async () => {
+  const handleCheck = React.useCallback(async () => {
     if (gameState !== "playing" || !currentQuestion) return
 
     let isCorrect = false
@@ -287,9 +287,9 @@ export function CodeLessonGame({ lessonId }: { lessonId: string;}) {
     if (!isCorrect) {
       setHearts((h) => Math.max(0, h - 1))
     }
-  }
+  }, [gameState, currentQuestion, selectedSegmentId, selectedOptionId, reorderItems, matchedPairs, sessionId, onQuestionAnswered, onMistakeFixed])
 
-  const handleNext = async () => {
+  const handleNext = React.useCallback(async () => {
     if (feedbackStatus === "incorrect") {
       if (hearts === 0) {
         setGameState("failed")
@@ -314,9 +314,9 @@ export function CodeLessonGame({ lessonId }: { lessonId: string;}) {
         setGameState("completed")
       }
     }
-  }
+  }, [feedbackStatus, hearts, currentQuestionIndex, questions.length])
 
-  const handleRetry = () => {
+  const handleRetry = React.useCallback(() => {
     setCurrentQuestionIndex(0)
     setHearts(5)
     setGameState("playing")
@@ -325,7 +325,7 @@ export function CodeLessonGame({ lessonId }: { lessonId: string;}) {
     if (questions[0]?.type === "REORDER" && questions[0]?.items) {
       setReorderItems(questions[0].items)
     }
-  }
+  }, [questions])
 
   // Loading state
   if (loading) {
@@ -361,7 +361,6 @@ export function CodeLessonGame({ lessonId }: { lessonId: string;}) {
     return null
   }
 
-  console.log("Segmenrs ",selectedSegmentId)
   const renderDebugHunt = () => (
     <div className="flex flex-col gap-6">
       <div className="bg-slate-900 p-6 rounded-2xl font-mono text-lg text-white shadow-inner overflow-x-auto">
@@ -413,7 +412,7 @@ export function CodeLessonGame({ lessonId }: { lessonId: string;}) {
               key={option.id}
               onClick={() => gameState === "playing" && setSelectedOptionId(option.id)}
               className={cn(
-                "p-4 rounded-2xl border-2 border-b-4 cursor-pointer transition-all active:border-b-2 active:translate-y-[2px] font-mono text-sm md:text-base",
+                "p-4 rounded-2xl border-2 border-b-4 cursor-pointer transition-all active:border-b-2 active:translate-y-0.5 font-mono text-sm md:text-base",
                 gameState === "playing" && isSelected && "bg-card border-blue-500 cursor-default",
                 gameState === "playing" && !isSelected && "bg-card border-border hover:bg-muted/50",
                 showCorrect && "bg-green-100 border-green-500 text-green-700",
@@ -523,7 +522,7 @@ export function CodeLessonGame({ lessonId }: { lessonId: string;}) {
                 className={cn(
                   "h-14 rounded-xl border-2 border-b-4 font-mono text-lg font-medium transition-all relative",
                   gameState === "playing" && isSelected && "bg-muted border-transparent text-transparent cursor-default",
-                  gameState === "playing" && !isSelected && "bg-card border-border hover:bg-muted/50 active:border-b-2 active:translate-y-[2px]",
+                  gameState === "playing" && !isSelected && "bg-card border-border hover:bg-muted/50 active:border-b-2 active:translate-y-0.5",
                   showOptionCorrect && "bg-green-100 border-green-500",
                   showOptionIncorrect && "bg-red-100 border-red-500",
                   gameState === "feedback" && !showOptionCorrect && !showOptionIncorrect && "bg-card border-border opacity-50",
@@ -596,7 +595,7 @@ export function CodeLessonGame({ lessonId }: { lessonId: string;}) {
                 key={option.id}
                 onClick={() => gameState === "playing" && setSelectedOptionId(option.id)}
                 className={cn(
-                  "p-4 rounded-2xl border-2 border-b-4 cursor-pointer transition-all active:border-b-2 active:translate-y-[2px] font-mono text-center font-bold text-lg",
+                  "p-4 rounded-2xl border-2 border-b-4 cursor-pointer transition-all active:border-b-2 active:translate-y-0.5 font-mono text-center font-bold text-lg",
                   gameState === "playing" && isSelected && "bg-blue-100 border-blue-500 text-blue-600",
                   gameState === "playing" && !isSelected && "bg-card border-border hover:bg-muted/50",
                   showOptionCorrect && "bg-green-100 border-green-500 text-green-700",
@@ -682,7 +681,7 @@ export function CodeLessonGame({ lessonId }: { lessonId: string;}) {
                 key={option.id}
                 onClick={() => gameState === "playing" && setSelectedOptionId(option.id)}
                 className={cn(
-                  "p-4 rounded-2xl border-2 border-b-4 cursor-pointer transition-all active:border-b-2 active:translate-y-[2px] font-mono text-center font-bold",
+                  "p-4 rounded-2xl border-2 border-b-4 cursor-pointer transition-all active:border-b-2 active:translate-y-0.5 font-mono text-center font-bold",
                   gameState === "playing" && isSelected && "bg-blue-100 border-blue-500 text-blue-600",
                   gameState === "playing" && !isSelected && "bg-card border-border hover:bg-muted/50",
                   showOptionCorrect && "bg-green-100 border-green-500 text-green-700",
@@ -708,7 +707,6 @@ export function CodeLessonGame({ lessonId }: { lessonId: string;}) {
         isSelected &&
         !matchedPairs.includes(pair.id)
 
-      console.log("Matched Pairs: ", isNotMatched)
       if (isMatched) {
         return (
           <motion.div
@@ -722,25 +720,7 @@ export function CodeLessonGame({ lessonId }: { lessonId: string;}) {
           </motion.div>
         )
       }
-    
-      // if (isNotMatched) {
-      //   return (
-      //     <motion.div
-      //       key={pair.id}
-      //       className="h-16 rounded-xl bg-red-100 border-2 border-red-500 flex items-center justify-center px-2 text-center font-mono text-sm md:text-base font-medium text-red-600"
-      //         initial={{ opacity: 1, scale: 1 }}
-      // animate={{ opacity: 1, scale: [1, 1.15, 1] }}   // bounce then return
-      // transition={{
-      //   duration: 0.45,
-      //   type: "spring",
-      //   stiffness: 260,
-      //   damping: 14
-      // }}
-      //     >
-      //       {pair.text}
-      //     </motion.div>
-      //   )
-      // }
+
       return (
         <motion.button
           key={pair.id}

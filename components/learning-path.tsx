@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, memo, useMemo } from "react"
 import { motion } from "framer-motion"
 import { Check, Lock, Star, BookOpen, FastForward } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -39,7 +39,7 @@ const START_OFFSET = 0 // Initial vertical padding
 
 // --- Components ---
 
-const PathNode = ({
+const PathNode = memo(({
   level,
   index,
   total,
@@ -82,7 +82,7 @@ const PathNode = ({
       : "border-primary-depth" // Darker yellow
 
   const iconColor = isActive ? "text-white" : isLocked ? "text-muted-foreground" : "text-white"
-  console.log(level)
+
   return (
     <div
       className="absolute flex justify-center items-center w-full"
@@ -90,7 +90,7 @@ const PathNode = ({
     >
       <div className="relative z-10" style={{ transform: `translateX(${xOffset}px)` }}>
         {/* Floating Start Tooltip for Active Node isActive and first lesson and chapter */}
-        {isActive && index === 0 && (level.levelIndex ?? 0) === 1  && (
+        {isActive && index === 0 && (level.levelIndex ?? 0) === 1 && (
           <motion.div
             initial={{ y: -10, opacity: 0 }}
             animate={{ y: [0, -8, 0], opacity: 1 }}
@@ -205,9 +205,9 @@ const PathNode = ({
       </div>
     </div>
   )
-}
+})
 
-export const UnitHeader = ({ unit, className }: { unit: UnitData; className?: string }) => {
+export const UnitHeader = memo(({ unit, className }: { unit: UnitData; className?: string }) => {
   return (
     <div className={cn("bg-primary text-primary-foreground p-4 rounded-b-none sticky top-16 z-30", className)}>
       <div className="container mx-auto max-w-lg flex items-center justify-between">
@@ -221,9 +221,9 @@ export const UnitHeader = ({ unit, className }: { unit: UnitData; className?: st
       </div>
     </div>
   )
-}
+})
 
-export const LearningPath = ({ 
+export const LearningPath = memo(({ 
   unit, 
   onLevelClick,
   openTooltip: globalOpenTooltip,
@@ -385,4 +385,4 @@ export const LearningPath = ({
       )}
     </div>
   )
-}
+})

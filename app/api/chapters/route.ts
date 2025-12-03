@@ -1,13 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@/lib/generated/prisma/client';
-import { PrismaPg } from '@prisma/adapter-pg';
 import { auth } from '@/auth';
-
-const adapter = new PrismaPg({
-  connectionString: process.env.DATABASE_URL,
-});
-
-const prisma = new PrismaClient({ adapter });
+import { getCachedChapters, getCachedUserProgress } from '@/lib/cache';
 
 export async function GET(request: NextRequest) {
   try {
@@ -24,54 +17,28 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Fetch all chapters for the language with units and lessons
-    const chapters = await prisma.chapter.findMany({
-      where: { languageId },
-      orderBy: { levelIndex: 'asc' },
-      include: {
-        units: {
-          orderBy: { unitIndex: 'asc' },
-          include: {
-            lessons: {
-              orderBy: { lessonIndex: 'asc' },
-            },
-          },
-        },
-        // Get question count for the chapter
-        _count: {
-          select: { questions: true },
-        },
-      },
-    });
+    // Fetch chapters from cache (revalidates every 2 hours)
+    const chapters = await getCachedChapters(languageId);
 
     // If no chapters found, return empty
     if (chapters.length === 0) {
-      return NextResponse.json({ chapters: [] });
+      const response = NextResponse.json({ chapters: [] });
+      response.headers.set('Cache-Control', 'public, max-age=300, s-maxage=3600'); // CDN: 1 hour
+      return response;
     }
 
-    // Enrich with user progress data if logged in
+    // Enrich with user progress data if logged in (cached for 5 minutes)
     if (userId) {
-      // Collect all unit and lesson IDs
       const unitIds = chapters.flatMap(ch => ch.units.map(u => u.id));
       const lessonIds = chapters.flatMap(ch => 
         ch.units.flatMap(u => u.lessons.map(l => l.id))
       );
 
-      // Batch fetch all user progress data in 2 queries instead of many
-      const [userUnitsProgress, userLessonsCompletion] = await Promise.all([
-        prisma.userUnitProgress.findMany({
-          where: {
-            userId,
-            unitId: { in: unitIds },
-          },
-        }),
-        prisma.userLessonCompletion.findMany({
-          where: {
-            userId,
-            lessonId: { in: lessonIds },
-          },
-        }),
-      ]);
+      const { userUnitsProgress, userLessonsCompletion } = await getCachedUserProgress(
+        userId,
+        unitIds,
+        lessonIds
+      );
 
       // Create maps for O(1) lookup
       const userProgressMap = new Map(
@@ -108,16 +75,20 @@ export async function GET(request: NextRequest) {
           });
         });
       });
+
+      const response = NextResponse.json({ chapters });
+      response.headers.set('Cache-Control', 'private, max-age=300'); // User-specific: 5 minutes
+      return response;
     }
 
-    return NextResponse.json({ chapters });
+    const response = NextResponse.json({ chapters });
+    response.headers.set('Cache-Control', 'public, max-age=600, s-maxage=3600'); // CDN: 1 hour
+    return response;
   } catch (error) {
     console.error('Error fetching chapters:', error);
     return NextResponse.json(
       { message: 'Failed to fetch chapters', error: String(error) },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }

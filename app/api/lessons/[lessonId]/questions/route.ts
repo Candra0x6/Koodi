@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient, DifficultyLevel } from '@/lib/generated/prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { auth } from '@/auth';
+import { getCachedChapterQuestions } from '@/lib/cache';
 
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL,
@@ -72,19 +73,8 @@ export async function GET(
       difficultyOrder.push('MEDIUM', 'EASY');
     }
 
-    // Fetch all questions for this chapter
-    const allQuestions = await prisma.question.findMany({
-      where: {
-        chapterId,
-        languageId,
-      },
-      include: {
-        codeSegments: { orderBy: { index: 'asc' } },
-        options: { orderBy: { index: 'asc' } },
-        items: { orderBy: { index: 'asc' } },
-        pairs: { orderBy: { index: 'asc' } },
-      },
-    });
+    // Fetch all questions for this chapter using cache
+    const allQuestions = await getCachedChapterQuestions(chapterId, languageId);
 
     let selectedQuestions: typeof allQuestions = [];
 
@@ -172,6 +162,14 @@ export async function GET(
       questions: selectedQuestions,
       sessionId,
       questionCount: selectedQuestions.length,
+    }, {
+      headers: {
+        // Cache for 10 minutes on client, 1 hour on CDN for authenticated users
+        // Cache for 1 hour on CDN for anonymous users
+        'Cache-Control': userId 
+          ? 'private, max-age=600, s-maxage=3600'
+          : 'public, max-age=600, s-maxage=3600',
+      },
     });
   } catch (error) {
     console.error('Error fetching lesson questions:', error);
