@@ -36,14 +36,14 @@ function OnboardingContent() {
         <AnimatePresence mode="wait">
           <motion.div
             key={state.currentStep}
-            initial={{ opacity: 0, scale: 0.5, x: -100, rotate: -10 }}
+            initial={{ opacity: 0, scale: 1, x: -1, rotate: -10 }}
             animate={{ 
               opacity: 1, 
               scale: 1, 
               x: 0, 
               rotate: 0,
             }}
-            exit={{ opacity: 0, scale: 0.5, x: -100, rotate: 10 }}
+            exit={{ opacity: 0, scale: 1, x: -100, rotate: 10 }}
             transition={{ 
               type: "spring", 
               stiffness: 200, 
@@ -54,7 +54,7 @@ function OnboardingContent() {
             <motion.div
               animate={{ y: [0, -15, 0] }}
               transition={{ 
-                duration: 3,
+                duration: 3 ,
                 repeat: Infinity,
                 ease: "easeInOut"
               }}
@@ -62,7 +62,7 @@ function OnboardingContent() {
               whileTap={{ scale: 0.9 }}
             >
               <Image 
-                src="/6.png" 
+                src="/15.png" 
                 alt="Onboarding Illustration" 
                 width={200} 
                 height={200}
@@ -79,11 +79,11 @@ function OnboardingContent() {
             animate={{ opacity: 1, scale: 1, x: 0, rotate: 0 }}
             exit={{ opacity: 0, scale: 0.8, x: 20, rotate: 2 }}
             transition={{ duration: 0.4, type: "spring", bounce: 0.5, delay: 0.1 }}
-            className="relative bg-card border-2 border-primary p-6 rounded-2xl shadow-lg max-w-md"
+            className="relative bg-orange-50 border-2 border-primary p-6 rounded-2xl shadow-lg max-w-md"
           >
             {/* Speech bubble tail */}
             <div className="absolute top-1/2 -left-3.5 -translate-y-1/2 w-0 h-0 border-y-[10px] border-y-transparent border-r-[14px] border-r-primary" />
-            <div className="absolute top-1/2 -left-3 -translate-y-1/2 w-0 h-0 border-y-[8px] border-y-transparent border-r-[12px] border-r-card" />
+            <div className="absolute top-1/2 -left-3 -translate-y-1/2 w-0 h-0 border-y-[8px] border-y-transparent border-r-[12px] border-r-orange-50" />
             
             <motion.h1 
               className="text-2xl font-bold text-foreground"
